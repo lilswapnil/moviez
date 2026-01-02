@@ -114,7 +114,7 @@ export default function FeaturedBanner({ movies = [], shows = [] }: FeaturedBann
   }
 
   return (
-    <div className="relative min-h-screen mx-4 mb-8 rounded-2xl overflow-hidden group">
+    <div className="relative min-h-screen mb-8 rounded-2xl overflow-hidden group">
       {/* Background with overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent z-10"></div>
       <div 
