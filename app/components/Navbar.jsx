@@ -21,8 +21,8 @@ export default function Navbar() {
                 <Image
                     src='/logo.svg'
                     alt='Moviez Logo'
-                    width={50}
-                    height={50}
+                    width={30}
+                    height={30}
                 />
                 <h1 className="text-xl font-bold">Moviez</h1>
             </Link>

@@ -29,6 +29,7 @@ export default function FeaturedBanner({ movies = [], shows = [] }: FeaturedBann
   const [showTrailer, setShowTrailer] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const trailerFailureCountsRef = useRef<Record<string, number>>({});
+  const trailerCacheRef = useRef<Record<string, Trailer | null>>({});
   const MAX_TRAILER_FAILURES = 3;
 
   const allItems: FeaturedItem[] = useMemo(() => {
@@ -72,8 +73,26 @@ export default function FeaturedBanner({ movies = [], shows = [] }: FeaturedBann
       return;
     }
     
+    let cancelled = false;
+    const setTrailerSafely = (value: Trailer | null) => {
+      if (!cancelled) {
+        setTrailer(value);
+      }
+    };
+
+    const hasCache = Object.prototype.hasOwnProperty.call(trailerCacheRef.current, itemKey);
+    if (hasCache) {
+      const cachedTrailer = trailerCacheRef.current[itemKey];
+      setTrailerSafely(cachedTrailer);
+      setShowTrailer(false);
+      setIsPlaying(false);
+      return () => {
+        cancelled = true;
+      };
+    }
+
     const fetchTrailer = async () => {
-      setTrailer(null);
+      setTrailerSafely(null);
       setShowTrailer(false);
       setIsPlaying(false);
       
@@ -92,16 +111,21 @@ export default function FeaturedBanner({ movies = [], shows = [] }: FeaturedBann
 
         if (trailers.length > 0) {
           trailerFailureCountsRef.current[itemKey] = 0;
-          setTrailer(trailers[0]);
+          trailerCacheRef.current[itemKey] = trailers[0];
+          setTrailerSafely(trailers[0]);
         } else {
-          const updatedFailures = failureCount + 1;
+          const updatedFailures = (trailerFailureCountsRef.current[itemKey] ?? 0) + 1;
           trailerFailureCountsRef.current[itemKey] = updatedFailures;
+          if (updatedFailures >= MAX_TRAILER_FAILURES) {
+            trailerCacheRef.current[itemKey] = null;
+          }
           console.warn(`No trailers found for ${itemKey} (attempt ${updatedFailures}/${MAX_TRAILER_FAILURES}).`);
         }
       } catch (error) {
-        const updatedFailures = failureCount + 1;
+        const updatedFailures = (trailerFailureCountsRef.current[itemKey] ?? 0) + 1;
         trailerFailureCountsRef.current[itemKey] = updatedFailures;
         if (updatedFailures >= MAX_TRAILER_FAILURES) {
+          trailerCacheRef.current[itemKey] = null;
           console.error(`Stopping trailer fetches for ${itemKey} after ${updatedFailures} failures.`, error);
         } else {
           console.error(`Error fetching trailer for ${itemKey} (attempt ${updatedFailures}/${MAX_TRAILER_FAILURES}):`, error);
@@ -110,6 +134,9 @@ export default function FeaturedBanner({ movies = [], shows = [] }: FeaturedBann
     };
     
     fetchTrailer();
+    return () => {
+      cancelled = true;
+    };
   }, [featuredItem?.id, featuredItem?.kind]);
 
   const goToNext = () => {
