@@ -1,9 +1,22 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Navbar() {
+    const [isScrolled, setIsScrolled] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => setIsScrolled(window.scrollY > 0);
+
+        handleScroll();
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
     return (
-        <nav className="fixed top-0 left-0 right-0 z-50 flex items-center gap-4 py-3 px-6 text-white justify-between bg-black/30 backdrop-blur-xl">
+        <nav className={`fixed top-0 left-0 right-0 z-50 flex items-center gap-4 py-3 px-6 text-white justify-between transition-all duration-300 ${isScrolled ? "bg-black/30 backdrop-blur-xl" : "bg-transparent"}`}>
                 <Link href="/" className="flex items-center gap-1">
                 <Image
                     src='/logo.svg'

@@ -1,8 +1,11 @@
 import type { NextConfig } from "next";
 import { createRequire } from "module";
+import { dirname } from "path";
+import { fileURLToPath } from "url";
 
 const require = createRequire(import.meta.url);
 const tailwindEntry = require.resolve("tailwindcss");
+const projectRoot = dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
   images: {
@@ -14,11 +17,10 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  experimental: {
-    turbo: {
-      resolveAlias: {
-        tailwindcss: tailwindEntry,
-      },
+  turbopack: {
+    root: projectRoot,
+    resolveAlias: {
+      tailwindcss: tailwindEntry,
     },
   },
 };
