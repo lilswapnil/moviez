@@ -1,4 +1,8 @@
 import type { NextConfig } from "next";
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
+const tailwindEntry = require.resolve("tailwindcss");
 
 const nextConfig: NextConfig = {
   images: {
@@ -9,6 +13,13 @@ const nextConfig: NextConfig = {
         pathname: '/t/p/**',
       },
     ],
+  },
+  experimental: {
+    turbo: {
+      resolveAlias: {
+        tailwindcss: tailwindEntry,
+      },
+    },
   },
 };
 

@@ -76,21 +76,31 @@ export default async function Library() {
           const results = await fetcher();
           const normalizedItems = (Array.isArray(results) ? results : []) as (Movie | TVShow)[];
 
-          const items: ChartPreviewItem[] = normalizedItems
-            .slice(0, 12)
-            .map((item) => {
-              const title = 'title' in item && item.title ? item.title : item.name;
-              if (!title) {
-                return null;
+          const items = normalizedItems.slice(0, 12).reduce<ChartPreviewItem[]>((acc, item) => {
+            const title = (() => {
+              if ('title' in item && item.title) {
+                return item.title;
               }
 
-              return {
-                id: item.id,
-                title,
-                poster_path: item.poster_path ?? null,
-              };
-            })
-            .filter((preview): preview is ChartPreviewItem => preview !== null);
+              if ('name' in item && item.name) {
+                return item.name;
+              }
+
+              return undefined;
+            })();
+
+            if (!title) {
+              return acc;
+            }
+
+            acc.push({
+              id: item.id,
+              title,
+              poster_path: item.poster_path ?? null,
+            });
+
+            return acc;
+          }, []);
 
           return { name: chartName, items };
         })
