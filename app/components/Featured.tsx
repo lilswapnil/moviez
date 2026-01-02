@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { getImageUrl } from '@/lib/tmdb';
 import type { Trailer, Movie, TVShow } from '@/lib/tmdb';
 
@@ -28,6 +28,8 @@ export default function FeaturedBanner({ movies = [], shows = [] }: FeaturedBann
   const [trailer, setTrailer] = useState<Trailer | null>(null);
   const [showTrailer, setShowTrailer] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const trailerFailureCountsRef = useRef<Record<string, number>>({});
+  const MAX_TRAILER_FAILURES = 3;
 
   const allItems: FeaturedItem[] = useMemo(() => {
     const movieItems = movies.map((movie) => ({
@@ -59,6 +61,16 @@ export default function FeaturedBanner({ movies = [], shows = [] }: FeaturedBann
   // Fetch trailer when item changes
   useEffect(() => {
     if (!featuredItem) return;
+    const itemKey = `${featuredItem.kind}-${featuredItem.id}`;
+    const failureCount = trailerFailureCountsRef.current[itemKey] ?? 0;
+
+    if (failureCount >= MAX_TRAILER_FAILURES) {
+      console.warn(`Skipping trailer fetch for ${itemKey} after repeated failures.`);
+      setTrailer(null);
+      setShowTrailer(false);
+      setIsPlaying(false);
+      return;
+    }
     
     const fetchTrailer = async () => {
       setTrailer(null);
@@ -79,17 +91,26 @@ export default function FeaturedBanner({ movies = [], shows = [] }: FeaturedBann
         const trailers: Trailer[] = Array.isArray(data.results) ? data.results : [];
 
         if (trailers.length > 0) {
+          trailerFailureCountsRef.current[itemKey] = 0;
           setTrailer(trailers[0]);
         } else {
-          console.warn('No trailers found for this item');
+          const updatedFailures = failureCount + 1;
+          trailerFailureCountsRef.current[itemKey] = updatedFailures;
+          console.warn(`No trailers found for ${itemKey} (attempt ${updatedFailures}/${MAX_TRAILER_FAILURES}).`);
         }
       } catch (error) {
-        console.error('Error fetching trailer:', error);
+        const updatedFailures = failureCount + 1;
+        trailerFailureCountsRef.current[itemKey] = updatedFailures;
+        if (updatedFailures >= MAX_TRAILER_FAILURES) {
+          console.error(`Stopping trailer fetches for ${itemKey} after ${updatedFailures} failures.`, error);
+        } else {
+          console.error(`Error fetching trailer for ${itemKey} (attempt ${updatedFailures}/${MAX_TRAILER_FAILURES}):`, error);
+        }
       }
     };
     
     fetchTrailer();
-  }, [featuredItem]);
+  }, [featuredItem?.id, featuredItem?.kind]);
 
   const goToNext = () => {
     if (allItems.length === 0) return;
