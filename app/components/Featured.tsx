@@ -1,0 +1,213 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { getImageUrl } from '@/lib/tmdb';
+import type { Trailer, Movie, TVShow } from '@/lib/tmdb';
+
+interface FeaturedItem {
+  id: number;
+  title?: string;
+  name?: string;
+  overview: string;
+  backdrop_path: string;
+  poster_path: string;
+  release_date?: string;
+  first_air_date?: string;
+  vote_average: number;
+  genre_ids: number[];
+}
+
+interface FeaturedBannerProps {
+  movies?: Movie[];
+  shows?: TVShow[];
+}
+
+export default function FeaturedBanner({ movies = [], shows = [] }: FeaturedBannerProps) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [trailer, setTrailer] = useState<Trailer | null>(null);
+  const [showTrailer, setShowTrailer] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [loading, setLoading] = useState(false);
+  
+  // Combine movies and shows, then slice to first 10
+  const allItems: FeaturedItem[] = [
+    ...movies.map(movie => ({ ...movie, title: movie.title, release_date: movie.release_date })),
+    ...shows.map(show => ({ ...show as any, name: show.name, first_air_date: show.first_air_date }))
+  ].slice(0, 10);
+  
+  const featuredItem = allItems[currentIndex];
+
+  // Fetch trailer when item changes
+  useEffect(() => {
+    if (!featuredItem) return;
+    
+    const fetchTrailer = async () => {
+      setLoading(true);
+      setTrailer(null);
+      setShowTrailer(false);
+      setIsPlaying(false);
+      
+      try {
+        const isMovie = !!allItems[currentIndex].title && !allItems[currentIndex].name;
+        const type = isMovie ? 'movie' : 'tv';
+        console.log(`Fetching trailers for ${type} with ID:`, featuredItem.id);
+
+        const response = await fetch(`/api/trailers?type=${type}&id=${featuredItem.id}`, {
+          method: 'GET',
+          cache: 'no-store',
+        });
+
+        if (!response.ok) {
+          throw new Error(`Trailer request failed: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const trailers: Trailer[] = Array.isArray(data.results) ? data.results : [];
+        
+        console.log(`Found ${trailers.length} trailers:`, trailers);
+        
+        if (trailers.length > 0) {
+          setTrailer(trailers[0]);
+          console.log('Set trailer:', trailers[0]);
+        } else {
+          console.warn('No trailers found for this item');
+        }
+      } catch (error) {
+        console.error('Error fetching trailer:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchTrailer();
+  }, [currentIndex, allItems]);
+
+  const goToNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % allItems.length);
+  };
+
+  const goToPrev = () => {
+    setCurrentIndex((prev) => (prev - 1 + allItems.length) % allItems.length);
+  };
+
+  const goToSlide = (index: number) => {
+    setCurrentIndex(index);
+  };
+
+  if (!featuredItem) {
+    return (
+      <div className="relative min-h-screen mx-4 mb-8 rounded-2xl overflow-hidden bg-gray-900 flex items-center justify-center">
+        <p className="text-gray-500 text-xl">Loading featured content...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative min-h-screen mx-4 mb-8 rounded-2xl overflow-hidden group">
+      {/* Background with overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent z-10"></div>
+      <div 
+        className="absolute inset-0 bg-cover bg-center transition-all duration-500"
+        style={{ backgroundImage: `url(${getImageUrl(featuredItem.backdrop_path)})` }}
+      ></div>
+      
+      {/* Content */}
+      <div className="absolute bottom-0 left-0 z-20 pb-24 px-12 max-w-2xl">
+        <h1 className="text-6xl font-bold text-white mb-4">{featuredItem.title || featuredItem.name}</h1>
+        <p className="text-xl text-gray-300 mb-4 leading-relaxed line-clamp-3">
+          {featuredItem.overview}
+        </p>
+        <div className="flex items-center gap-4 mb-6 text-gray-300">
+          <span className="flex items-center gap-1">
+            ⭐ {featuredItem.vote_average.toFixed(1)}
+          </span>
+          <span>•</span>
+          <span>{new Date(featuredItem.release_date || featuredItem.first_air_date || '').getFullYear()}</span>
+        </div>
+        <div className="flex gap-4">
+          <button 
+            onClick={() => {
+              setShowTrailer(true);
+              setIsPlaying(true);
+            }}
+            disabled={!trailer}
+            className="px-8 py-3 bg-red-600 hover:bg-red-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors flex items-center gap-2"
+          >
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+            </svg>
+            {showTrailer && isPlaying ? 'Pause' : 'Play Now'}
+          </button>
+          <button className="px-8 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white font-semibold rounded-lg transition-colors">
+            More Info
+          </button>
+        </div>
+      </div>
+
+      {/* Navigation Arrows */}
+      <button 
+        onClick={goToPrev}
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-30 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all opacity-0 group-hover:opacity-100"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <button 
+        onClick={goToNext}
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-30 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all opacity-0 group-hover:opacity-100"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+
+      {/* Pagination Dots */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-2">
+        {allItems.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => goToSlide(index)}
+            className={`transition-all ${
+              index === currentIndex 
+                ? 'w-8 h-2 bg-red-600' 
+                : 'w-2 h-2 bg-white/50 hover:bg-white/80'
+            } rounded-full`}
+            aria-label={`Go to item ${index + 1}`}
+          />
+        ))}
+      </div>
+
+      {/* Trailer Modal */}
+      {showTrailer && isPlaying && trailer && trailer.key && (
+        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
+          <div className="relative w-full max-w-4xl">
+            <button
+              onClick={() => {
+                setShowTrailer(false);
+                setIsPlaying(false);
+              }}
+              className="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors"
+            >
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <div className="aspect-video rounded-lg overflow-hidden bg-black">
+              <iframe
+                key={trailer.key}
+                width="100%"
+                height="100%"
+                src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=1&rel=0`}
+                title={trailer.name}
+                frameBorder="0"
+                allowFullScreen
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
