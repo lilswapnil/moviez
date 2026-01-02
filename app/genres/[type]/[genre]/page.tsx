@@ -53,7 +53,6 @@ export default async function GenrePage({ params }: GenrePageProps) {
           <GenreContent
             initialResults={results}
             type={type}
-            genre={decodedGenre}
             genreId={genreId}
           />
         ) : (

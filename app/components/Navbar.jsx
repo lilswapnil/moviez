@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function Navbar() {
     return (
         <nav className="fixed top-0 left-0 right-0 z-50 flex items-center gap-4 py-3 px-6 text-white justify-between bg-black/30 backdrop-blur-xl">
-                <Link href="/" className="flex items-center gap-4">
+                <Link href="/" className="flex items-center gap-1">
                 <Image
                     src='/logo.svg'
                     alt='Moviez Logo'

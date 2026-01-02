@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { Movie, TVShow } from '@/lib/tmdb';
-import Data from './HomeCards';
 import HomeCards from './HomeCards';
 
 interface DataSectionProps {

@@ -2,6 +2,7 @@ import { movieGenres, tvGenres, animeGenres, cartoonGenres, movieCharts, tvChart
 import Link from 'next/link';
 import ChartSection, { ChartWithPreview } from '../components/ChartSection';
 import type { ChartPreviewItem } from '../components/ChartPreviewRow';
+import type { Movie, TVShow } from '../../lib/tmdb';
 import {
   getTrendingMovies,
   getTopRatedMovies,
@@ -37,7 +38,9 @@ const chartSectionsConfig = [
   { title: 'Cartoon Charts', charts: cartoonCharts },
 ];
 
-const chartFetchers: Record<string, () => Promise<any[]>> = {
+type ChartFetcher = () => Promise<Movie[] | TVShow[]>;
+
+const chartFetchers: Record<string, ChartFetcher> = {
   'Trending Movies': () => getTrendingMovies(),
   'Top Rated Movies': () => getTopRatedMovies(),
   'Upcoming Movies': () => getUpcomingMovies(),
@@ -71,19 +74,23 @@ export default async function Library() {
           }
 
           const results = await fetcher();
-          const items = (Array.isArray(results) ? results : [])
+          const normalizedItems = (Array.isArray(results) ? results : []) as (Movie | TVShow)[];
+
+          const items: ChartPreviewItem[] = normalizedItems
             .slice(0, 12)
-            .map((item: any) => {
-              if (!item || typeof item !== 'object') return null;
+            .map((item) => {
               const title = 'title' in item && item.title ? item.title : item.name;
-              if (!title) return null;
+              if (!title) {
+                return null;
+              }
+
               return {
                 id: item.id,
                 title,
                 poster_path: item.poster_path ?? null,
-              } as ChartPreviewItem;
+              };
             })
-            .filter(Boolean) as ChartPreviewItem[];
+            .filter((preview): preview is ChartPreviewItem => preview !== null);
 
           return { name: chartName, items };
         })

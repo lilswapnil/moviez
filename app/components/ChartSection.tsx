@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import ChartPreviewRow, { ChartPreviewItem } from './ChartPreviewRow';
 
 export interface ChartWithPreview {
@@ -19,14 +19,12 @@ export default function ChartSection({ title, charts }: ChartSectionProps) {
   const totalPages = Math.max(1, Math.ceil(charts.length / CHARTS_PER_PAGE));
   const [currentPage, setCurrentPage] = useState(0);
 
-  useEffect(() => {
+  const safePage = useMemo(() => {
     const lastPageIndex = totalPages - 1;
-    if (currentPage > lastPageIndex) {
-      setCurrentPage(lastPageIndex);
-    }
+    return Math.min(currentPage, lastPageIndex);
   }, [currentPage, totalPages]);
 
-  const start = currentPage * CHARTS_PER_PAGE;
+  const start = safePage * CHARTS_PER_PAGE;
   const visibleCharts = charts.slice(start, start + CHARTS_PER_PAGE);
 
   const goToPage = (page: number) => {
@@ -55,7 +53,7 @@ export default function ChartSection({ title, charts }: ChartSectionProps) {
               key={index}
               onClick={() => goToPage(index)}
               className={`h-2 w-2 rounded-full transition-colors ${
-                currentPage === index ? 'bg-red-500' : 'bg-white/30 hover:bg-white/60'
+                safePage === index ? 'bg-red-500' : 'bg-white/30 hover:bg-white/60'
               }`}
               aria-label={`Go to page ${index + 1}`}
             />

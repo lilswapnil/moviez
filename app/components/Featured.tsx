@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { getImageUrl } from '@/lib/tmdb';
 import type { Trailer, Movie, TVShow } from '@/lib/tmdb';
 
@@ -15,6 +15,7 @@ interface FeaturedItem {
   first_air_date?: string;
   vote_average: number;
   genre_ids: number[];
+  kind: 'movie' | 'tv';
 }
 
 interface FeaturedBannerProps {
@@ -27,32 +28,45 @@ export default function FeaturedBanner({ movies = [], shows = [] }: FeaturedBann
   const [trailer, setTrailer] = useState<Trailer | null>(null);
   const [showTrailer, setShowTrailer] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [loading, setLoading] = useState(false);
-  
-  // Combine movies and shows, then slice to first 10
-  const allItems: FeaturedItem[] = [
-    ...movies.map(movie => ({ ...movie, title: movie.title, release_date: movie.release_date })),
-    ...shows.map(show => ({ ...show as any, name: show.name, first_air_date: show.first_air_date }))
-  ].slice(0, 10);
-  
-  const featuredItem = allItems[currentIndex];
+
+  const allItems: FeaturedItem[] = useMemo(() => {
+    const movieItems = movies.map((movie) => ({
+      ...movie,
+      kind: 'movie' as const,
+      title: movie.title,
+      release_date: movie.release_date,
+    }));
+
+    const showItems = shows.map((show) => ({
+      ...show,
+      kind: 'tv' as const,
+      name: show.name,
+      first_air_date: show.first_air_date,
+    }));
+
+    return [...movieItems, ...showItems].slice(0, 10);
+  }, [movies, shows]);
+
+  const safeIndex = useMemo(() => {
+    if (allItems.length === 0) {
+      return 0;
+    }
+    return Math.min(currentIndex, allItems.length - 1);
+  }, [allItems.length, currentIndex]);
+
+  const featuredItem = allItems[safeIndex];
 
   // Fetch trailer when item changes
   useEffect(() => {
     if (!featuredItem) return;
     
     const fetchTrailer = async () => {
-      setLoading(true);
       setTrailer(null);
       setShowTrailer(false);
       setIsPlaying(false);
       
       try {
-        const isMovie = !!allItems[currentIndex].title && !allItems[currentIndex].name;
-        const type = isMovie ? 'movie' : 'tv';
-        console.log(`Fetching trailers for ${type} with ID:`, featuredItem.id);
-
-        const response = await fetch(`/api/trailers?type=${type}&id=${featuredItem.id}`, {
+        const response = await fetch(`/api/trailers?type=${featuredItem.kind}&id=${featuredItem.id}`, {
           method: 'GET',
           cache: 'no-store',
         });
@@ -63,30 +77,27 @@ export default function FeaturedBanner({ movies = [], shows = [] }: FeaturedBann
 
         const data = await response.json();
         const trailers: Trailer[] = Array.isArray(data.results) ? data.results : [];
-        
-        console.log(`Found ${trailers.length} trailers:`, trailers);
-        
+
         if (trailers.length > 0) {
           setTrailer(trailers[0]);
-          console.log('Set trailer:', trailers[0]);
         } else {
           console.warn('No trailers found for this item');
         }
       } catch (error) {
         console.error('Error fetching trailer:', error);
-      } finally {
-        setLoading(false);
       }
     };
     
     fetchTrailer();
-  }, [currentIndex, allItems]);
+  }, [featuredItem]);
 
   const goToNext = () => {
+    if (allItems.length === 0) return;
     setCurrentIndex((prev) => (prev + 1) % allItems.length);
   };
 
   const goToPrev = () => {
+    if (allItems.length === 0) return;
     setCurrentIndex((prev) => (prev - 1 + allItems.length) % allItems.length);
   };
 
@@ -169,7 +180,7 @@ export default function FeaturedBanner({ movies = [], shows = [] }: FeaturedBann
             key={index}
             onClick={() => goToSlide(index)}
             className={`transition-all ${
-              index === currentIndex 
+              index === safeIndex 
                 ? 'w-8 h-2 bg-red-600' 
                 : 'w-2 h-2 bg-white/50 hover:bg-white/80'
             } rounded-full`}

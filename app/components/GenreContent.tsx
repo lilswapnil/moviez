@@ -1,20 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Movie, TVShow, getImageUrl } from '@/lib/tmdb';
 import Image from 'next/image';
 
 interface GenreContentProps {
   initialResults: (Movie | TVShow)[];
   type: 'movies' | 'shows' | 'animes' | 'cartoons';
-  genre: string;
   genreId: number;
 }
 
 export default function GenreContent({
   initialResults,
   type,
-  genre,
   genreId,
 }: GenreContentProps) {
   const [results, setResults] = useState<(Movie | TVShow)[]>(initialResults);
