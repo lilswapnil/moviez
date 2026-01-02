@@ -107,7 +107,7 @@ export default function FeaturedBanner({ movies = [], shows = [] }: FeaturedBann
 
   if (!featuredItem) {
     return (
-      <div className="relative min-h-screen mx-4 mb-8 rounded-xl overflow-hidden bg-gray-900 flex items-center justify-center">
+      <div className="relative min-h-screen mx-4 mb-8 rounded-sm overflow-hidden bg-gray-900 flex items-center justify-center">
         <p className="text-gray-500 text-xl">Loading featured content...</p>
       </div>
     );

@@ -263,10 +263,19 @@ export function getImageUrl(path: string, size: 'w500' | 'w780' | 'original' = '
   return `${TMDB_IMAGE_BASE_URL}/${size}${path}`;
 }
 
+const MAX_TRAILER_FAILURES = 3;
+let movieTrailerFailureCount = 0;
+let tvTrailerFailureCount = 0;
+let movieTrailerFetchDisabled = false;
+let tvTrailerFetchDisabled = false;
+
 /**
  * Fetch trailers for a movie
  */
 export async function getMovieTrailers(movieId: number): Promise<Trailer[]> {
+  if (movieTrailerFetchDisabled) {
+    return [];
+  }
   try {
     const response = await fetch(
       `${TMDB_BASE_URL}/movie/${movieId}/videos?api_key=${TMDB_API_KEY}&language=en-US`,
@@ -282,9 +291,20 @@ export async function getMovieTrailers(movieId: number): Promise<Trailer[]> {
       console.warn('No videos found in response for movie:', movieId);
       return [];
     }
+    movieTrailerFailureCount = 0;
+    movieTrailerFetchDisabled = false;
     return data.results.filter((video: Trailer) => video.site === 'YouTube' && (video.type === 'Trailer' || video.type === 'Teaser'));
   } catch (error) {
-    console.error('Error fetching movie trailers:', error);
+    movieTrailerFailureCount += 1;
+    if (movieTrailerFailureCount >= MAX_TRAILER_FAILURES) {
+      if (!movieTrailerFetchDisabled) {
+        console.error('Error fetching movie trailers:', error);
+        console.error('Movie trailer fetching disabled after 3 consecutive failures.');
+      }
+      movieTrailerFetchDisabled = true;
+    } else {
+      console.error('Error fetching movie trailers:', error);
+    }
     return [];
   }
 }
@@ -293,6 +313,9 @@ export async function getMovieTrailers(movieId: number): Promise<Trailer[]> {
  * Fetch trailers for a TV show
  */
 export async function getTVTrailers(tvId: number): Promise<Trailer[]> {
+  if (tvTrailerFetchDisabled) {
+    return [];
+  }
   try {
     const response = await fetch(
       `${TMDB_BASE_URL}/tv/${tvId}/videos?api_key=${TMDB_API_KEY}&language=en-US`,
@@ -308,9 +331,20 @@ export async function getTVTrailers(tvId: number): Promise<Trailer[]> {
       console.warn('No videos found in response for TV show:', tvId);
       return [];
     }
+    tvTrailerFailureCount = 0;
+    tvTrailerFetchDisabled = false;
     return data.results.filter((video: Trailer) => video.site === 'YouTube' && (video.type === 'Trailer' || video.type === 'Teaser'));
   } catch (error) {
-    console.error('Error fetching TV trailers:', error);
+    tvTrailerFailureCount += 1;
+    if (tvTrailerFailureCount >= MAX_TRAILER_FAILURES) {
+      if (!tvTrailerFetchDisabled) {
+        console.error('Error fetching TV trailers:', error);
+        console.error('TV trailer fetching disabled after 3 consecutive failures.');
+      }
+      tvTrailerFetchDisabled = true;
+    } else {
+      console.error('Error fetching TV trailers:', error);
+    }
     return [];
   }
 }
