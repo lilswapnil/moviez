@@ -27,7 +27,7 @@ export default function Navbar() {
                 <h1 className="text-xl font-bold">Moviez</h1>
             </Link>
         
-        <div className="flex gap-6 absolute left-1/2 -translate-x-1/2">
+        <div className="flex gap-8 absolute left-1/2 -translate-x-1/2">
             <Link href="/" className="hover:text-red-500 transition-colors">
                 Home
             </Link>
