@@ -22,7 +22,7 @@ export default function ChartPreviewRow({ name, items }: ChartPreviewRowProps) {
   return (
     <div className="w-60 flex-shrink-0 rounded-xl bg-black/40 border border-white/5 px-4 py-4 hover:border-red-500/60 hover:bg-red-500/5 transition-colors">
       <span className="block text-white font-semibold mb-3">{name}</span>
-      <div className="flex gap-3 min-h-[150px]">
+      <div className="flex gap-2 min-h-[150px]">
         {displayItems.length > 0 ? (
           displayItems.map((item) => (
             <div key={item.id} className="w-16 flex-shrink-0">
