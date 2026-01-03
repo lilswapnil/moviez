@@ -64,10 +64,10 @@ export interface Trailer {
 /**
  * Fetch newly released movies from TMDB
  */
-export async function getNewReleases(): Promise<Movie[]> {
+export async function getNewReleases(page: number = 1): Promise<Movie[]> {
   try {
     const response = await fetch(
-      `${TMDB_BASE_URL}/movie/now_playing?api_key=${TMDB_API_KEY}&language=en-US&page=1`,
+      `${TMDB_BASE_URL}/movie/now_playing?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`,
       { next: { revalidate: 3600 } } // Cache for 1 hour
     );
     
@@ -86,10 +86,10 @@ export async function getNewReleases(): Promise<Movie[]> {
 /**
  * Fetch trending movies
  */
-export async function getTrendingMovies(): Promise<Movie[]> {
+export async function getTrendingMovies(page: number = 1): Promise<Movie[]> {
   try {
     const response = await fetch(
-      `${TMDB_BASE_URL}/trending/movie/week?api_key=${TMDB_API_KEY}`,
+      `${TMDB_BASE_URL}/trending/movie/week?api_key=${TMDB_API_KEY}&page=${page}`,
       { next: { revalidate: 3600 } }
     );
     
@@ -152,10 +152,10 @@ export async function getPopularMovies(page: number = 1): Promise<Movie[]> {
 /**
  * Fetch popular TV shows
  */
-export async function getPopularTVShows(): Promise<TVShow[]> {
+export async function getPopularTVShows(page: number = 1): Promise<TVShow[]> {
   try {
     const response = await fetch(
-      `${TMDB_BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`,
+      `${TMDB_BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`,
       { next: { revalidate: 3600 } }
     );
     
@@ -174,10 +174,10 @@ export async function getPopularTVShows(): Promise<TVShow[]> {
 /**
  * Fetch trending TV shows
  */
-export async function getTrendingTVShows(): Promise<TVShow[]> {
+export async function getTrendingTVShows(page: number = 1): Promise<TVShow[]> {
   try {
     const response = await fetch(
-      `${TMDB_BASE_URL}/trending/tv/week?api_key=${TMDB_API_KEY}`,
+      `${TMDB_BASE_URL}/trending/tv/week?api_key=${TMDB_API_KEY}&page=${page}`,
       { next: { revalidate: 3600 } }
     );
 
@@ -465,13 +465,14 @@ interface AnimationChartOptions {
   chart: 'popular' | 'topRated' | 'airingNow' | 'upcoming' | 'classics' | 'trending' | 'family' | 'kids';
   originalLanguage: string;
   includeKids?: boolean;
+  page?: number;
 }
 
-async function getAnimationChart({ chart, originalLanguage, includeKids }: AnimationChartOptions): Promise<TVShow[]> {
+async function getAnimationChart({ chart, originalLanguage, includeKids, page = 1 }: AnimationChartOptions): Promise<TVShow[]> {
   const baseParams: Record<string, string> = {
     sort_by: 'popularity.desc',
     'with_genres': includeKids ? '16,10762' : '16',
-    page: '1',
+    page: page.toString(),
     'with_original_language': originalLanguage,
   };
 
@@ -516,42 +517,129 @@ async function getAnimationChart({ chart, originalLanguage, includeKids }: Anima
   return discoverAnimationShows(baseParams);
 }
 
-export async function getPopularAnimeShows(): Promise<TVShow[]> {
-  return getAnimationChart({ chart: 'popular', originalLanguage: 'ja' });
+export async function getPopularAnimeShows(page: number = 1): Promise<TVShow[]> {
+  return getAnimationChart({ chart: 'popular', originalLanguage: 'ja', page });
 }
 
-export async function getTopRatedAnimeShows(): Promise<TVShow[]> {
-  return getAnimationChart({ chart: 'topRated', originalLanguage: 'ja' });
+export async function getTopRatedAnimeShows(page: number = 1): Promise<TVShow[]> {
+  return getAnimationChart({ chart: 'topRated', originalLanguage: 'ja', page });
 }
 
-export async function getAiringNowAnimeShows(): Promise<TVShow[]> {
-  return getAnimationChart({ chart: 'airingNow', originalLanguage: 'ja' });
+export async function getAiringNowAnimeShows(page: number = 1): Promise<TVShow[]> {
+  return getAnimationChart({ chart: 'airingNow', originalLanguage: 'ja', page });
 }
 
-export async function getUpcomingAnimeShows(): Promise<TVShow[]> {
-  return getAnimationChart({ chart: 'upcoming', originalLanguage: 'ja' });
+export async function getUpcomingAnimeShows(page: number = 1): Promise<TVShow[]> {
+  return getAnimationChart({ chart: 'upcoming', originalLanguage: 'ja', page });
 }
 
-export async function getClassicAnimeShows(): Promise<TVShow[]> {
-  return getAnimationChart({ chart: 'classics', originalLanguage: 'ja' });
+export async function getClassicAnimeShows(page: number = 1): Promise<TVShow[]> {
+  return getAnimationChart({ chart: 'classics', originalLanguage: 'ja', page });
 }
 
-export async function getPopularCartoonShows(): Promise<TVShow[]> {
-  return getAnimationChart({ chart: 'popular', originalLanguage: 'en', includeKids: true });
+export async function getPopularCartoonShows(page: number = 1): Promise<TVShow[]> {
+  return getAnimationChart({ chart: 'popular', originalLanguage: 'en', includeKids: true, page });
 }
 
-export async function getTopRatedCartoonShows(): Promise<TVShow[]> {
-  return getAnimationChart({ chart: 'topRated', originalLanguage: 'en', includeKids: true });
+export async function getTopRatedCartoonShows(page: number = 1): Promise<TVShow[]> {
+  return getAnimationChart({ chart: 'topRated', originalLanguage: 'en', includeKids: true, page });
 }
 
-export async function getKidsFavoriteCartoons(): Promise<TVShow[]> {
-  return getAnimationChart({ chart: 'kids', originalLanguage: 'en', includeKids: true });
+export async function getKidsFavoriteCartoons(page: number = 1): Promise<TVShow[]> {
+  return getAnimationChart({ chart: 'kids', originalLanguage: 'en', includeKids: true, page });
 }
 
-export async function getTrendingCartoons(): Promise<TVShow[]> {
-  return getAnimationChart({ chart: 'trending', originalLanguage: 'en', includeKids: true });
+export async function getTrendingCartoons(page: number = 1): Promise<TVShow[]> {
+  return getAnimationChart({ chart: 'trending', originalLanguage: 'en', includeKids: true, page });
 }
 
-export async function getFamilyCartoonShows(): Promise<TVShow[]> {
-  return getAnimationChart({ chart: 'family', originalLanguage: 'en', includeKids: true });
+export async function getFamilyCartoonShows(page: number = 1): Promise<TVShow[]> {
+  return getAnimationChart({ chart: 'family', originalLanguage: 'en', includeKids: true, page });
+}
+
+type SearchMediaType = 'movie' | 'tv';
+
+interface TMDBSearchResult {
+  id: number;
+  media_type: SearchMediaType | string;
+  title?: string;
+  name?: string;
+  overview?: string;
+  backdrop_path?: string | null;
+  poster_path?: string | null;
+  vote_average?: number;
+  genre_ids?: number[];
+  release_date?: string;
+  first_air_date?: string;
+  original_language?: string;
+  origin_country?: string[];
+}
+
+function normalizeString(value: string | undefined | null): string {
+  return value ?? '';
+}
+
+function normalizeNumber(value: number | undefined | null): number {
+  return Number.isFinite(value) ? Number(value) : 0;
+}
+
+export async function searchTitles(query: string, page: number = 1): Promise<(Movie | TVShow)[]> {
+  const trimmedQuery = query.trim();
+  if (!trimmedQuery) {
+    return [];
+  }
+
+  try {
+    const url = new URL(`${TMDB_BASE_URL}/search/multi`);
+    url.searchParams.set('api_key', TMDB_API_KEY ?? '');
+    url.searchParams.set('query', trimmedQuery);
+    url.searchParams.set('language', 'en-US');
+    url.searchParams.set('page', page.toString());
+    url.searchParams.set('include_adult', 'false');
+
+    const response = await fetch(url.toString(), { cache: 'no-store' });
+
+    if (!response.ok) {
+      throw new Error(`Failed to search titles: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const results: TMDBSearchResult[] = Array.isArray(data.results) ? data.results : [];
+
+    return results
+      .filter((item) => (item.media_type === 'movie' || item.media_type === 'tv') && item.id)
+      .map((item) => {
+        if (item.media_type === 'movie') {
+          const movie: Movie = {
+            id: item.id,
+            title: normalizeString(item.title || item.name || 'Untitled'),
+            overview: normalizeString(item.overview),
+            backdrop_path: normalizeString(item.backdrop_path),
+            poster_path: normalizeString(item.poster_path),
+            release_date: normalizeString(item.release_date),
+            vote_average: normalizeNumber(item.vote_average),
+            genre_ids: item.genre_ids ?? [],
+            original_language: item.original_language,
+          };
+          return movie;
+        }
+
+        const tvShow: TVShow = {
+          id: item.id,
+          name: normalizeString(item.name || item.title || 'Untitled'),
+          overview: normalizeString(item.overview),
+          backdrop_path: normalizeString(item.backdrop_path),
+          poster_path: normalizeString(item.poster_path),
+          first_air_date: normalizeString(item.first_air_date),
+          vote_average: normalizeNumber(item.vote_average),
+          genre_ids: item.genre_ids ?? [],
+          original_language: item.original_language,
+          origin_country: item.origin_country ?? [],
+        };
+        return tvShow;
+      });
+  } catch (error) {
+    console.error('Error searching titles:', error);
+    return [];
+  }
 }
