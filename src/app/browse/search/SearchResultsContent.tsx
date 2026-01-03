@@ -89,8 +89,10 @@ export default function SearchResultsContent({ initialItems, query }: SearchResu
                     sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, (max-width: 1536px) 20vw, 16vw"
                   />
                 ) : (
-                  <div className="flex h-full items-center justify-center text-xs text-gray-500 bg-gradient-to-br from-gray-700 to-gray-900">
-                    No Image
+                  <div className="flex h-full items-center justify-center text-xs text-gray-300 bg-gradient-to-br from-gray-700 to-gray-900 p-4">
+                    <p className="text-center font-semibold line-clamp-3">
+                      {title}
+                    </p>
                   </div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">

@@ -121,8 +121,10 @@ export default function SimilarTitles({ items, titleType }: SimilarTitlesProps) 
                     sizes="200px"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-500">
-                    No Image
+                  <div className="w-full h-full flex items-center justify-center text-gray-300 bg-gradient-to-br from-gray-700 to-gray-900 p-4">
+                    <p className="text-center font-semibold line-clamp-3 text-sm">
+                      {title}
+                    </p>
                   </div>
                 )}
                 {/* Hover overlay */}

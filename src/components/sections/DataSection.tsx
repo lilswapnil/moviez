@@ -9,7 +9,7 @@ interface DataSectionProps {
   initialMovies?: Movie[];
   initialShows?: TVShow[];
   type: 'movies' | 'shows';
-  category: 'top_rated' | 'upcoming' | 'anime' | 'cartoon' | 'international' | 'kdrama';
+  category: 'top' | 'upcoming' | 'on_air' | 'international' | 'anime_top' | 'anime_upcoming' | 'anime_on_air' | 'cartoon_top' | 'cartoon_upcoming' | 'cartoon_on_air' | 'kdrama_top' | 'kdrama_upcoming' | 'kdrama_on_air';
 }
 
 export default function DataSection({

@@ -242,8 +242,11 @@ export async function getTopRatedShows(page: number = 1): Promise<TVShow[]> {
  */
 export async function getUpcomingShows(page: number = 1): Promise<TVShow[]> {
   try {
+    const today = new Date().toISOString().split('T')[0];
+    const futureDate = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    
     const response = await fetch(
-      `${TMDB_BASE_URL}/tv/on_the_air?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`,
+      `${TMDB_BASE_URL}/discover/tv?api_key=${TMDB_API_KEY}&language=en-US&sort_by=first_air_date.desc&first_air_date.gte=${today}&first_air_date.lte=${futureDate}&page=${page}`,
       { next: { revalidate: 3600 } }
     );
     
@@ -252,7 +255,8 @@ export async function getUpcomingShows(page: number = 1): Promise<TVShow[]> {
     }
     
     const data = await response.json();
-    return data.results;
+    // Filter to only include shows with first_air_date in the future
+    return data.results.filter((show: TVShow) => show.first_air_date && new Date(show.first_air_date) >= new Date(today));
   } catch (error) {
     console.error('Error fetching upcoming shows:', error);
     return [];
@@ -282,12 +286,36 @@ export async function getAiringTodayShows(page: number = 1): Promise<TVShow[]> {
 }
 
 /**
+ * Fetch shows currently on the air
+ */
+export async function getAiringNowShows(page: number = 1): Promise<TVShow[]> {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/tv/on_the_air?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`,
+      { next: { revalidate: 3600 } }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch shows on the air');
+    }
+
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    console.error('Error fetching on the air shows:', error);
+    return [];
+  }
+}
+
+/**
  * Fetch upcoming movies
  */
 export async function getUpcomingMovies(page: number = 1): Promise<Movie[]> {
   try {
+    const today = new Date().toISOString().split('T')[0];
+    
     const response = await fetch(
-      `${TMDB_BASE_URL}/movie/upcoming?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`,
+      `${TMDB_BASE_URL}/movie/upcoming?api_key=${TMDB_API_KEY}&language=en-US&region=US&page=${page}`,
       { next: { revalidate: 3600 } }
     );
     
@@ -296,7 +324,8 @@ export async function getUpcomingMovies(page: number = 1): Promise<Movie[]> {
     }
     
     const data = await response.json();
-    return data.results;
+    // Filter to only include movies with release_date in the future
+    return data.results.filter((movie: Movie) => movie.release_date && new Date(movie.release_date) >= new Date(today));
   } catch (error) {
     console.error('Error fetching upcoming movies:', error);
     return [];
@@ -568,8 +597,8 @@ async function getAnimationChart({ chart, originalLanguage, includeKids, page = 
       break;
     case 'airingNow':
       baseParams.sort_by = 'popularity.desc';
-      baseParams['air_date.lte'] = formatDate(new Date());
-      baseParams['air_date.gte'] = formatDate(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000));
+      baseParams['first_air_date.lte'] = formatDate(new Date());
+      baseParams['first_air_date.gte'] = formatDate(new Date(Date.now() - 365 * 24 * 60 * 60 * 1000));
       break;
     case 'upcoming':
       baseParams.sort_by = 'popularity.desc';
@@ -635,11 +664,19 @@ export async function getTrendingCartoons(page: number = 1): Promise<TVShow[]> {
   return getAnimationChart({ chart: 'trending', originalLanguage: 'en', includeKids: true, page });
 }
 
+export async function getUpcomingCartoons(page: number = 1): Promise<TVShow[]> {
+  return getAnimationChart({ chart: 'upcoming', originalLanguage: 'en', includeKids: true, page });
+}
+
+export async function getAiringNowCartoons(page: number = 1): Promise<TVShow[]> {
+  return getAnimationChart({ chart: 'airingNow', originalLanguage: 'en', includeKids: true, page });
+}
+
 export async function getFamilyCartoonShows(page: number = 1): Promise<TVShow[]> {
   return getAnimationChart({ chart: 'family', originalLanguage: 'en', includeKids: true, page });
 }
 
-async function getKDramaChart({ chart, page = 1 }: { chart: 'topRated' | 'upcoming'; page?: number }): Promise<TVShow[]> {
+async function getKDramaChart({ chart, page = 1 }: { chart: 'topRated' | 'upcoming' | 'airingNow'; page?: number }): Promise<TVShow[]> {
   try {
     const searchParams = new URLSearchParams();
     searchParams.set('api_key', TMDB_API_KEY ?? '');
@@ -656,6 +693,10 @@ async function getKDramaChart({ chart, page = 1 }: { chart: 'topRated' | 'upcomi
     } else if (chart === 'upcoming') {
       const today = formatDate(new Date());
       searchParams.set('first_air_date.gte', today);
+    } else if (chart === 'airingNow') {
+      const today = formatDate(new Date());
+      searchParams.set('first_air_date.lte', today);
+      searchParams.set('first_air_date.gte', formatDate(new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)));
     }
 
     const response = await fetch(
@@ -677,6 +718,10 @@ async function getKDramaChart({ chart, page = 1 }: { chart: 'topRated' | 'upcomi
 
 export async function getTopRatedKDramas(page: number = 1): Promise<TVShow[]> {
   return getKDramaChart({ chart: 'topRated', page });
+}
+
+export async function getAiringNowKDramas(page: number = 1): Promise<TVShow[]> {
+  return getKDramaChart({ chart: 'airingNow', page });
 }
 
 export async function getUpcomingKDramas(page: number = 1): Promise<TVShow[]> {

@@ -120,7 +120,11 @@ export default function Login() {
                       }}
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-900"></div>
+                    <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center p-2">
+                      <p className="text-gray-300 text-xs text-center font-semibold line-clamp-3">
+                        {movie.title}
+                      </p>
+                    </div>
                   )}
                 </div>
               );

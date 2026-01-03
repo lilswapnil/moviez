@@ -106,8 +106,10 @@ export default function GenreContent({
                     sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, (max-width: 1536px) 20vw, 16vw"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-500 bg-gradient-to-br from-gray-700 to-gray-900">
-                    No Image
+                  <div className="w-full h-full flex items-center justify-center text-gray-300 bg-gradient-to-br from-gray-700 to-gray-900 p-4">
+                    <p className="text-center font-semibold line-clamp-3 text-sm">
+                      {title}
+                    </p>
                   </div>
                 )}
                 {/* Hover overlay */}

@@ -19,6 +19,7 @@ import {
   getTopRatedCartoonShows,
   getKidsFavoriteCartoons,
   getTrendingCartoons,
+  getUpcomingCartoons,
   getFamilyCartoonShows,
 } from '../api/tmdb-client';
 import type { Movie, TVShow } from '../api/tmdb-types';
@@ -65,11 +66,10 @@ export const chartFetchers: Record<string, ChartFetcher> = {
   'Popular Cartoons': (page) => getPopularCartoonShows(page),
   'Top Rated Cartoons': (page) => getTopRatedCartoonShows(page),
   'Kids Favorites': (page) => getKidsFavoriteCartoons(page),
-  'Trending Cartoons': (page) => getTrendingCartoons(page),
   'Family Friendly': (page) => getFamilyCartoonShows(page),
   'Popular International Cartoons': (page) => getPopularCartoonShows(page),
   'Top International Cartoons': (page) => getTopRatedCartoonShows(page),
-  'Upcoming International': (page) => getTrendingCartoons(page),
+  'Upcoming International': (page) => getUpcomingCartoons(page),
   'Popular International Movies': (page) => getPopularMovies(page),
   'Top Rated International Movies': (page) => getTopRatedMovies(page),
   'Upcoming International Movies': (page) => getUpcomingMovies(page),

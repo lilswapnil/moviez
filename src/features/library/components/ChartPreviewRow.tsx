@@ -43,8 +43,8 @@ export default function ChartPreviewRow({ name, items }: ChartPreviewRowProps) {
                     sizes="64px"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-500 text-[10px] text-center leading-tight">
-                    No Image
+                  <div className="w-full h-full flex items-center justify-center text-gray-300 text-[10px] text-center leading-tight bg-gradient-to-br from-gray-700 to-gray-900 p-1">
+                    {item.title}
                   </div>
                 )}
               </div>

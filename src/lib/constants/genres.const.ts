@@ -184,7 +184,7 @@ export const cartoonCharts = [
   "Popular Cartoons",
   "Top Rated Cartoons",
   "Kids Favorites",
-  "Trending Cartoons",
+
   "Family Friendly",
   "Popular International Cartoons",
   "Top International Cartoons",
