@@ -90,7 +90,7 @@ export async function getNewReleases(page: number = 1): Promise<Movie[]> {
   try {
     const response = await fetch(
       `${TMDB_BASE_URL}/movie/now_playing?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`,
-      { next: { revalidate: 3600 } } // Cache for 1 hour
+      { next: { revalidate: 86400 } } // Cache for 24 hours (daily refresh)
     );
     
     if (!response.ok) {

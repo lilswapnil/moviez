@@ -46,10 +46,10 @@ export default function Navbar() {
                 <Image
                     src='/logo.svg'
                     alt='Moviez Logo'
-                    width={30}
-                    height={30}
+                    width={50}
+                    height={50}
                 />
-                <h1 className="text-xl font-bold">Moviez</h1>
+                {/* <h1 className="text-xl font-bold">Moviez</h1> */}
             </Link>
         
         <div className="flex gap-8 absolute left-1/2 -translate-x-1/2">

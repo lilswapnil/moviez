@@ -120,10 +120,47 @@ export default function TitleHero({ item, displayType, trailerType, children }: 
 
   const saveLabel = isSaved ? 'Added to Library' : 'Add to Library';
 
+  // Load saved titles from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('savedTitles');
+      const savedTitles = saved ? JSON.parse(saved) : [];
+      const isTitleSaved = savedTitles.some((title: any) => title.id === item.id);
+      setIsSaved(isTitleSaved);
+    } catch (error) {
+      console.error('Failed to load saved titles:', error);
+    }
+  }, [item.id]);
+
   const handleSave = () => {
     try {
-      // TODO: Wire this up to real persistence when available.
-      setIsSaved(true);
+      const saved = localStorage.getItem('savedTitles');
+      const savedTitles = saved ? JSON.parse(saved) : [];
+      
+      if (!isSaved) {
+        // Determine type and name based on what's available
+        const titleType = displayType === 'Movie' ? 'movie' : 'show';
+        const titleName = item.title;
+        
+        const newTitle = {
+          id: item.id,
+          title: titleName,
+          name: titleName,
+          type: titleType,
+          posterPath: item.posterPath,
+          rating: item.voteAverage,
+          releaseYear: item.releaseYear,
+        };
+        
+        savedTitles.push(newTitle);
+        localStorage.setItem('savedTitles', JSON.stringify(savedTitles));
+        setIsSaved(true);
+      } else {
+        // Remove from saved
+        const updatedTitles = savedTitles.filter((title: any) => title.id !== item.id);
+        localStorage.setItem('savedTitles', JSON.stringify(updatedTitles));
+        setIsSaved(false);
+      }
       setSaveError(null);
     } catch (error) {
       console.error('Failed to save title:', error);
@@ -221,17 +258,20 @@ export default function TitleHero({ item, displayType, trailerType, children }: 
           <button
             type="button"
             onClick={handleSave}
-            disabled={isSaved}
-            className="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-8 py-3 font-semibold text-white transition-colors hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-70"
+            className={`inline-flex items-center gap-2 rounded-lg px-8 py-3 font-semibold transition-colors ${
+              isSaved
+                ? 'border border-red-500/50 bg-red-500/20 text-white hover:bg-red-500/30'
+                : 'border border-white/20 bg-white/10 text-white hover:bg-white/20'
+            }`}
           >
-            <span aria-hidden="true">♡</span>
+            <span aria-hidden="true">{isSaved ? '♥' : '♡'}</span>
             {saveLabel}
           </button>
         </div>
         </div>
       </div>
 
-      {children ? <div className="relative z-10 px-6 md:px-12 lg:px-16 py-30">{children}</div> : null}
+      {children ? <div className="relative z-10 px-6 md:px-12 lg:px-16 pt-30">{children}</div> : null}
       {isModalOpen && trailer ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4">
           <div className="relative w-full max-w-4xl">

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import SavedTitlesSection from '@/components/sections/SavedTitlesSection';
 
 export const dynamic = 'force-dynamic';
 
@@ -132,33 +133,7 @@ export default function Account() {
 
         {/* Saved Titles Section */}
         <section>
-          <div className="flex items-baseline justify-between mb-4">
-            <h2 className="text-2xl font-semibold text-white">My Saved Titles</h2>
-            <span className="text-sm text-gray-400">{savedTitles.length} titles saved</span>
-          </div>
-          <div className="rounded-xl bg-white/5 border border-white/10 p-6 shadow-lg shadow-black/30">
-            {savedTitles.length > 0 ? (
-              <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-                {savedTitles.map((title) => (
-                  <div
-                    key={title.id}
-                    className="flex-shrink-0 w-40 rounded-lg bg-white/10 border border-white/20 p-4 hover:border-red-500/60 hover:bg-red-500/5 transition-colors"
-                  >
-                    <div className="aspect-video bg-white/5 rounded mb-3 flex items-center justify-center border border-white/10">
-                      <span className="text-gray-400 text-sm">📺</span>
-                    </div>
-                    <p className="text-white font-semibold text-sm line-clamp-2 mb-2">{title.name || title.title}</p>
-                    <p className="text-gray-400 text-xs">{title.type === 'movie' ? '🎬 Movie' : '📺 Show'}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-gray-400 mb-2">No saved titles yet</p>
-                <p className="text-gray-500 text-sm">Start saving your favorite titles to build your library</p>
-              </div>
-            )}
-          </div>
+          <SavedTitlesSection titles={savedTitles} />
         </section>
       </main>
 

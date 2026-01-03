@@ -15,6 +15,7 @@ import FeaturedBanner from '@/components/media/FeaturedBanner';
 import DataSection from '@/components/sections/DataSection';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 86400; // Revalidate every 24 hours (86400 seconds)
 
 export default async function Home() {
   const newReleases = await getNewReleases();
