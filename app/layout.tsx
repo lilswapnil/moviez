@@ -40,7 +40,7 @@ export default function RootLayout({
         <Navbar />
         {children}
         <footer>
-        <div className="text-center py-4 text-sm text-gray-500">
+        <div className="text-center py-4 bg-black/50 backdrop-blur-md text-sm text-gray-500">
           &copy; {new Date().getFullYear()} Moviez. All rights reserved.
         </div>
       </footer>
