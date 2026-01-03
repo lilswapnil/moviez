@@ -24,7 +24,7 @@ export default function Navbar() {
         setSearchTerm(searchParams.get("q") ?? "");
     }, [searchParams]);
 
-    const handleSearch = (event) => {
+    const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const term = searchTerm.trim();
         if (term) {
@@ -34,7 +34,7 @@ export default function Navbar() {
         }
     };
 
-    const linkClassName = (href) => {
+    const linkClassName = (href: string) => {
         const isActive = href === '/' ? pathname === '/' : pathname?.startsWith(href);
         const base = "transition-colors";
         return isActive ? `${base} text-[#ffe8ab]` : `${base} text-white hover:text-red-500`;
@@ -87,9 +87,6 @@ export default function Navbar() {
                 </svg>
             </button>
         </form>
-
-        
-        
-        </nav>
-    )
+    </nav>
+    );
 }

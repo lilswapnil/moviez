@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const results = await searchTitles(trimmedQuery, page);
-    const items = normalizeChartItems(results);
+    const items = normalizeChartItems(results, 'tv');
     return NextResponse.json({ items });
   } catch (error) {
     console.error('Search API error:', error);

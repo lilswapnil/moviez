@@ -10,6 +10,7 @@ export interface Movie {
   poster_path: string;
   release_date: string;
   vote_average: number;
+  popularity: number;
   genre_ids: number[];
   original_language?: string;
 }
@@ -22,36 +23,14 @@ export interface TVShow {
   poster_path: string;
   first_air_date: string;
   vote_average: number;
+  popularity: number;
   genre_ids: number[];
   original_language?: string;
   origin_country?: string[];
 }
 
-export interface Anime extends TVShow {
-  id: number;
-  name: string;
-  overview: string;
-  backdrop_path: string;
-  poster_path: string;
-  first_air_date: string;
-  vote_average: number;
-  genre_ids: number[];
-  original_language?: string;
-  origin_country?: string[];
-}
-
-export interface Cartoon extends TVShow {
-  id: number;
-  name: string;
-  overview: string;
-  backdrop_path: string;
-  poster_path: string;
-  first_air_date: string;
-  vote_average: number;
-  genre_ids: number[];
-  original_language?: string;
-  origin_country?: string[];
-}
+export type Anime = TVShow;
+export type Cartoon = TVShow;
 
 export interface Trailer {
   id: string;
@@ -59,6 +38,37 @@ export interface Trailer {
   name: string;
   site: string;
   type: string;
+}
+
+export interface GenreTag {
+  id: number;
+  name: string;
+}
+
+export interface MovieDetails extends Movie {
+  runtime?: number;
+  status?: string;
+  tagline?: string;
+  genres?: GenreTag[];
+  homepage?: string;
+}
+
+export interface TVDetails extends TVShow {
+  episode_run_time?: number[];
+  number_of_seasons?: number;
+  number_of_episodes?: number;
+  status?: string;
+  tagline?: string;
+  genres?: GenreTag[];
+  homepage?: string;
+}
+
+export interface CastMember {
+  id: number;
+  name: string;
+  character?: string;
+  profile_path?: string | null;
+  order?: number;
 }
 
 /**
@@ -289,6 +299,88 @@ export function getImageUrl(path: string, size: 'w500' | 'w780' | 'original' = '
   return `${TMDB_IMAGE_BASE_URL}/${size}${path}`;
 }
 
+export async function getMovieDetails(movieId: number): Promise<MovieDetails | null> {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US`,
+      { next: { revalidate: 3600 } }
+    );
+
+    if (response.status === 404) {
+      return null;
+    }
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch movie details: ${response.status}`);
+    }
+
+    return (await response.json()) as MovieDetails;
+  } catch (error) {
+    console.error('Error fetching movie details:', error);
+    return null;
+  }
+}
+
+export async function getTVShowDetails(tvId: number): Promise<TVDetails | null> {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/tv/${tvId}?api_key=${TMDB_API_KEY}&language=en-US`,
+      { next: { revalidate: 3600 } }
+    );
+
+    if (response.status === 404) {
+      return null;
+    }
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch TV show details: ${response.status}`);
+    }
+
+    return (await response.json()) as TVDetails;
+  } catch (error) {
+    console.error('Error fetching TV show details:', error);
+    return null;
+  }
+}
+
+export async function getMovieCredits(movieId: number): Promise<CastMember[]> {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/movie/${movieId}/credits?api_key=${TMDB_API_KEY}&language=en-US`,
+      { next: { revalidate: 3600 } }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch movie credits: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return Array.isArray(data.cast) ? (data.cast as CastMember[]) : [];
+  } catch (error) {
+    console.error('Error fetching movie credits:', error);
+    return [];
+  }
+}
+
+export async function getTVCredits(tvId: number): Promise<CastMember[]> {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/tv/${tvId}/credits?api_key=${TMDB_API_KEY}&language=en-US`,
+      { next: { revalidate: 3600 } }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch TV credits: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return Array.isArray(data.cast) ? (data.cast as CastMember[]) : [];
+  } catch (error) {
+    console.error('Error fetching TV credits:', error);
+    return [];
+  }
+}
+
 const MAX_TRAILER_FAILURES = 3;
 let movieTrailerFailureCount = 0;
 let tvTrailerFailureCount = 0;
@@ -299,9 +391,6 @@ let tvTrailerFetchDisabled = false;
  * Fetch trailers for a movie
  */
 export async function getMovieTrailers(movieId: number): Promise<Trailer[]> {
-  if (movieTrailerFetchDisabled) {
-    return [];
-  }
   try {
     const response = await fetch(
       `${TMDB_BASE_URL}/movie/${movieId}/videos?api_key=${TMDB_API_KEY}&language=en-US`,
@@ -314,26 +403,18 @@ export async function getMovieTrailers(movieId: number): Promise<Trailer[]> {
     
     const data = await response.json();
     if (!data.results || !Array.isArray(data.results)) {
-      console.warn('No videos found in response for movie:', movieId);
       return [];
     }
-    movieTrailerFailureCount = 0;
-    movieTrailerFetchDisabled = false;
+    
     const videos = (data.results as Trailer[]).filter((video) => video.site === 'YouTube');
     const teasers = videos.filter((video) => video.type === 'Teaser' || video.name?.toLowerCase().includes('teaser'));
-    const otherVideos = videos.filter((video) => !(video.type === 'Teaser' || video.name?.toLowerCase().includes('teaser')));
-    return [...teasers, ...otherVideos];
+    return teasers.length > 0 ? teasers : videos;
   } catch (error) {
     movieTrailerFailureCount += 1;
     if (movieTrailerFailureCount >= MAX_TRAILER_FAILURES) {
-      if (!movieTrailerFetchDisabled) {
-        console.error('Error fetching movie trailers:', error);
-        console.error('Movie trailer fetching disabled after 3 consecutive failures.');
-      }
       movieTrailerFetchDisabled = true;
-    } else {
-      console.error('Error fetching movie trailers:', error);
     }
+    console.error('Error fetching movie trailers:', error);
     return [];
   }
 }
@@ -342,9 +423,6 @@ export async function getMovieTrailers(movieId: number): Promise<Trailer[]> {
  * Fetch trailers for a TV show
  */
 export async function getTVTrailers(tvId: number): Promise<Trailer[]> {
-  if (tvTrailerFetchDisabled) {
-    return [];
-  }
   try {
     const response = await fetch(
       `${TMDB_BASE_URL}/tv/${tvId}/videos?api_key=${TMDB_API_KEY}&language=en-US`,
@@ -357,26 +435,18 @@ export async function getTVTrailers(tvId: number): Promise<Trailer[]> {
     
     const data = await response.json();
     if (!data.results || !Array.isArray(data.results)) {
-      console.warn('No videos found in response for TV show:', tvId);
       return [];
     }
-    tvTrailerFailureCount = 0;
-    tvTrailerFetchDisabled = false;
+    
     const videos = (data.results as Trailer[]).filter((video) => video.site === 'YouTube');
     const teasers = videos.filter((video) => video.type === 'Teaser' || video.name?.toLowerCase().includes('teaser'));
-    const otherVideos = videos.filter((video) => !(video.type === 'Teaser' || video.name?.toLowerCase().includes('teaser')));
-    return [...teasers, ...otherVideos];
+    return teasers.length > 0 ? teasers : videos;
   } catch (error) {
     tvTrailerFailureCount += 1;
     if (tvTrailerFailureCount >= MAX_TRAILER_FAILURES) {
-      if (!tvTrailerFetchDisabled) {
-        console.error('Error fetching TV trailers:', error);
-        console.error('TV trailer fetching disabled after 3 consecutive failures.');
-      }
       tvTrailerFetchDisabled = true;
-    } else {
-      console.error('Error fetching TV trailers:', error);
     }
+    console.error('Error fetching TV trailers:', error);
     return [];
   }
 }
@@ -618,6 +688,7 @@ export async function searchTitles(query: string, page: number = 1): Promise<(Mo
             poster_path: normalizeString(item.poster_path),
             release_date: normalizeString(item.release_date),
             vote_average: normalizeNumber(item.vote_average),
+            popularity: 0,
             genre_ids: item.genre_ids ?? [],
             original_language: item.original_language,
           };
@@ -632,6 +703,7 @@ export async function searchTitles(query: string, page: number = 1): Promise<(Mo
           poster_path: normalizeString(item.poster_path),
           first_air_date: normalizeString(item.first_air_date),
           vote_average: normalizeNumber(item.vote_average),
+          popularity: 0,
           genre_ids: item.genre_ids ?? [],
           original_language: item.original_language,
           origin_country: item.origin_country ?? [],
@@ -640,6 +712,43 @@ export async function searchTitles(query: string, page: number = 1): Promise<(Mo
       });
   } catch (error) {
     console.error('Error searching titles:', error);
+    return [];
+  }
+}
+export async function getSimilarMovies(movieId: number, page: number = 1): Promise<Movie[]> {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/movie/${movieId}/similar?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`,
+      { next: { revalidate: 3600 } }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch similar movies: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return Array.isArray(data.results) ? (data.results as Movie[]) : [];
+  } catch (error) {
+    console.error('Error fetching similar movies:', error);
+    return [];
+  }
+}
+
+export async function getSimilarTVShows(tvId: number, page: number = 1): Promise<TVShow[]> {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/tv/${tvId}/similar?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`,
+      { next: { revalidate: 3600 } }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch similar TV shows: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return Array.isArray(data.results) ? (data.results as TVShow[]) : [];
+  } catch (error) {
+    console.error('Error fetching similar TV shows:', error);
     return [];
   }
 }

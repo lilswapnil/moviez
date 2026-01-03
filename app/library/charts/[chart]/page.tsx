@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { chartFetchers, normalizeChartItems } from '@/lib/charts';
+import { chartFetchers, normalizeChartItems, getChartCategory } from '@/lib/charts';
 import { getChartNameFromSlug, chartSlugs } from '@/lib/chartSlugs';
 import ChartResultsContent from '../ChartResultsContent';
 
@@ -25,7 +25,8 @@ export default async function ChartResults({ params }: ChartResultsProps) {
   }
 
   const results = await fetcher(1);
-  const items = normalizeChartItems(Array.isArray(results) ? results : []);
+  const category = getChartCategory(chartName);
+  const items = normalizeChartItems(Array.isArray(results) ? results : [], category);
 
   return (
     <div className="mt-20 px-6 py-16">

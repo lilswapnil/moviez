@@ -18,7 +18,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   if (query) {
     const results = await searchTitles(query, 1);
-    initialItems = normalizeChartItems(results);
+    initialItems = normalizeChartItems(results, 'tv');
   }
 
   return (

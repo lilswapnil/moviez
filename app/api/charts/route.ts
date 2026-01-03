@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { chartFetchers, normalizeChartItems } from '@/lib/charts';
+import { chartFetchers, normalizeChartItems, getChartCategory } from '@/lib/charts';
 import { getChartNameFromSlug } from '@/lib/chartSlugs';
 
 export async function GET(request: NextRequest) {
@@ -28,7 +28,8 @@ export async function GET(request: NextRequest) {
 
   try {
     const results = await fetcher(page);
-    const normalized = normalizeChartItems(Array.isArray(results) ? results : []);
+    const category = getChartCategory(chartName);
+    const normalized = normalizeChartItems(Array.isArray(results) ? results : [], category);
     return NextResponse.json({ items: normalized });
   } catch (error) {
     console.error(`Failed to fetch chart data for ${chartName}:`, error);

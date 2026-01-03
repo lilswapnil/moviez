@@ -5,49 +5,16 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRef, useState, useEffect } from 'react';
 
-interface DataItem {
-  id: number;
-  title: string;
-  overview: string;
-  backdrop_path: string;
-  poster_path: string;
-  vote_average: number;
-  genre_ids: number[];
-  release_date?: string;
-  first_air_date?: string;
+interface SimilarTitlesProps {
+  items: (Movie | TVShow)[];
+  titleType: 'movies' | 'shows' | 'animes' | 'cartoons';
 }
 
-interface DataProps {
-  title: string;
-  movies?: Movie[];
-  shows?: TVShow[];
-  onShowMore?: () => void;
-  isLoading?: boolean;
-}
+export default function SimilarTitles({ items, titleType }: SimilarTitlesProps) {
+  if (!items || items.length === 0) {
+    return null;
+  }
 
-export default function HomeCards({ title, movies = [], shows = [], onShowMore, isLoading = false }: DataProps) {
-  const items: DataItem[] = [
-    ...movies.map(m => ({
-      id: m.id,
-      title: m.title,
-      overview: m.overview,
-      backdrop_path: m.backdrop_path,
-      poster_path: m.poster_path,
-      vote_average: m.vote_average,
-      genre_ids: m.genre_ids,
-      release_date: m.release_date
-    })),
-    ...shows.map(s => ({
-      id: s.id,
-      title: s.name,
-      overview: s.overview,
-      backdrop_path: s.backdrop_path,
-      poster_path: s.poster_path,
-      vote_average: s.vote_average,
-      genre_ids: s.genre_ids,
-      first_air_date: s.first_air_date
-    }))
-  ];
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -72,7 +39,7 @@ export default function HomeCards({ title, movies = [], shows = [], onShowMore, 
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
       const containerWidth = scrollContainerRef.current.clientWidth;
-      const itemWidth = 206; 
+      const itemWidth = 206;
       const itemsToScroll = Math.floor(containerWidth / itemWidth);
       const scrollAmount = itemsToScroll * itemWidth;
       scrollContainerRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
@@ -82,19 +49,27 @@ export default function HomeCards({ title, movies = [], shows = [], onShowMore, 
   const scrollRight = () => {
     if (scrollContainerRef.current) {
       const containerWidth = scrollContainerRef.current.clientWidth;
-      const itemWidth = 206; // 190px width + 16px gap
+      const itemWidth = 206;
       const itemsToScroll = Math.floor(containerWidth / itemWidth);
       const scrollAmount = itemsToScroll * itemWidth;
       scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
 
+  const getItemTitle = (item: Movie | TVShow): string => {
+    return 'title' in item ? item.title : item.name;
+  };
+
+  const getItemDate = (item: Movie | TVShow): string => {
+    return 'release_date' in item ? item.release_date : item.first_air_date;
+  };
+
   return (
-    <div className="mb-12 px-12">
+    <div className="py-4">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-white">{title}</h2>
+        <h2 className="text-2xl font-bold text-white">Similar Titles</h2>
         <div className="flex gap-2">
-          <button 
+          <button
             onClick={scrollLeft}
             disabled={!canScrollLeft}
             className={`p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors ${
@@ -106,40 +81,29 @@ export default function HomeCards({ title, movies = [], shows = [], onShowMore, 
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          {canScrollRight ? (
-            <button 
-              onClick={scrollRight}
-              disabled={!canScrollRight}
-              className={`p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors ${
-                !canScrollRight ? 'opacity-30 cursor-not-allowed' : ''
-              }`}
-              aria-label="Scroll right"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          ) : (
-            onShowMore && (
-              <button
-                onClick={onShowMore}
-                disabled={isLoading}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold"
-              >
-                {isLoading ? 'Loading...' : 'Show More'}
-              </button>
-            )
-          )}
+          <button
+            onClick={scrollRight}
+            disabled={!canScrollRight}
+            className={`p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors ${
+              !canScrollRight ? 'opacity-30 cursor-not-allowed' : ''
+            }`}
+            aria-label="Scroll right"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
         </div>
       </div>
-      <div 
+      <div
         ref={scrollContainerRef}
         className="flex gap-2 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory"
       >
         {items.map((item) => {
-          const isMovie = 'release_date' in item;
-          const titleType = isMovie ? 'movies' : 'shows';
-          
+          const title = getItemTitle(item);
+          const date = getItemDate(item);
+          const year = date ? new Date(date).getFullYear() : '';
+
           return (
             <Link
               key={item.id}
@@ -150,7 +114,7 @@ export default function HomeCards({ title, movies = [], shows = [], onShowMore, 
                 {item.poster_path ? (
                   <Image
                     src={getImageUrl(item.poster_path, 'w500')}
-                    alt={item.title || ''}
+                    alt={title}
                     fill
                     className="object-cover"
                     sizes="200px"
@@ -163,12 +127,12 @@ export default function HomeCards({ title, movies = [], shows = [], onShowMore, 
                 {/* Hover overlay */}
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
                   <h3 className="text-white font-semibold text-sm mb-1 line-clamp-2">
-                    {item.title}
+                    {title}
                   </h3>
                   <div className="flex items-center gap-2 text-xs text-gray-300">
                     <span>⭐ {item.vote_average.toFixed(1)}</span>
                     <span>•</span>
-                    <span>{new Date(item.release_date || item.first_air_date || '').getFullYear()}</span>
+                    <span>{year}</span>
                   </div>
                 </div>
               </div>
@@ -176,6 +140,15 @@ export default function HomeCards({ title, movies = [], shows = [], onShowMore, 
           );
         })}
       </div>
+      <style jsx global>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </div>
   );
 }

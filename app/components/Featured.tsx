@@ -28,6 +28,13 @@ function shuffleWithSeed<T>(items: T[], seed: number): T[] {
   return copy;
 }
 
+function isLandscapeVideo(videoId: string): boolean {
+  // YouTube Shorts have IDs with specific patterns, but for safety
+  // we assume landscape by default. In practice, Teaser/Trailer types
+  // are almost always landscape format videos.
+  return true;
+}
+
 interface FeaturedItem {
   id: number;
   title?: string;
@@ -151,6 +158,11 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
     const setTrailerSafely = (value: Trailer | null) => {
       if (!cancelled) {
         setTrailer(value);
+        // Auto-play only if we found a valid trailer
+        if (value && value.key) {
+          setShowTrailer(true);
+          setIsPlaying(true);
+        }
       }
     };
 
@@ -158,15 +170,13 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
     if (hasCache) {
       const cachedTrailer = trailerCacheRef.current[itemKey];
       setTrailerSafely(cachedTrailer);
-      setShowTrailer(false);
-      setIsPlaying(false);
       return () => {
         cancelled = true;
       };
     }
 
     const fetchTrailer = async () => {
-      setTrailerSafely(null);
+      setTrailer(null);
       setShowTrailer(false);
       setIsPlaying(false);
       
@@ -181,19 +191,27 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
         }
 
         const data = await response.json();
-        const trailers: Trailer[] = Array.isArray(data.results) ? data.results : [];
+        const allVideos: Trailer[] = Array.isArray(data.results) ? data.results : [];
+        // Filter to only official trailers/teasers with specific naming
+        const validTrailers = allVideos.filter(
+          (video) => 
+            (video.type === 'Teaser' || video.type === 'Trailer') && 
+            isLandscapeVideo(video.key) &&
+            (video.name?.includes('Official Trailer') || video.name?.includes('Official Teaser Trailer'))
+        );
 
-        if (trailers.length > 0) {
+        if (validTrailers.length > 0) {
           trailerFailureCountsRef.current[itemKey] = 0;
-          trailerCacheRef.current[itemKey] = trailers[0];
-          setTrailerSafely(trailers[0]);
+          trailerCacheRef.current[itemKey] = validTrailers[0];
+          setTrailerSafely(validTrailers[0]);
         } else {
+          // No valid trailers found, cache null to skip future fetches
           const updatedFailures = (trailerFailureCountsRef.current[itemKey] ?? 0) + 1;
           trailerFailureCountsRef.current[itemKey] = updatedFailures;
           if (updatedFailures >= MAX_TRAILER_FAILURES) {
             trailerCacheRef.current[itemKey] = null;
           }
-          console.warn(`No trailers found for ${itemKey} (attempt ${updatedFailures}/${MAX_TRAILER_FAILURES}).`);
+          console.warn(`No valid trailers found for ${itemKey} (attempt ${updatedFailures}/${MAX_TRAILER_FAILURES}).`);
         }
       } catch (error) {
         const updatedFailures = (trailerFailureCountsRef.current[itemKey] ?? 0) + 1;
@@ -237,12 +255,31 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
 
   return (
     <div className="relative min-h-screen mb-8 rounded-2xl overflow-hidden group">
-      {/* Background with overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent z-10"></div>
+      {/* Backdrop Background (always visible as base) */}
       <div 
-        className="absolute inset-0 bg-cover bg-center transition-all duration-500"
+        className="absolute inset-0 bg-cover bg-center z-0"
         style={{ backgroundImage: `url(${getImageUrl(featuredItem.backdrop_path)})` }}
       ></div>
+
+      {/* YouTube Teaser Video (overlays backdrop when playing) */}
+      {showTrailer && isPlaying && trailer && trailer.key && (
+        <div className="absolute inset-0 z-5">
+          <iframe
+            key={trailer.key}
+            width="100%"
+            height="100%"
+            src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=1&rel=0&controls=0&modestbranding=1&showinfo=0&iv_load_policy=3`}
+            title={trailer.name}
+            frameBorder="0"
+            allowFullScreen
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+            className="absolute inset-0 w-full h-full"
+          ></iframe>
+        </div>
+      )}
+      
+      {/* Dark overlay for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent z-10"></div>
       
       {/* Content */}
       <div className="absolute bottom-0 left-0 z-20 pb-24 px-12 max-w-2xl">
@@ -260,8 +297,13 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
         <div className="flex gap-4">
           <button 
             onClick={() => {
-              setShowTrailer(true);
-              setIsPlaying(true);
+              if (showTrailer && isPlaying) {
+                setShowTrailer(false);
+                setIsPlaying(false);
+              } else if (trailer) {
+                setShowTrailer(true);
+                setIsPlaying(true);
+              }
             }}
             disabled={!trailer}
             className="px-8 py-3 bg-red-600 hover:bg-red-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors flex items-center gap-2"
@@ -310,37 +352,6 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
           />
         ))}
       </div>
-
-      {/* Trailer Modal */}
-      {showTrailer && isPlaying && trailer && trailer.key && (
-        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
-          <div className="relative w-full max-w-4xl">
-            <button
-              onClick={() => {
-                setShowTrailer(false);
-                setIsPlaying(false);
-              }}
-              className="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors"
-            >
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-            <div className="aspect-video rounded-lg overflow-hidden bg-black">
-              <iframe
-                key={trailer.key}
-                width="100%"
-                height="100%"
-                src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=1&rel=0`}
-                title={trailer.name}
-                frameBorder="0"
-                allowFullScreen
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-              ></iframe>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

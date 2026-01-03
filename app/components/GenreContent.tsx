@@ -1,14 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Movie, TVShow, getImageUrl } from '@/lib/tmdb';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface GenreContentProps {
   initialResults: (Movie | TVShow)[];
   type: 'movies' | 'shows' | 'animes' | 'cartoons';
   genreId: number;
 }
+
+type SortOption = 'popularity' | 'rating' | 'newest' | 'oldest';
 
 export default function GenreContent({
   initialResults,
@@ -18,6 +21,7 @@ export default function GenreContent({
   const [results, setResults] = useState<(Movie | TVShow)[]>(initialResults);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [sortOption, setSortOption] = useState<SortOption>('popularity');
 
   const handleLoadMore = async () => {
     setIsLoading(true);
@@ -38,16 +42,58 @@ export default function GenreContent({
     }
   };
 
+  const sortedResults = useMemo(() => {
+    const items = [...results];
+
+    const getDateValue = (item: Movie | TVShow) => {
+      const dateValue = 'release_date' in item ? item.release_date : item.first_air_date;
+      if (!dateValue) {
+        return 0;
+      }
+      const timestamp = new Date(dateValue).getTime();
+      return Number.isNaN(timestamp) ? 0 : timestamp;
+    };
+
+    switch (sortOption) {
+      case 'rating':
+        return items.sort((a, b) => b.vote_average - a.vote_average);
+      case 'newest':
+        return items.sort((a, b) => getDateValue(b) - getDateValue(a));
+      case 'oldest':
+        return items.sort((a, b) => getDateValue(a) - getDateValue(b));
+      case 'popularity':
+      default:
+        return items.sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0));
+    }
+  }, [results, sortOption]);
+
   return (
     <>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end mb-6">
+        <label htmlFor="genre-sort" className="text-sm text-white/70">
+          Sort by
+        </label>
+        <select
+          id="genre-sort"
+          value={sortOption}
+          onChange={(event) => setSortOption(event.target.value as SortOption)}
+          className="w-full max-w-xs rounded-full border border-white/15 bg-black/50 px-4 py-2 text-sm text-white focus:border-red-500/60 focus:outline-none"
+        >
+          <option value="popularity">Most Popular</option>
+          <option value="rating">Top Rated</option>
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+        </select>
+      </div>
       <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-        {results.map((item) => {
+        {sortedResults.map((item) => {
           const title = 'title' in item ? item.title : item.name;
           const date = 'release_date' in item ? item.release_date : item.first_air_date;
           return (
-            <div
+            <Link
               key={item.id}
-              className="group cursor-pointer transition-all duration-300 hover:shadow-2xl"
+              href={`/title/${type}/${item.id}`}
+              className="group block transition-all duration-300 hover:shadow-2xl"
             >
               <div className="relative aspect-[2/3] overflow-hidden bg-gray-800 shadow-lg">
                 {item.poster_path ? (
@@ -78,7 +124,7 @@ export default function GenreContent({
                   </div>
                 </div>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>

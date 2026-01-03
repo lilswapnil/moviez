@@ -33,6 +33,14 @@ export const chartSectionsConfig = [
   { title: 'Cartoon Charts', charts: cartoonCharts },
 ];
 
+type ChartCategory = 'movie' | 'tv' | 'anime' | 'cartoon';
+
+const chartCategoryMap = new Map<string, ChartCategory>();
+movieCharts.forEach((name) => chartCategoryMap.set(name, 'movie'));
+tvCharts.forEach((name) => chartCategoryMap.set(name, 'tv'));
+animeCharts.forEach((name) => chartCategoryMap.set(name, 'anime'));
+cartoonCharts.forEach((name) => chartCategoryMap.set(name, 'cartoon'));
+
 export const chartFetchers: Record<string, ChartFetcher> = {
   'Trending Movies': (page) => getTrendingMovies(page),
   'Top Rated Movies': (page) => getTopRatedMovies(page),
@@ -65,14 +73,37 @@ export interface ChartResultItem {
   posterPath: string | null;
   year?: number;
   voteAverage: number;
+  mediaType: ChartCategory;
 }
 
-export function normalizeChartItems(results: (Movie | TVShow)[]): ChartResultItem[] {
+export function getChartCategory(chartName: string): ChartCategory {
+  return chartCategoryMap.get(chartName) ?? 'movie';
+}
+
+function resolveMediaType(
+  item: Movie | TVShow,
+  fallback: ChartCategory
+): ChartCategory {
+  const isMovie = 'title' in item && typeof item.title === 'string';
+  if (isMovie) {
+    return 'movie';
+  }
+  if (fallback === 'anime' || fallback === 'cartoon') {
+    return fallback;
+  }
+  return 'tv';
+}
+
+export function normalizeChartItems(
+  results: (Movie | TVShow)[],
+  fallback: ChartCategory = 'movie'
+): ChartResultItem[] {
   return results.map((item) => {
     const title = 'title' in item && item.title ? item.title : 'name' in item ? item.name : undefined;
     const dateValue = 'release_date' in item ? item.release_date : 'first_air_date' in item ? item.first_air_date : undefined;
     const year = dateValue ? new Date(dateValue).getFullYear() : undefined;
     const voteAverage = Number.isFinite(item.vote_average) ? item.vote_average : 0;
+    const mediaType = resolveMediaType(item, fallback);
 
     return {
       id: item.id,
@@ -81,6 +112,7 @@ export function normalizeChartItems(results: (Movie | TVShow)[]): ChartResultIte
       posterPath: item.poster_path ?? null,
       year,
       voteAverage,
+      mediaType,
     };
   });
 }
