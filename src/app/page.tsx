@@ -1,27 +1,29 @@
-import { getNewReleases, getUpcomingMovies, getTrendingMovies, getTopRatedMovies, getTopRatedShows, getUpcomingShows } from '@/lib/api/tmdb-client';
-import FeaturedBanner from '@/components/media/FeaturedBanner';
-import DataSection from '@/components/sections/DataSection';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Home() {
-  const newReleases = await getNewReleases();
-  const upcomingMovies = await getUpcomingMovies();
-  const trendingMovies = await getTrendingMovies();
-  const topRatedMovies = await getTopRatedMovies();
-  const topRatedShows = await getTopRatedShows();
-  const upcomingShows = await getUpcomingShows();
+export default function Home() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const isGuest = localStorage.getItem('isGuest') === 'true';
+    
+    if (!isGuest) {
+      // Not logged in and not a guest, redirect to login
+      router.push('/login');
+    } else {
+      // Guest user, redirect to home
+      router.push('/browse/home');
+    }
+  }, [router]);
 
   return (
-    <div>
-      <main>
-        <FeaturedBanner movies={newReleases} />
-        <DataSection title="Trending Now" initialMovies={trendingMovies} type="movies" category="top_rated" />
-        <DataSection title="Top Rated Movies" initialMovies={topRatedMovies} type="movies" category="top_rated" />
-        <DataSection title="Top Rated Shows" initialShows={topRatedShows} type="shows" category="top_rated" />
-        <DataSection title="Upcoming Movies" initialMovies={upcomingMovies} type="movies" category="upcoming" />
-        <DataSection title="Upcoming Shows" initialShows={upcomingShows} type="shows" category="upcoming" />
-      </main>
+    <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="text-gray-400">Loading...</div>
     </div>
   );
 }

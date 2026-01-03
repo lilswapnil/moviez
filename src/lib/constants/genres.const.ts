@@ -153,6 +153,9 @@ export const movieCharts = [
   "Upcoming Movies",
   "Now Playing Movies",
   "Popular Movies",
+  "Popular International Movies",
+  "Top Rated International Movies",
+  "Upcoming International Movies",
 ];
 
 export const tvCharts = [
@@ -161,6 +164,9 @@ export const tvCharts = [
   "Airing Today",
   "On The Air",
   "Popular TV Shows",
+  "Popular International TV Shows",
+  "Top Rated International TV Shows",
+  "Upcoming International TV Shows",
 ];
 
 export const animeCharts = [
@@ -169,6 +175,9 @@ export const animeCharts = [
   "Airing Now",
   "Upcoming Anime",
   "All Time Classics",
+  "Popular International Anime",
+  "Top Rated International Anime",
+  "Upcoming International Anime",
 ];
 
 export const cartoonCharts = [
@@ -177,4 +186,7 @@ export const cartoonCharts = [
   "Kids Favorites",
   "Trending Cartoons",
   "Family Friendly",
+  "Popular International Cartoons",
+  "Top International Cartoons",
+  "Upcoming International",
 ];

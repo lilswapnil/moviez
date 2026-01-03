@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Nunito_Sans } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/common/Navbar";
+import NavbarWrapper from "@/components/common/NavbarWrapper";
+
+export const dynamic = 'force-dynamic';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,7 +39,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${nunitoSans.variable} antialiased`}
       >
-        <Navbar />
+        <NavbarWrapper />
         {children}
         <footer>
         <div className="text-center py-4 bg-black/50 backdrop-blur-md text-sm text-gray-500">

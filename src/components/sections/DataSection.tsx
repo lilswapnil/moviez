@@ -9,7 +9,7 @@ interface DataSectionProps {
   initialMovies?: Movie[];
   initialShows?: TVShow[];
   type: 'movies' | 'shows';
-  category: 'top_rated' | 'upcoming';
+  category: 'top_rated' | 'upcoming' | 'anime' | 'cartoon' | 'international';
 }
 
 export default function DataSection({
