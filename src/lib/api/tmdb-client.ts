@@ -639,6 +639,50 @@ export async function getFamilyCartoonShows(page: number = 1): Promise<TVShow[]>
   return getAnimationChart({ chart: 'family', originalLanguage: 'en', includeKids: true, page });
 }
 
+async function getKDramaChart({ chart, page = 1 }: { chart: 'topRated' | 'upcoming'; page?: number }): Promise<TVShow[]> {
+  try {
+    const searchParams = new URLSearchParams();
+    searchParams.set('api_key', TMDB_API_KEY ?? '');
+    searchParams.set('language', 'en-US');
+    searchParams.set('page', page.toString());
+    searchParams.set('include_adult', 'false');
+    searchParams.set('include_null_first_air_dates', 'false');
+    searchParams.set('with_genres', '18'); // Drama genre ID
+    searchParams.set('with_origin_country', 'KR'); // South Korea
+    searchParams.set('sort_by', chart === 'topRated' ? 'vote_average.desc' : 'first_air_date.desc');
+
+    if (chart === 'topRated') {
+      searchParams.set('vote_count.gte', '100');
+    } else if (chart === 'upcoming') {
+      const today = formatDate(new Date());
+      searchParams.set('first_air_date.gte', today);
+    }
+
+    const response = await fetch(
+      `${TMDB_BASE_URL}/discover/tv?${searchParams.toString()}`,
+      { next: { revalidate: 3600 } }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to discover K dramas');
+    }
+
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    console.error('Error discovering K dramas:', error);
+    return [];
+  }
+}
+
+export async function getTopRatedKDramas(page: number = 1): Promise<TVShow[]> {
+  return getKDramaChart({ chart: 'topRated', page });
+}
+
+export async function getUpcomingKDramas(page: number = 1): Promise<TVShow[]> {
+  return getKDramaChart({ chart: 'upcoming', page });
+}
+
 type SearchMediaType = 'movie' | 'tv';
 
 interface TMDBSearchResult {

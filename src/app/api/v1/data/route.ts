@@ -1,4 +1,16 @@
-import { getTopRatedMovies, getUpcomingMovies, getTopRatedShows, getUpcomingShows } from '@/lib/api/tmdb-client';
+import { 
+  getTopRatedMovies, 
+  getUpcomingMovies, 
+  getTopRatedShows, 
+  getUpcomingShows,
+  getTopRatedAnimeShows,
+  getUpcomingAnimeShows,
+  getTopRatedCartoonShows,
+  getTrendingCartoons,
+  getPopularMovies,
+  getTopRatedKDramas,
+  getUpcomingKDramas
+} from '@/lib/api/tmdb-client';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -14,12 +26,32 @@ export async function GET(request: Request) {
         data = await getTopRatedMovies(page);
       } else if (category === 'upcoming') {
         data = await getUpcomingMovies(page);
+      } else if (category === 'international') {
+        data = await getPopularMovies(page);
       }
     } else if (type === 'shows') {
       if (category === 'top_rated') {
         data = await getTopRatedShows(page);
       } else if (category === 'upcoming') {
         data = await getUpcomingShows(page);
+      } else if (category === 'anime') {
+        if (page === 1) {
+          data = await getTopRatedAnimeShows(page);
+        } else {
+          data = await getUpcomingAnimeShows(page);
+        }
+      } else if (category === 'cartoon') {
+        if (page === 1) {
+          data = await getTopRatedCartoonShows(page);
+        } else {
+          data = await getTrendingCartoons(page);
+        }
+      } else if (category === 'kdrama') {
+        if (page === 1) {
+          data = await getTopRatedKDramas(page);
+        } else {
+          data = await getUpcomingKDramas(page);
+        }
       }
     }
 

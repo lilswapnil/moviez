@@ -9,7 +9,9 @@ import {
   getUpcomingAnimeShows,
   getTopRatedCartoonShows,
   getTrendingCartoons,
-  getPopularMovies
+  getPopularMovies,
+  getTopRatedKDramas,
+  getUpcomingKDramas
 } from '@/lib/api/tmdb-client';
 import FeaturedBanner from '@/components/media/FeaturedBanner';
 import DataSection from '@/components/sections/DataSection';
@@ -29,6 +31,8 @@ export default async function Home() {
   const topCartoons = await getTopRatedCartoonShows();
   const trendingCartoons = await getTrendingCartoons();
   const internationalMovies = await getPopularMovies();
+  const topKDramas = await getTopRatedKDramas();
+  const upcomingKDramas = await getUpcomingKDramas();
 
   return (
     <div>
@@ -44,6 +48,8 @@ export default async function Home() {
         <DataSection title="Top Cartoons" initialShows={topCartoons} type="shows" category="cartoon" />
         <DataSection title="Trending Cartoons" initialShows={trendingCartoons} type="shows" category="cartoon" />
         <DataSection title="Popular International Movies" initialMovies={internationalMovies} type="movies" category="international" />
+        <DataSection title="Top K Dramas" initialShows={topKDramas} type="shows" category="kdrama" />
+        <DataSection title="Upcoming K Dramas" initialShows={upcomingKDramas} type="shows" category="kdrama" />
       </main>
     </div>
   );
