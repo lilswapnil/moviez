@@ -4,6 +4,15 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { getImageUrl } from '@/lib/tmdb';
 import type { Trailer, Movie, TVShow, Anime, Cartoon } from '@/lib/tmdb';
 
+function shuffleArray<T>(items: T[]): T[] {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
 interface FeaturedItem {
   id: number;
   title?: string;
@@ -35,35 +44,47 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
   const MAX_TRAILER_FAILURES = 3;
 
   const allItems: FeaturedItem[] = useMemo(() => {
-    const movieItems = movies.map((movie) => ({
+    const movieItems = shuffleArray(movies.map((movie) => ({
       ...movie,
       kind: 'movie' as const,
       title: movie.title,
       release_date: movie.release_date,
-    }));
+    })));
 
-    const showItems = shows.map((show) => ({
+    const showItems = shuffleArray(shows.map((show) => ({
       ...show,
       kind: 'tv' as const,
       name: show.name,
       first_air_date: show.first_air_date,
-    }));
+    })));
 
-    const animeItems = anime.map((show) => ({
+    const animeItems = shuffleArray(anime.map((show) => ({
       ...show,
       kind: 'anime' as const,
       name: show.name,
       first_air_date: show.first_air_date,
-    }));
+    })));
 
-    const cartoonItems = cartoon.map((show) => ({
+    const cartoonItems = shuffleArray(cartoon.map((show) => ({
       ...show,
       kind: 'cartoon' as const,
       name: show.name,
       first_air_date: show.first_air_date,
-    }));
+    })));
 
-    return [...movieItems, ...showItems, ...animeItems, ...cartoonItems].slice(0, 10);
+    const buckets = [movieItems, showItems, animeItems, cartoonItems];
+    const interleaved: FeaturedItem[] = [];
+    let bucketIndex = 0;
+
+    while (interleaved.length < 10 && buckets.some((bucket) => bucket.length > 0)) {
+      const bucket = buckets[bucketIndex % buckets.length];
+      if (bucket.length > 0) {
+        interleaved.push(bucket.shift()!);
+      }
+      bucketIndex += 1;
+    }
+
+    return interleaved;
   }, [anime, cartoon, movies, shows]);
 
   const safeIndex = useMemo(() => {
