@@ -21,8 +21,37 @@ const nunitoSans = Nunito_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "moviez",
-  description: "A movie discovery app built with Next.js 13 and The Movie Database (TMDb) API"
+  title: "Moviez - Movie Discovery",
+  description: "Discover movies, TV shows, anime, cartoons, and Korean dramas. A beautiful movie discovery app powered by TMDb API.",
+  icons: {
+    icon: [
+      {
+        url: "/favicon.ico",
+        sizes: "any",
+      },
+    ],
+    apple: "/apple-icon.svg",
+  },
+  openGraph: {
+    title: "Moviez",
+    description: "Discover your next favorite movie or show",
+    url: "https://moviez.app",
+    siteName: "Moviez",
+    images: [
+      {
+        url: "/og-image.svg",
+        width: 1200,
+        height: 630,
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Moviez",
+    description: "Discover your next favorite movie or show",
+    images: ["/og-image.svg"],
+  },
 };
 
 export const viewport: Viewport = {
