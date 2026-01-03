@@ -2,7 +2,9 @@ import { notFound } from 'next/navigation';
 import TitleHero from '@/components/sections/TitleHero';
 import TitleCastSection from '@/components/sections/TitleCastSection';
 import SimilarTitles from '@/components/sections/SimilarTitles';
-import { getMovieCredits, getMovieDetails, getTVCredits, getTVShowDetails, getSimilarMovies, getSimilarTVShows } from '@/lib/api/tmdb-client';
+import MerchandiseSection from '@/components/sections/MerchandiseSection';
+import EpisodesSection from '@/components/sections/EpisodesSection';
+import { getMovieCredits, getMovieDetails, getTVCredits, getTVShowDetails, getSimilarMovies, getSimilarTVShows, getCollectionDetails, getSeasonDetails } from '@/lib/api/tmdb-client';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,6 +41,22 @@ export default async function TitlePage({ params }: TitlePageProps) {
       notFound();
     }
 
+    let merchandiseItems: Array<{ id: number; title: string; posterPath: string | null; releaseDate: string | null; voteAverage?: number }> = [];
+    if (details.belongs_to_collection?.id) {
+      const collection = await getCollectionDetails(details.belongs_to_collection.id);
+      if (collection?.parts) {
+        merchandiseItems = collection.parts
+          .filter((part: any) => part.id !== numericId)
+          .map((part: any) => ({
+            id: part.id,
+            title: part.title,
+            posterPath: part.poster_path,
+            releaseDate: part.release_date,
+            voteAverage: part.vote_average,
+          }));
+      }
+    }
+
     const releaseYear = details.release_date ? new Date(details.release_date).getFullYear() : undefined;
     const runtimeMinutes = details.runtime ?? null;
     const genres = details.genres?.map((genre) => genre.name) ?? [];
@@ -65,6 +83,7 @@ export default async function TitlePage({ params }: TitlePageProps) {
           <TitleCastSection cast={credits} />
         </TitleHero>
         <div className="bg-gradient-to-b from-transparent via-black/50 to-black px-6 md:px-12 lg:px-16 py-6">
+          {merchandiseItems.length > 0 && <MerchandiseSection items={merchandiseItems} title={`More from ${details.belongs_to_collection?.name || 'this Franchise'}`} />}
           <SimilarTitles items={similar} titleType="movies" />
         </div>
       </main>
@@ -79,6 +98,13 @@ export default async function TitlePage({ params }: TitlePageProps) {
   if (!details) {
     notFound();
   }
+
+  const seasonsData: Array<{ season_number: number; name: string }> = (details.seasons || [])
+    .filter((season: any) => season.season_number !== 0)
+    .map((season: any) => ({
+      season_number: season.season_number,
+      name: season.name,
+    }));
 
   const releaseYear = details.first_air_date ? new Date(details.first_air_date).getFullYear() : undefined;
   const runtimeMinutes = Array.isArray(details.episode_run_time) && details.episode_run_time.length > 0
@@ -111,6 +137,7 @@ export default async function TitlePage({ params }: TitlePageProps) {
         <TitleCastSection cast={credits} />
       </TitleHero>
       <div className="bg-gradient-to-b from-transparent via-black/50 to-black px-6 md:px-12 lg:px-16 py-2">
+        {seasonsData.length > 0 && <EpisodesSection seasons={seasonsData} tvId={numericId} />}
         <SimilarTitles items={similar} titleType={routeType === 'shows' ? 'shows' : routeType === 'animes' ? 'animes' : 'cartoons'} />
       </div>
     </main>

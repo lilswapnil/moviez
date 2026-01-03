@@ -51,6 +51,12 @@ export interface MovieDetails extends Movie {
   tagline?: string;
   genres?: GenreTag[];
   homepage?: string;
+  belongs_to_collection?: {
+    id: number;
+    name: string;
+    poster_path: string | null;
+    backdrop_path: string | null;
+  };
 }
 
 export interface TVDetails extends TVShow {
@@ -61,6 +67,12 @@ export interface TVDetails extends TVShow {
   tagline?: string;
   genres?: GenreTag[];
   homepage?: string;
+  seasons?: Array<{
+    season_number: number;
+    name: string;
+    poster_path: string | null;
+    episode_count: number;
+  }>;
 }
 
 export interface CastMember {
@@ -750,5 +762,43 @@ export async function getSimilarTVShows(tvId: number, page: number = 1): Promise
   } catch (error) {
     console.error('Error fetching similar TV shows:', error);
     return [];
+  }
+}
+
+export async function getCollectionDetails(collectionId: number) {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/collection/${collectionId}?api_key=${TMDB_API_KEY}&language=en-US`,
+      { next: { revalidate: 3600 } }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch collection details: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching collection details:', error);
+    return null;
+  }
+}
+
+export async function getSeasonDetails(tvId: number, seasonNumber: number) {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/tv/${tvId}/season/${seasonNumber}?api_key=${TMDB_API_KEY}&language=en-US`,
+      { next: { revalidate: 3600 } }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch season details: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching season details:', error);
+    return null;
   }
 }
