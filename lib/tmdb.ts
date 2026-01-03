@@ -27,6 +27,32 @@ export interface TVShow {
   origin_country?: string[];
 }
 
+export interface Anime extends TVShow {
+  id: number;
+  name: string;
+  overview: string;
+  backdrop_path: string;
+  poster_path: string;
+  first_air_date: string;
+  vote_average: number;
+  genre_ids: number[];
+  original_language?: string;
+  origin_country?: string[];
+}
+
+export interface Cartoon extends TVShow {
+  id: number;
+  name: string;
+  overview: string;
+  backdrop_path: string;
+  poster_path: string;
+  first_air_date: string;
+  vote_average: number;
+  genre_ids: number[];
+  original_language?: string;
+  origin_country?: string[];
+}
+
 export interface Trailer {
   id: string;
   key: string;

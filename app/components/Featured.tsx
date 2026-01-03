@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { getImageUrl } from '@/lib/tmdb';
-import type { Trailer, Movie, TVShow } from '@/lib/tmdb';
+import type { Trailer, Movie, TVShow, Anime, Cartoon } from '@/lib/tmdb';
 
 interface FeaturedItem {
   id: number;
@@ -15,15 +15,17 @@ interface FeaturedItem {
   first_air_date?: string;
   vote_average: number;
   genre_ids: number[];
-  kind: 'movie' | 'tv';
+  kind: 'movie' | 'tv' | 'anime' | 'cartoon';
 }
 
 interface FeaturedBannerProps {
   movies?: Movie[];
   shows?: TVShow[];
+  anime?: Anime[];
+  cartoon?: Cartoon[];
 }
 
-export default function FeaturedBanner({ movies = [], shows = [] }: FeaturedBannerProps) {
+export default function FeaturedBanner({ movies = [], shows = [], anime = [], cartoon = [] }: FeaturedBannerProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [trailer, setTrailer] = useState<Trailer | null>(null);
   const [showTrailer, setShowTrailer] = useState(false);
@@ -47,8 +49,22 @@ export default function FeaturedBanner({ movies = [], shows = [] }: FeaturedBann
       first_air_date: show.first_air_date,
     }));
 
-    return [...movieItems, ...showItems].slice(0, 10);
-  }, [movies, shows]);
+    const animeItems = anime.map((show) => ({
+      ...show,
+      kind: 'anime' as const,
+      name: show.name,
+      first_air_date: show.first_air_date,
+    }));
+
+    const cartoonItems = cartoon.map((show) => ({
+      ...show,
+      kind: 'cartoon' as const,
+      name: show.name,
+      first_air_date: show.first_air_date,
+    }));
+
+    return [...movieItems, ...showItems, ...animeItems, ...cartoonItems].slice(0, 10);
+  }, [anime, cartoon, movies, shows]);
 
   const safeIndex = useMemo(() => {
     if (allItems.length === 0) {
