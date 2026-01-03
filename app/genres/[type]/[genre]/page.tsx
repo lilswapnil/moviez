@@ -1,6 +1,7 @@
 import { getMoviesByGenre, getTVShowsByGenre, Movie, TVShow } from '@/lib/tmdb';
 import { movieGenreIds, tvGenreIds, animeGenreIds, cartoonGenreIds } from '@/lib/category';
 import GenreContent from '@/app/components/GenreContent';
+import Link from 'next/link';
 
 interface GenrePageProps {
   params: Promise<{
@@ -38,13 +39,21 @@ export default async function GenrePage({ params }: GenrePageProps) {
   }
 
   return (
-    <div className="mt-8 px-12 py-16">
-      <main className="max-w-7xl mx-auto">
-        <header className="mb-12">
-          <h1 className="text-4xl font-bold text-white mb-2">
+    <div className="mt-20 px-6 py-16">
+      <main className="max-w-6xl mx-auto space-y-8">
+        <div className="flex items-center gap-4">
+          <Link
+            href="/library"
+            className="text-sm text-white/70 hover:text-white transition-colors"
+          >
+            &larr; Back to Library
+          </Link>
+        </div>
+        <header className="space-y-2">
+          <h1 className="text-4xl font-bold text-white">
             {decodedGenre} {type === 'movies' ? 'Movies' : type === 'shows' ? 'Shows' : type === 'animes' ? 'Anime' : 'Cartoons'}
           </h1>
-          <p className="text-gray-400">
+          <p className="text-gray-300">
             Showing {results.length} results
           </p>
         </header>

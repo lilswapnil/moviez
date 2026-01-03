@@ -319,7 +319,10 @@ export async function getMovieTrailers(movieId: number): Promise<Trailer[]> {
     }
     movieTrailerFailureCount = 0;
     movieTrailerFetchDisabled = false;
-    return data.results.filter((video: Trailer) => video.site === 'YouTube' && (video.type === 'Trailer' || video.type === 'Teaser'));
+    const videos = (data.results as Trailer[]).filter((video) => video.site === 'YouTube');
+    const teasers = videos.filter((video) => video.type === 'Teaser' || video.name?.toLowerCase().includes('teaser'));
+    const otherVideos = videos.filter((video) => !(video.type === 'Teaser' || video.name?.toLowerCase().includes('teaser')));
+    return [...teasers, ...otherVideos];
   } catch (error) {
     movieTrailerFailureCount += 1;
     if (movieTrailerFailureCount >= MAX_TRAILER_FAILURES) {
@@ -359,7 +362,10 @@ export async function getTVTrailers(tvId: number): Promise<Trailer[]> {
     }
     tvTrailerFailureCount = 0;
     tvTrailerFetchDisabled = false;
-    return data.results.filter((video: Trailer) => video.site === 'YouTube' && (video.type === 'Trailer' || video.type === 'Teaser'));
+    const videos = (data.results as Trailer[]).filter((video) => video.site === 'YouTube');
+    const teasers = videos.filter((video) => video.type === 'Teaser' || video.name?.toLowerCase().includes('teaser'));
+    const otherVideos = videos.filter((video) => !(video.type === 'Teaser' || video.name?.toLowerCase().includes('teaser')));
+    return [...teasers, ...otherVideos];
   } catch (error) {
     tvTrailerFailureCount += 1;
     if (tvTrailerFailureCount >= MAX_TRAILER_FAILURES) {

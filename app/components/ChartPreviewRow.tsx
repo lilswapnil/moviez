@@ -2,6 +2,8 @@
 
 import Image from 'next/image';
 import { getImageUrl } from '@/lib/tmdb';
+import Link from 'next/link';
+import { chartNameToSlug } from '@/lib/chartSlugs';
 
 export type ChartPreviewItem = {
   id: number;
@@ -19,8 +21,13 @@ export default function ChartPreviewRow({ name, items }: ChartPreviewRowProps) {
     .filter((item): item is ChartPreviewItem => Boolean(item))
     .slice(0, 3);
 
+  const slug = chartNameToSlug(name);
+
   return (
-    <div className="w-60 flex-shrink-0 rounded-xl bg-black/40 border border-white/5 px-4 py-4 hover:border-red-500/60 hover:bg-red-500/5 transition-colors">
+    <Link
+      href={`/library/charts/${slug}`}
+      className="block w-60 flex-shrink-0 rounded-xl bg-black/40 border border-white/5 px-4 py-4 hover:border-red-500/60 hover:bg-red-500/5 transition-colors"
+    >
       <span className="block text-white font-semibold mb-3">{name}</span>
       <div className="flex gap-2 min-h-[150px]">
         {displayItems.length > 0 ? (
@@ -50,6 +57,6 @@ export default function ChartPreviewRow({ name, items }: ChartPreviewRowProps) {
           <span className="text-xs text-gray-500">No data</span>
         )}
       </div>
-    </div>
+    </Link>
   );
 }

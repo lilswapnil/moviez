@@ -1,67 +1,14 @@
-import { movieGenres, tvGenres, animeGenres, cartoonGenres, movieCharts, tvCharts, animeCharts, cartoonCharts } from '../../lib/category';
+import { movieGenres, tvGenres, animeGenres, cartoonGenres } from '../../lib/category';
 import Link from 'next/link';
 import ChartSection, { ChartWithPreview } from '../components/ChartSection';
 import type { ChartPreviewItem } from '../components/ChartPreviewRow';
 import type { Movie, TVShow } from '../../lib/tmdb';
-import {
-  getTrendingMovies,
-  getTopRatedMovies,
-  getUpcomingMovies,
-  getNewReleases,
-  getPopularMovies,
-  getTrendingTVShows,
-  getTopRatedShows,
-  getAiringTodayShows,
-  getUpcomingShows,
-  getPopularTVShows,
-  getPopularAnimeShows,
-  getTopRatedAnimeShows,
-  getAiringNowAnimeShows,
-  getUpcomingAnimeShows,
-  getClassicAnimeShows,
-  getPopularCartoonShows,
-  getTopRatedCartoonShows,
-  getKidsFavoriteCartoons,
-  getTrendingCartoons,
-  getFamilyCartoonShows,
-} from '../../lib/tmdb';
+import { chartSectionsConfig, chartFetchers } from '../../lib/charts';
 
 interface ChartSectionData {
   title: string;
   charts: ChartWithPreview[];
 }
-
-const chartSectionsConfig = [
-  { title: 'Movie Charts', charts: movieCharts },
-  { title: 'TV Charts', charts: tvCharts },
-  { title: 'Anime Charts', charts: animeCharts },
-  { title: 'Cartoon Charts', charts: cartoonCharts },
-];
-
-type ChartFetcher = () => Promise<Movie[] | TVShow[]>;
-
-const chartFetchers: Record<string, ChartFetcher> = {
-  'Trending Movies': () => getTrendingMovies(),
-  'Top Rated Movies': () => getTopRatedMovies(),
-  'Upcoming Movies': () => getUpcomingMovies(),
-  'Now Playing Movies': () => getNewReleases(),
-  'Popular Movies': () => getPopularMovies(),
-  'Trending TV Shows': () => getTrendingTVShows(),
-  'Top Rated TV Shows': () => getTopRatedShows(),
-  'Airing Today': () => getAiringTodayShows(),
-  'On The Air': () => getUpcomingShows(),
-  'Popular TV Shows': () => getPopularTVShows(),
-  'Popular Anime': () => getPopularAnimeShows(),
-  'Top Rated Anime': () => getTopRatedAnimeShows(),
-  'Airing Now': () => getAiringNowAnimeShows(),
-  'Upcoming Anime': () => getUpcomingAnimeShows(),
-  'All Time Classics': () => getClassicAnimeShows(),
-  'Popular Cartoons': () => getPopularCartoonShows(),
-  'Top Rated Cartoons': () => getTopRatedCartoonShows(),
-  'Kids Favorites': () => getKidsFavoriteCartoons(),
-  'Trending Cartoons': () => getTrendingCartoons(),
-  'Family Friendly': () => getFamilyCartoonShows(),
-};
 
 export default async function Library() {
   const chartSections: ChartSectionData[] = await Promise.all(

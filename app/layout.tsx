@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Nunito_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
@@ -20,7 +20,10 @@ const nunitoSans = Nunito_Sans({
 
 export const metadata: Metadata = {
   title: "moviez",
-  description: "A movie discovery app built with Next.js 13 and The Movie Database (TMDb) API",
+  description: "A movie discovery app built with Next.js 13 and The Movie Database (TMDb) API"
+};
+
+export const viewport: Viewport = {
   themeColor: '#200404'
 };
 

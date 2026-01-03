@@ -43,10 +43,10 @@ export default function Navbar() {
             <input 
                 type="text" 
                 placeholder="Search movies..." 
-                className="w-full px-4 py-2.5 pr-10 rounded-full bg-white/10 backdrop-blur-sm border-none text-white placeholder-gray-400 focus:outline-none focus:bg-white/15 transition-colors"
+                className="w-full px-4 py-2.5 pr-10 rounded-full bg-black/50 border border-white/20 text-white placeholder:text-white/60 focus:outline-none focus:bg-black/60 focus:border-red-500/50 transition-colors"
             />
             <svg 
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5" 
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 w-5 h-5"
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
