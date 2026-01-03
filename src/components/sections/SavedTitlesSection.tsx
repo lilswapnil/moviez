@@ -19,18 +19,6 @@ interface SavedTitlesSectionProps {
 }
 
 export default function SavedTitlesSection({ titles }: SavedTitlesSectionProps) {
-  if (!titles || titles.length === 0) {
-    return (
-      <section className="py-4">
-        <h2 className="text-2xl font-bold text-white mb-6">My Saved Titles</h2>
-        <div className="text-center py-12 rounded-xl bg-white/5 border border-white/10">
-          <p className="text-gray-400 mb-2">No saved titles yet</p>
-          <p className="text-gray-500 text-sm">Start saving your favorite titles to build your library</p>
-        </div>
-      </section>
-    );
-  }
-
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -76,6 +64,19 @@ export default function SavedTitlesSection({ titles }: SavedTitlesSectionProps) 
     const type = title.type === 'movie' ? 'movies' : 'shows';
     return `/title/${type}/${title.id}`;
   };
+
+  // Return early with hooks already called
+  if (!titles || titles.length === 0) {
+    return (
+      <section className="py-4">
+        <h2 className="text-2xl font-bold text-white mb-6">My Saved Titles</h2>
+        <div className="text-center py-12 rounded-xl bg-white/5 border border-white/10">
+          <p className="text-gray-400 mb-2">No saved titles yet</p>
+          <p className="text-gray-500 text-sm">Start saving your favorite titles to build your library</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-4">
