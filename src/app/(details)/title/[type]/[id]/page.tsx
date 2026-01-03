@@ -82,7 +82,7 @@ export default async function TitlePage({ params }: TitlePageProps) {
         >
           <TitleCastSection cast={credits} />
         </TitleHero>
-        <div className="bg-gradient-to-b from-transparent via-black/50 to-black px-6 md:px-12 lg:px-16 py-6">
+        <div className="bg-gradient-to-b from-transparent via-black/50 to-black px-6 md:px-12 lg:px-11 py-6">
           {merchandiseItems.length > 0 && <MerchandiseSection items={merchandiseItems} title={`More from ${details.belongs_to_collection?.name || 'this Franchise'}`} />}
           <SimilarTitles items={similar} titleType="movies" />
         </div>
