@@ -20,11 +20,6 @@ export default async function Home() {
         <DataSection title="Upcoming Movies" initialMovies={upcomingMovies} type="movies" category="upcoming" />
         <DataSection title="Upcoming Shows" initialShows={upcomingShows} type="shows" category="upcoming" />
       </main>
-      <footer>
-        <div className="text-center py-4 text-sm text-gray-500">
-          &copy; {new Date().getFullYear()} Moviez. All rights reserved.
-        </div>
-      </footer>
     </div>
   );
 }

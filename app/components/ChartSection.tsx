@@ -37,7 +37,7 @@ export default function ChartSection({ title, charts }: ChartSectionProps) {
         <h2 className="text-2xl font-semibold text-white">{title}</h2>
         <span className="text-sm text-gray-400">Top trends right now</span>
       </div>
-      <div className="flex gap-5 overflow-x-auto scrollbar-hide pb-2">
+      <div className="flex flex-wrap justify-center gap-5 pb-2">
         {visibleCharts.length > 0 ? (
           visibleCharts.map(({ name, items }) => (
             <ChartPreviewRow key={name} name={name} items={items} />

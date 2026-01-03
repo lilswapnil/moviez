@@ -21,6 +21,7 @@ const nunitoSans = Nunito_Sans({
 export const metadata: Metadata = {
   title: "moviez",
   description: "A movie discovery app built with Next.js 13 and The Movie Database (TMDb) API",
+  themeColor: '#200404'
 };
 
 export default function RootLayout({
@@ -35,6 +36,11 @@ export default function RootLayout({
       >
         <Navbar />
         {children}
+        <footer>
+        <div className="text-center py-4 text-sm text-gray-500">
+          &copy; {new Date().getFullYear()} Moviez. All rights reserved.
+        </div>
+      </footer>
       </body>
     </html>
   );

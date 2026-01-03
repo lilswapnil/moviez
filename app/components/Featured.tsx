@@ -4,12 +4,27 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { getImageUrl } from '@/lib/tmdb';
 import type { Trailer, Movie, TVShow, Anime, Cartoon } from '@/lib/tmdb';
 
-function shuffleArray<T>(items: T[]): T[] {
+function hashString(value: string): number {
+  let hash = 0;
+  for (let i = 0; i < value.length; i += 1) {
+    hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
+  }
+  return hash || 1;
+}
+
+function shuffleWithSeed<T>(items: T[], seed: number): T[] {
   const copy = [...items];
+  if (copy.length <= 1) {
+    return copy;
+  }
+
+  let currentSeed = seed;
   for (let i = copy.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
+    currentSeed = (currentSeed * 1664525 + 1013904223) >>> 0;
+    const j = currentSeed % (i + 1);
     [copy[i], copy[j]] = [copy[j], copy[i]];
   }
+
   return copy;
 }
 
@@ -44,37 +59,59 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
   const MAX_TRAILER_FAILURES = 3;
 
   const allItems: FeaturedItem[] = useMemo(() => {
-    const movieItems = shuffleArray(movies.map((movie) => ({
+    const movieSeed = hashString(`movie:${movies.map((movie) => movie.id).join('-')}`);
+    const showSeed = hashString(`tv:${shows.map((show) => show.id).join('-')}`);
+    const animeSeed = hashString(`anime:${anime.map((item) => item.id).join('-')}`);
+    const cartoonSeed = hashString(`cartoon:${cartoon.map((item) => item.id).join('-')}`);
+
+    const movieItems = shuffleWithSeed(
+      movies.map((movie) => ({
       ...movie,
       kind: 'movie' as const,
       title: movie.title,
       release_date: movie.release_date,
-    })));
+      })),
+      movieSeed
+    );
 
-    const showItems = shuffleArray(shows.map((show) => ({
+    const showItems = shuffleWithSeed(
+      shows.map((show) => ({
       ...show,
       kind: 'tv' as const,
       name: show.name,
       first_air_date: show.first_air_date,
-    })));
+      })),
+      showSeed
+    );
 
-    const animeItems = shuffleArray(anime.map((show) => ({
+    const animeItems = shuffleWithSeed(
+      anime.map((show) => ({
       ...show,
       kind: 'anime' as const,
       name: show.name,
       first_air_date: show.first_air_date,
-    })));
+      })),
+      animeSeed
+    );
 
-    const cartoonItems = shuffleArray(cartoon.map((show) => ({
+    const cartoonItems = shuffleWithSeed(
+      cartoon.map((show) => ({
       ...show,
       kind: 'cartoon' as const,
       name: show.name,
       first_air_date: show.first_air_date,
-    })));
+      })),
+      cartoonSeed
+    );
 
     const buckets = [movieItems, showItems, animeItems, cartoonItems];
     const interleaved: FeaturedItem[] = [];
-    let bucketIndex = 0;
+    const combinedKey = buckets
+      .flat()
+      .map((item) => `${item.kind}-${item.id}`)
+      .join('|');
+    const startIndex = hashString(combinedKey) % (buckets.length || 1);
+    let bucketIndex = startIndex;
 
     while (interleaved.length < 10 && buckets.some((bucket) => bucket.length > 0)) {
       const bucket = buckets[bucketIndex % buckets.length];
