@@ -177,7 +177,7 @@ Set `TMDB_API_KEY` in your hosting provider's environment variables.
 
 ## Preview
 <p align="center">
-  <img src="preview.jpeg" alt="preview" width="800">
+  <img src="assets/preview.jpeg" alt="preview" width="800">
   <br/>
   <em>Preview</em>
 </p>
