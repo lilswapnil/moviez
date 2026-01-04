@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { getImageUrl } from '@/lib/api/tmdb-client';
 import Link from 'next/link';
 import { chartNameToSlug } from '@/lib/utils/chart-slugs';
+import { getChartUrl } from '@/lib/utils/url';
 
 export type ChartPreviewItem = {
   id: number;
@@ -25,7 +26,7 @@ export default function ChartPreviewRow({ name, items }: ChartPreviewRowProps) {
 
   return (
     <Link
-      href={`/browse/library/charts/${slug}`}
+      href={getChartUrl(slug)}
       className="block w-60 flex-shrink-0 rounded-xl bg-black/40 border border-white/5 px-4 py-4 hover:border-red-500/60 hover:bg-red-500/5 transition-colors"
     >
       <span className="block text-white font-semibold mb-3">{name}</span>

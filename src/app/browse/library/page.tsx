@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { movieGenres, tvGenres, animeGenres, cartoonGenres } from '@/lib/constants/genres.const';
+import { getGenreUrl } from '@/lib/utils/url';
 import ChartSection, { ChartWithPreview } from '@/components/sections/ChartSection';
 import type { ChartPreviewItem } from '@/features/library/components/ChartPreviewRow';
 import type { Movie, TVShow } from '@/lib/api/tmdb-types';
@@ -82,7 +83,7 @@ export default async function Library() {
             {movieGenres.map((genre) => (
               <Link
                 key={genre}
-                href={`/browse/genres/movies/${encodeURIComponent(genre)}`}
+                href={getGenreUrl('movies', genre)}
                 className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white hover:border-red-500/60 hover:bg-red-500/10 transition-colors"
               >
                 {genre}
@@ -100,7 +101,7 @@ export default async function Library() {
             {tvGenres.map((genre) => (
               <Link
                 key={genre}
-                href={`/browse/genres/shows/${encodeURIComponent(genre)}`}
+                href={getGenreUrl('shows', genre)}
                 className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white hover:border-red-500/60 hover:bg-red-500/10 transition-colors"
               >
                 {genre}
@@ -118,7 +119,7 @@ export default async function Library() {
             {animeGenres.map((genre) => (
               <Link
                 key={genre}
-                href={`/browse/genres/animes/${encodeURIComponent(genre)}`}
+                href={getGenreUrl('animes', genre)}
                 className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white hover:border-red-500/60 hover:bg-red-500/10 transition-colors"
               >
                 {genre}
@@ -136,7 +137,7 @@ export default async function Library() {
             {cartoonGenres.map((genre) => (
               <Link
                 key={genre}
-                href={`/browse/genres/cartoons/${encodeURIComponent(genre)}`}
+                href={getGenreUrl('cartoons', genre)}
                 className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white hover:border-red-500/60 hover:bg-red-500/10 transition-colors"
               >
                 {genre}

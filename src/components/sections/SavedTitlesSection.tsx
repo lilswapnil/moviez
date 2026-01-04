@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { getTitleUrl as getTitleUrlUtil } from '@/lib/utils/url';
 
 interface SavedTitle {
   id: number;
@@ -62,7 +63,7 @@ export default function SavedTitlesSection({ titles }: SavedTitlesSectionProps) 
 
   const getTitleUrl = (title: SavedTitle) => {
     const type = title.type === 'movie' ? 'movies' : 'shows';
-    return `/title/${type}/${title.id}`;
+    return getTitleUrlUtil(type, title.id);
   };
 
   // Return early with hooks already called
