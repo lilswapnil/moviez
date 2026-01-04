@@ -175,6 +175,13 @@ Set `TMDB_API_KEY` in your hosting provider's environment variables.
 - 🖼️ Next.js Image optimization
 - 🎯 Core Web Vitals optimized
 
+## Preview
+<p align="center">
+  <img src="preview.jpeg" alt="preview" width="800">
+  <br/>
+  <em>Preview</em>
+</p>
+
 ## 🤝 Contributing
 
 Contributions welcome! Please:
