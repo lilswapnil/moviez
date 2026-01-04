@@ -100,21 +100,18 @@ export default function Login() {
 
         {/* Movie grid background */}
         {movies.length > 0 && (
-          <div className="grid grid-cols-5 gap-0 p-0 h-full w-full auto-rows-max opacity-60">
+          <div className="flex flex-row gap-0 p-0 h-[220px] w-full overflow-x-auto opacity-80 items-center justify-center">
             {movies.slice(0, 20).map((movie) => {
               const imageUrl = `https://image.tmdb.org/t/p/w342${movie.poster_path}`;
-              console.log(`Rendering movie: ${movie.title}, poster_path: ${movie.poster_path}, URL: ${imageUrl}`);
               return (
-                <div key={movie.id} className="relative aspect-[2/3] overflow-hidden shadow-none bg-gray-800">
+                <div key={movie.id} className="relative min-w-[140px] h-[210px] mx-1 flex-shrink-0 overflow-hidden bg-gray-800 rounded-lg shadow-md">
                   {movie.poster_path ? (
                     <Image
                       src={imageUrl}
                       alt={movie.title}
                       fill
-                      className="object-contain hover:scale-105 transition-transform duration-300"
-                      onLoad={() => console.log(`Image loaded: ${movie.title}`)}
+                      className="object-cover hover:scale-105 transition-transform duration-300"
                       onError={(e) => {
-                        console.error(`Image failed to load: ${movie.title}`, e);
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none';
                       }}
