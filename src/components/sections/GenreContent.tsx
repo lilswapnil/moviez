@@ -5,6 +5,7 @@ import { getImageUrl } from '@/lib/api/tmdb-client';
 import type { Movie, TVShow } from '@/lib/api/tmdb-types';
 import Image from 'next/image';
 import Link from 'next/link';
+import { getTitleUrl } from '@/lib/utils/url';
 
 interface GenreContentProps {
   initialResults: (Movie | TVShow)[];
@@ -93,7 +94,7 @@ export default function GenreContent({
           return (
             <Link
               key={item.id}
-              href={`/title/${type}/${item.id}`}
+              href={getTitleUrl(type, item.id)}
               className="group block transition-all duration-300 hover:shadow-2xl"
             >
               <div className="relative aspect-[2/3] overflow-hidden bg-gray-800 shadow-lg">

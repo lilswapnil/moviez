@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { getTitleUrl } from '@/lib/utils/url';
 import { useRef, useState, useEffect } from 'react';
 
 interface MerchandiseItem {
@@ -104,7 +105,7 @@ export default function MerchandiseSection({ items, title = 'More from this Fran
           return (
             <Link
               key={item.id}
-              href={`/title/movies/${item.id}`}
+              href={getTitleUrl('movies', item.id)}
               className="flex-shrink-0 w-[190px] cursor-pointer group transition-transform hover:scale-105 snap-start"
             >
               <div className="relative aspect-[2/3] overflow-hidden bg-gray-800 shadow-lg">

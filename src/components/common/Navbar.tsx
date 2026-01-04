@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { getSearchUrl, getAccountUrl } from '@/lib/utils/url';
 
 export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -28,9 +29,9 @@ export default function Navbar() {
         event.preventDefault();
         const term = searchTerm.trim();
         if (term) {
-            router.push(`/browse/search?q=${encodeURIComponent(term)}`);
-          } else {
-            router.push('/browse/search');
+            router.push(getSearchUrl(term));
+        } else {
+            router.push(getSearchUrl());
         }
     };
 
@@ -59,7 +60,7 @@ export default function Navbar() {
             <Link href="/browse/library" className={linkClassName('/browse/library')}>
                 Library
             </Link>
-            <Link href="/auth/account" className={linkClassName('/auth/account')}>
+            <Link href={getAccountUrl()} className={linkClassName('/auth/account')}>
                 Account
             </Link>
         </div>

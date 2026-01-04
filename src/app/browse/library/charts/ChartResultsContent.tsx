@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { getTitleUrl } from '@/lib/utils/url';
 import { getImageUrl } from '@/lib/api/tmdb-client';
 import type { ChartResultItem } from '@/lib/utils/charts-mapping';
 
@@ -65,7 +66,7 @@ export default function ChartResultsContent({ initialItems, slug }: ChartResults
       <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
         {items.map(({ id, title, posterPath, year, voteAverage, mediaType }) => {
           const pathSegment = mediaType === 'movie' ? 'movies' : mediaType === 'tv' ? 'shows' : mediaType === 'anime' ? 'animes' : 'cartoons';
-          const href = `/title/${pathSegment}/${id}`;
+          const href = getTitleUrl(pathSegment, id);
 
           return (
             <Link

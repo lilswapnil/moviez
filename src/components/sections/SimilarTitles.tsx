@@ -4,6 +4,7 @@ import { getImageUrl } from '@/lib/api/tmdb-client';
 import type { Movie, TVShow } from '@/lib/api/tmdb-types';
 import Image from 'next/image';
 import Link from 'next/link';
+import { getTitleUrl } from '@/lib/utils/url';
 import { useRef, useState, useEffect } from 'react';
 
 interface SimilarTitlesProps {
@@ -108,7 +109,7 @@ export default function SimilarTitles({ items, titleType }: SimilarTitlesProps) 
           return (
             <Link
               key={item.id}
-              href={`/title/${titleType}/${item.id}`}
+              href={getTitleUrl(titleType, item.id)}
               className="flex-shrink-0 w-[190px] cursor-pointer group transition-transform hover:scale-105 snap-start"
             >
               <div className="relative aspect-[2/3] overflow-hidden bg-gray-800 shadow-lg">
