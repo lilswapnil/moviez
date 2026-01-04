@@ -35,7 +35,7 @@ A modern streaming discovery platform built with Next.js that surfaces curated f
 
 ### 1. Clone & Install
 ```bash
-git clone <repo-url>
+git clone https://github.com/lilswapnil/moviez.git
 cd moviez
 npm install
 ```
