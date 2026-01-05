@@ -63,7 +63,15 @@ export default function Account() {
                   <p className="text-gray-400 mb-4">1 followers</p>
                 </>
               ) : (
-                <p className="text-gray-400 mb-4">Guest user • No account linked</p>
+                <>
+                  <p className="text-gray-400 mb-4">Guest user • No account linked</p>
+                  <Link
+                    href="/signup"
+                    className="inline-block mt-2 px-6 py-2 rounded-lg bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold hover:from-red-700 hover:to-red-600 transition-all shadow-lg shadow-red-500/20"
+                  >
+                    Create Account
+                  </Link>
+                </>
               )}
             </div>
           </div>
@@ -137,17 +145,6 @@ export default function Account() {
         </section>
       </main>
 
-      {/* Sign Up Button - Bottom */}
-      {isGuest && (
-        <div className="mt-12 px-12 pb-16 flex justify-center">
-          <Link
-            href="/signup"
-            className="px-8 py-3 rounded-lg bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold hover:from-red-700 hover:to-red-600 transition-all shadow-lg shadow-red-500/20"
-          >
-            Create Account
-          </Link>
-        </div>
-      )}
     </div>
   );
 }
