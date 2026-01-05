@@ -229,6 +229,14 @@ export default function Login() {
             </div>
           </div>
 
+          {/* Sign Up Button */}
+          <Link
+            href="/signup"
+            className="w-full block text-center px-4 py-3 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold hover:from-red-600 hover:to-red-700 transition-all shadow-lg shadow-red-500/20 mb-3"
+          >
+            Sign Up
+          </Link>
+
           {/* Continue as Guest Button */}
           <button
             type="button"

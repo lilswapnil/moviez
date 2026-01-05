@@ -6,8 +6,8 @@ import Navbar from '@/components/common/Navbar';
 export default function NavbarWrapper() {
   const pathname = usePathname();
   
-  // Hide navbar on login page
-  if (pathname === '/login') {
+  // Hide navbar on login and signup pages
+  if (pathname === '/login' || pathname === '/signup') {
     return null;
   }
 
