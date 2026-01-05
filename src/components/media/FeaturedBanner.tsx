@@ -49,14 +49,17 @@ interface FeaturedItem {
   kind: 'movie' | 'tv' | 'anime' | 'cartoon';
 }
 
+
 interface FeaturedBannerProps {
   movies?: Movie[];
   shows?: TVShow[];
   anime?: Anime[];
   cartoon?: Cartoon[];
+  kdrama?: TVShow[];
+  international?: Movie[];
 }
 
-export default function FeaturedBanner({ movies = [], shows = [], anime = [], cartoon = [] }: FeaturedBannerProps) {
+export default function FeaturedBanner({ movies = [], shows = [], anime = [], cartoon = [], kdrama = [], international = [] }: FeaturedBannerProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [trailer, setTrailer] = useState<Trailer | null>(null);
   const [showTrailer, setShowTrailer] = useState(false);
@@ -70,48 +73,70 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
     const showSeed = hashString(`tv:${shows.map((show) => show.id).join('-')}`);
     const animeSeed = hashString(`anime:${anime.map((item) => item.id).join('-')}`);
     const cartoonSeed = hashString(`cartoon:${cartoon.map((item) => item.id).join('-')}`);
+    const kdramaSeed = hashString(`kdrama:${kdrama.map((item) => item.id).join('-')}`);
+    const internationalSeed = hashString(`international:${international.map((item) => item.id).join('-')}`);
 
     const movieItems = shuffleWithSeed(
       movies.map((movie) => ({
-      ...movie,
-      kind: 'movie' as const,
-      title: movie.title,
-      release_date: movie.release_date,
+        ...movie,
+        kind: 'movie' as const,
+        title: movie.title,
+        release_date: movie.release_date,
       })),
       movieSeed
     );
 
     const showItems = shuffleWithSeed(
       shows.map((show) => ({
-      ...show,
-      kind: 'tv' as const,
-      name: show.name,
-      first_air_date: show.first_air_date,
+        ...show,
+        kind: 'tv' as const,
+        name: show.name,
+        first_air_date: show.first_air_date,
       })),
       showSeed
     );
 
     const animeItems = shuffleWithSeed(
       anime.map((show) => ({
-      ...show,
-      kind: 'anime' as const,
-      name: show.name,
-      first_air_date: show.first_air_date,
+        ...show,
+        kind: 'anime' as const,
+        name: show.name,
+        first_air_date: show.first_air_date,
       })),
       animeSeed
     );
 
     const cartoonItems = shuffleWithSeed(
       cartoon.map((show) => ({
-      ...show,
-      kind: 'cartoon' as const,
-      name: show.name,
-      first_air_date: show.first_air_date,
+        ...show,
+        kind: 'cartoon' as const,
+        name: show.name,
+        first_air_date: show.first_air_date,
       })),
       cartoonSeed
     );
 
-    const buckets = [movieItems, showItems, animeItems, cartoonItems];
+    const kdramaItems = shuffleWithSeed(
+      kdrama.map((show) => ({
+        ...show,
+        kind: 'kdrama' as const,
+        name: show.name,
+        first_air_date: show.first_air_date,
+      })),
+      kdramaSeed
+    );
+
+    const internationalItems = shuffleWithSeed(
+      international.map((movie) => ({
+        ...movie,
+        kind: 'international' as const,
+        title: movie.title,
+        release_date: movie.release_date,
+      })),
+      internationalSeed
+    );
+
+    const buckets = [movieItems, showItems, animeItems, cartoonItems, kdramaItems, internationalItems];
     const interleaved: FeaturedItem[] = [];
     const combinedKey = buckets
       .flat()
@@ -129,7 +154,7 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
     }
 
     return interleaved;
-  }, [anime, cartoon, movies, shows]);
+  }, [anime, cartoon, movies, shows, kdrama, international]);
 
   const safeIndex = useMemo(() => {
     if (allItems.length === 0) {
@@ -313,9 +338,21 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
             </svg>
             {showTrailer && isPlaying ? 'Pause' : 'Play Now'}
           </button>
-          <button className="px-8 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white font-semibold rounded-lg transition-colors">
+          <a
+            href={`/title/${
+              featuredItem.kind === 'movie' ? 'movies'
+              : featuredItem.kind === 'tv' ? 'shows'
+              : featuredItem.kind === 'anime' ? 'animes'
+              : featuredItem.kind === 'cartoon' ? 'cartoons'
+              : featuredItem.kind === 'kdrama' ? 'shows' // treat kdrama as shows
+              : featuredItem.kind === 'international' ? 'movies' // treat international as movies
+              : 'movies'
+            }/${featuredItem.id}`}
+            className="px-8 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white font-semibold rounded-lg transition-colors flex items-center justify-center"
+            style={{ textDecoration: 'none' }}
+          >
             More Info
-          </button>
+          </a>
         </div>
       </div>
 

@@ -43,7 +43,14 @@ export default async function Home() {
   return (
     <div>
       <main>
-        <FeaturedBanner movies={newReleases} />
+        <FeaturedBanner 
+          movies={newReleases}
+          shows={topRatedShows}
+          anime={topAnime}
+          cartoon={topCartoons}
+          kdrama={topKDramas}
+          international={internationalMovies}
+        />
         <DataSection title="Top Rated Movies" initialMovies={topRatedMovies} type="movies" category="top" />
         <DataSection title="Upcoming Movies" initialMovies={upcomingMovies} type="movies" category="upcoming" />
         <DataSection title="Top Rated Shows" initialShows={topRatedShows} type="shows" category="top" />
