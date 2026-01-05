@@ -46,7 +46,7 @@ interface FeaturedItem {
   first_air_date?: string;
   vote_average: number;
   genre_ids: number[];
-  kind: 'movie' | 'tv' | 'anime' | 'cartoon';
+  kind: 'movie' | 'tv' | 'anime' | 'cartoon' | 'kdrama' | 'international';
 }
 
 
