@@ -46,7 +46,7 @@ export default function Signup() {
       }
       setSuccess(true);
       setTimeout(() => router.push('/login'), 1200);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError("Signup failed");
     }
     setLoading(false);

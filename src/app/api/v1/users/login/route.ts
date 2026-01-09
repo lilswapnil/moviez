@@ -29,7 +29,7 @@ export async function POST(request: Request) {
       { expiresIn: '7d' }
     );
     return NextResponse.json({ user: userWithoutPassword, token });
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
