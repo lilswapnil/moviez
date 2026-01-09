@@ -4,7 +4,7 @@ import TitleCastSection from '@/components/sections/TitleCastSection';
 import SimilarTitles from '@/components/sections/SimilarTitles';
 import MerchandiseSection from '@/components/sections/MerchandiseSection';
 import EpisodesSection from '@/components/sections/EpisodesSection';
-import { getMovieCredits, getMovieDetails, getTVCredits, getTVShowDetails, getSimilarMovies, getSimilarTVShows, getCollectionDetails, getSeasonDetails } from '@/lib/api/tmdb-client';
+import { getMovieCredits, getMovieDetails, getTVCredits, getTVShowDetails, getSimilarMovies, getSimilarTVShows, getCollectionDetails } from '@/lib/api/tmdb-client';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,8 +46,8 @@ export default async function TitlePage({ params }: TitlePageProps) {
       const collection = await getCollectionDetails(details.belongs_to_collection.id);
       if (collection?.parts) {
         merchandiseItems = collection.parts
-          .filter((part: any) => part.id !== numericId)
-          .map((part: any) => ({
+          .filter((part: { id: number }) => part.id !== numericId)
+          .map((part: { id: number; title: string; poster_path: string | null; release_date: string | null; vote_average?: number }) => ({
             id: part.id,
             title: part.title,
             posterPath: part.poster_path,
@@ -100,8 +100,8 @@ export default async function TitlePage({ params }: TitlePageProps) {
   }
 
   const seasonsData: Array<{ season_number: number; name: string }> = (details.seasons || [])
-    .filter((season: any) => season.season_number !== 0)
-    .map((season: any) => ({
+    .filter((season: { season_number: number }) => season.season_number !== 0)
+    .map((season: { season_number: number; name: string }) => ({
       season_number: season.season_number,
       name: season.name,
     }));

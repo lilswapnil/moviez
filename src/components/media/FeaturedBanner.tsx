@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { getImageUrl } from '@/lib/api/tmdb-client';
 import type { Trailer, Movie, TVShow, Anime, Cartoon } from '@/lib/api/tmdb-types';
 
@@ -60,6 +61,8 @@ interface FeaturedBannerProps {
 }
 
 export default function FeaturedBanner({ movies = [], shows = [], anime = [], cartoon = [], kdrama = [], international = [] }: FeaturedBannerProps) {
+  // Track which poster is hovered: 'prev', 'next', or null
+  const [hoveredPoster, setHoveredPoster] = useState<null | 'prev' | 'next'>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [trailer, setTrailer] = useState<Trailer | null>(null);
   const [showTrailer, setShowTrailer] = useState(false);
@@ -280,11 +283,23 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
 
   return (
     <div className="relative min-h-screen mb-8 rounded-2xl overflow-hidden group">
+      <AnimatePresence initial={false} mode="wait">
+        <motion.div
+          key={featuredItem.id}
+          initial={{ opacity: 0, x: 80 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -80 }}
+          transition={{ duration: 0.5, ease: 'easeInOut' }}
+          className={`absolute inset-0 w-full h-full ${hoveredPoster ? 'backdrop-blur-md' : ''}`}
+          style={{ zIndex: 0 }}
+        >
       {/* Backdrop Background (always visible as base) */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center z-0"
-        style={{ backgroundImage: `url(${getImageUrl(featuredItem.backdrop_path)})` }}
-      ></div>
+          <div 
+            className="absolute inset-0 bg-cover bg-center z-0"
+            style={{ backgroundImage: `url(${getImageUrl(featuredItem.backdrop_path)})` }}
+          ></div>
+        </motion.div>
+      </AnimatePresence>
 
       {/* YouTube Teaser Video (overlays backdrop when playing) */}
       {showTrailer && isPlaying && trailer && trailer.key && (
@@ -356,23 +371,53 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
         </div>
       </div>
 
-      {/* Navigation Arrows */}
-      <button 
-        onClick={goToPrev}
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-30 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all opacity-0 group-hover:opacity-100"
-      >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
-      <button 
-        onClick={goToNext}
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-30 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all opacity-0 group-hover:opacity-100"
-      >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
+
+      {/* Poster Previews for Previous/Next */}
+      {allItems.length > 1 && (
+        <>
+          {/* Previous Poster */}
+          <motion.button
+            onClick={goToPrev}
+            className="absolute left-8 top-1/2 -translate-y-1/2 z-10 flex flex-col items-center group bg-black/10 hover:bg-black/30 rounded-lg p-1 transition-all shadow-lg"
+            style={{ width: 72, pointerEvents: 'auto' }}
+            aria-label="Previous title"
+            initial={{ opacity: 0, x: -40 }}
+            animate={{ opacity: hoveredPoster === 'prev' ? 1 : 0.5, x: 0 }}
+            exit={{ opacity: 0, x: -40 }}
+            transition={{ duration: 0.4, ease: 'easeInOut' }}
+            onMouseEnter={() => setHoveredPoster('prev')}
+            onMouseLeave={() => setHoveredPoster(null)}
+          >
+            <img
+              src={getImageUrl(allItems[(safeIndex - 1 + allItems.length) % allItems.length].poster_path, 'w500')}
+              alt="Previous poster"
+              className={`w-16 h-24 object-cover rounded-md border-2 border-white/30 group-hover:border-red-600 transition-all duration-300 ${hoveredPoster === 'prev' ? 'opacity-100' : 'opacity-60'}`}
+              style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}
+            />
+          </motion.button>
+
+          {/* Next Poster */}
+          <motion.button
+            onClick={goToNext}
+            className="absolute right-8 top-1/2 -translate-y-1/2 z-10 flex flex-col items-center group bg-black/10 hover:bg-black/30 rounded-lg p-1 transition-all shadow-lg"
+            style={{ width: 72, pointerEvents: 'auto' }}
+            aria-label="Next title"
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: hoveredPoster === 'next' ? 1 : 0.5, x: 0 }}
+            exit={{ opacity: 0, x: 40 }}
+            transition={{ duration: 0.4, ease: 'easeInOut' }}
+            onMouseEnter={() => setHoveredPoster('next')}
+            onMouseLeave={() => setHoveredPoster(null)}
+          >
+            <img
+              src={getImageUrl(allItems[(safeIndex + 1) % allItems.length].poster_path, 'w500')}
+              alt="Next poster"
+              className={`w-16 h-24 object-cover rounded-md border-2 border-white/30 group-hover:border-red-600 transition-all duration-300 ${hoveredPoster === 'next' ? 'opacity-100' : 'opacity-60'}`}
+              style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}
+            />
+          </motion.button>
+        </>
+      )}
 
       {/* Pagination Dots */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-2">

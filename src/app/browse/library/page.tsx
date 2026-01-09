@@ -5,6 +5,9 @@ import ChartSection, { ChartWithPreview } from '@/components/sections/ChartSecti
 import type { ChartPreviewItem } from '@/features/library/components/ChartPreviewRow';
 import type { Movie, TVShow } from '@/lib/api/tmdb-types';
 import { chartSectionsConfig, chartFetchers } from '@/lib/utils/charts-mapping';
+import Main from '@/components/common/Main';
+import Header from '@/components/common/Header';
+import Section from '@/components/common/Section';
 
 export const dynamic = 'force-dynamic';
 
@@ -62,19 +65,19 @@ export default async function Library() {
 
   return (
     <div className="mt-4 px-12 py-16">
-      <main className="max-w-6xl mx-auto space-y-12">
-        <header className="mb-4">
+      <Main className="space-y-12">
+        <Header className="mb-4">
           <h1 className="text-4xl font-bold text-white mb-2">Library</h1>
           <p className="text-gray-300">Browse movies, shows, anime, and cartoons by genre and by charts.</p>
-        </header>
+        </Header>
 
-        <section className="grid gap-8 lg:grid-cols-2">
+        <Section className="grid gap-8 lg:grid-cols-2">
           {chartSections.map(({ title, charts }) => (
             <ChartSection key={title} title={title} charts={charts} />
           ))}
-        </section>
+        </Section>
 
-        <section>
+        <Section>
           <div className="flex items-baseline justify-between mb-4">
             <h2 className="text-2xl font-semibold text-white">Movie Genres</h2>
             <span className="text-sm text-gray-400">Tap a genre to explore</span>
@@ -90,9 +93,9 @@ export default async function Library() {
               </Link>
             ))}
           </div>
-        </section>
+        </Section>
 
-        <section>
+        <Section>
           <div className="flex items-baseline justify-between mb-4">
             <h2 className="text-2xl font-semibold text-white">TV Genres</h2>
             <span className="text-sm text-gray-400">Discover series by mood</span>
@@ -108,9 +111,9 @@ export default async function Library() {
               </Link>
             ))}
           </div>
-        </section>
+        </Section>
 
-        <section>
+        <Section>
           <div className="flex items-baseline justify-between mb-4">
             <h2 className="text-2xl font-semibold text-white">Anime Genres</h2>
             <span className="text-sm text-gray-400">Find your favorite anime style</span>
@@ -126,9 +129,9 @@ export default async function Library() {
               </Link>
             ))}
           </div>
-        </section>
+        </Section>
 
-        <section>
+        <Section>
           <div className="flex items-baseline justify-between mb-4">
             <h2 className="text-2xl font-semibold text-white">Cartoon Genres</h2>
             <span className="text-sm text-gray-400">Enjoy animated fun for all ages</span>
@@ -144,8 +147,8 @@ export default async function Library() {
               </Link>
             ))}
           </div>
-        </section>
-      </main>
+        </Section>
+      </Main>
     </div>
   );
 }

@@ -3,6 +3,8 @@ import type { Movie, TVShow } from '@/lib/api/tmdb-types';
 import { movieGenreIds, tvGenreIds, animeGenreIds, cartoonGenreIds } from '@/lib/constants/genres.const';
 import GenreContent from '@/components/sections/GenreContent';
 import Link from 'next/link';
+import Main from '@/components/common/Main';
+import Header from '@/components/common/Header';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,7 +45,7 @@ export default async function GenrePage({ params }: GenrePageProps) {
 
   return (
     <div className="mt-20 px-6 py-16">
-      <main className="max-w-6xl mx-auto space-y-8">
+      <Main className="space-y-8">
         <div className="flex items-center gap-4">
           <Link
             href="/browse/library"
@@ -52,14 +54,14 @@ export default async function GenrePage({ params }: GenrePageProps) {
             &larr; Back to Library
           </Link>
         </div>
-        <header className="space-y-2">
+        <Header className="space-y-2">
           <h1 className="text-4xl font-bold text-white">
             {decodedGenre} {type === 'movies' ? 'Movies' : type === 'shows' ? 'Shows' : type === 'animes' ? 'Anime' : 'Cartoons'}
           </h1>
           <p className="text-gray-300">
             Showing {results.length} results
           </p>
-        </header>
+        </Header>
 
         {results.length > 0 ? (
           <GenreContent
@@ -74,7 +76,7 @@ export default async function GenrePage({ params }: GenrePageProps) {
             </p>
           </div>
         )}
-      </main>
+      </Main>
     </div>
   );
 }

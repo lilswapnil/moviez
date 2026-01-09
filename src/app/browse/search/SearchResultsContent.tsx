@@ -62,7 +62,7 @@ export default function SearchResultsContent({ initialItems, query }: SearchResu
   };
 
   if (items.length === 0) {
-    return <p className="text-gray-400">No results found for "{query}".</p>;
+    return <p className="text-gray-400">No results found for &quot;{query}&quot;.</p>;
   }
 
   return (

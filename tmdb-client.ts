@@ -98,7 +98,7 @@ export async function getNewReleases(page: number = 1): Promise<Movie[]> {
     }
     
     const data = await response.json();
-    return data.results;
+    return Array.isArray(data.results) ? (data.results as Movie[]) : [];
   } catch (error) {
     console.error('Error fetching new releases:', error);
     return [];
@@ -120,7 +120,7 @@ export async function getTrendingMovies(page: number = 1): Promise<Movie[]> {
     }
     
     const data = await response.json();
-    return data.results;
+    return Array.isArray(data.results) ? (data.results as Movie[]) : [];
   } catch (error) {
     console.error('Error fetching trending movies:', error);
     return [];
@@ -142,7 +142,7 @@ export async function getTopRatedMovies(page: number = 1): Promise<Movie[]> {
     }
     
     const data = await response.json();
-    return data.results;
+    return Array.isArray(data.results) ? (data.results as Movie[]) : [];
   } catch (error) {
     console.error('Error fetching top rated movies:', error);
     return [];
@@ -164,7 +164,7 @@ export async function getPopularMovies(page: number = 1): Promise<Movie[]> {
     }
 
     const data = await response.json();
-    return data.results;
+    return Array.isArray(data.results) ? (data.results as Movie[]) : [];
   } catch (error) {
     console.error('Error fetching popular movies:', error);
     return [];
@@ -186,7 +186,7 @@ export async function getPopularTVShows(page: number = 1): Promise<TVShow[]> {
     }
     
     const data = await response.json();
-    return data.results;
+    return Array.isArray(data.results) ? (data.results as TVShow[]) : [];
   } catch (error) {
     console.error('Error fetching TV shows:', error);
     return [];
@@ -208,7 +208,7 @@ export async function getTrendingTVShows(page: number = 1): Promise<TVShow[]> {
     }
 
     const data = await response.json();
-    return data.results;
+    return Array.isArray(data.results) ? (data.results as TVShow[]) : [];
   } catch (error) {
     console.error('Error fetching trending TV shows:', error);
     return [];
@@ -230,7 +230,7 @@ export async function getTopRatedShows(page: number = 1): Promise<TVShow[]> {
     }
     
     const data = await response.json();
-    return data.results;
+    return Array.isArray(data.results) ? (data.results as TVShow[]) : [];
   } catch (error) {
     console.error('Error fetching top rated shows:', error);
     return [];
@@ -256,7 +256,9 @@ export async function getUpcomingShows(page: number = 1): Promise<TVShow[]> {
     
     const data = await response.json();
     // Filter to only include shows with first_air_date in the future
-    return data.results.filter((show: TVShow) => show.first_air_date && new Date(show.first_air_date) >= new Date(today));
+    return Array.isArray(data.results)
+      ? (data.results as TVShow[]).filter((show: TVShow) => show.first_air_date && new Date(show.first_air_date) >= new Date(today))
+      : [];
   } catch (error) {
     console.error('Error fetching upcoming shows:', error);
     return [];
@@ -278,7 +280,7 @@ export async function getAiringTodayShows(page: number = 1): Promise<TVShow[]> {
     }
 
     const data = await response.json();
-    return data.results;
+    return Array.isArray(data.results) ? (data.results as TVShow[]) : [];
   } catch (error) {
     console.error('Error fetching airing today shows:', error);
     return [];
@@ -300,7 +302,7 @@ export async function getAiringNowShows(page: number = 1): Promise<TVShow[]> {
     }
 
     const data = await response.json();
-    return data.results;
+    return Array.isArray(data.results) ? (data.results as TVShow[]) : [];
   } catch (error) {
     console.error('Error fetching on the air shows:', error);
     return [];
@@ -325,7 +327,9 @@ export async function getUpcomingMovies(page: number = 1): Promise<Movie[]> {
     
     const data = await response.json();
     // Filter to only include movies with release_date in the future
-    return data.results.filter((movie: Movie) => movie.release_date && new Date(movie.release_date) >= new Date(today));
+    return Array.isArray(data.results)
+      ? (data.results as Movie[]).filter((movie: Movie) => movie.release_date && new Date(movie.release_date) >= new Date(today))
+      : [];
   } catch (error) {
     console.error('Error fetching upcoming movies:', error);
     return [];
@@ -511,7 +515,7 @@ export async function getMoviesByGenre(genreId: number, page: number = 1): Promi
     }
     
     const data = await response.json();
-    return data.results;
+    return Array.isArray(data.results) ? (data.results as Movie[]) : [];
   } catch (error) {
     console.error('Error fetching movies by genre:', error);
     return [];
@@ -533,14 +537,14 @@ export async function getTVShowsByGenre(genreId: number, page: number = 1): Prom
     }
     
     const data = await response.json();
-    return data.results;
+    return Array.isArray(data.results) ? (data.results as TVShow[]) : [];
   } catch (error) {
     console.error('Error fetching TV shows by genre:', error);
     return [];
   }
 }
 
-function formatDate(date: Date): string {
+export function formatDate(date: Date): string {
   return date.toISOString().split('T')[0];
 }
 
@@ -569,7 +573,7 @@ async function discoverAnimationShows(params: Record<string, string>): Promise<T
     }
 
     const data = await response.json();
-    return data.results;
+    return Array.isArray(data.results) ? (data.results as TVShow[]) : [];
   } catch (error) {
     console.error('Error discovering animation shows:', error);
     return [];
@@ -713,7 +717,7 @@ async function getKDramaChart({ chart, page = 1 }: { chart: 'topRated' | 'upcomi
     }
 
     const data = await response.json();
-    return data.results;
+    return Array.isArray(data.results) ? (data.results as TVShow[]) : [];
   } catch (error) {
     console.error('Error discovering K dramas:', error);
     return [];
@@ -870,7 +874,7 @@ export async function getCollectionDetails(collectionId: number) {
     }
 
     const data = await response.json();
-    return data;
+    return data ?? null;
   } catch (error) {
     console.error('Error fetching collection details:', error);
     return null;
@@ -889,7 +893,7 @@ export async function getSeasonDetails(tvId: number, seasonNumber: number) {
     }
 
     const data = await response.json();
-    return data;
+    return data ?? null;
   } catch (error) {
     console.error('Error fetching season details:', error);
     return null;
