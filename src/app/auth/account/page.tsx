@@ -3,47 +3,44 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import SavedTitlesSection from '@/components/sections/SavedTitlesSection';
+import Main from '@/components/common/Main';
+import Header from '@/components/common/Header';
+import Section from '@/components/common/Section';
 
-export const dynamic = 'force-dynamic';
-
-export default function Account() {
+// Accept params prop for Next.js App Router type compatibility
+type AccountPageProps = { params?: Record<string, unknown> };
+interface SavedTitle {
+  id: number;
+  title: string;
+  poster_path: string | null;
+}
+export default function Account({}: AccountPageProps) {
   const [greeting, setGreeting] = useState('Good Evening');
   const [userName, setUserName] = useState('Scott');
   const [isGuest, setIsGuest] = useState(false);
-  const [savedTitles, setSavedTitles] = useState<any[]>([]);
-
+  const [savedTitles, setSavedTitles] = useState<SavedTitle[]>([]);
   useEffect(() => {
-    // Check if user is guest
+    // Only update state if needed
     const userIsGuest = localStorage.getItem('isGuest') === 'true';
-    setIsGuest(userIsGuest);
-    if (userIsGuest) {
-      setUserName('Guest');
-    }
+    if (isGuest !== userIsGuest) setIsGuest(userIsGuest);
+    if (userIsGuest && userName !== 'Guest') setUserName('Guest');
 
     // Load saved titles from localStorage
     const saved = localStorage.getItem('savedTitles');
     if (saved) {
       setSavedTitles(JSON.parse(saved));
     }
-
-    // Determine greeting based on time of day
-    const hour = new Date().getHours();
-    if (hour < 12) {
-      setGreeting('Good Morning');
-    } else if (hour < 18) {
-      setGreeting('Good Afternoon');
-    } else {
-      setGreeting('Good Evening');
-    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   return (
     <div className="mt-4 px-12 py-16">
-      <main className="max-w-6xl mx-auto space-y-12">
+      <Main className="space-y-12">
         {/* Greeting */}
-        <header className="mb-4">
+        <Header className="mb-4">
           <h1 className="text-4xl font-bold text-white mb-2">{greeting}, {userName}!</h1>
           <p className="text-gray-300">Manage your account and preferences</p>
-        </header>
+        </Header>
 
         {/* User Profile Card */}
         <div className="rounded-xl bg-white/5 border border-white/10 p-6 shadow-lg shadow-black/30 hover:border-red-500/60 hover:bg-red-500/5 transition-colors">
@@ -79,7 +76,7 @@ export default function Account() {
 
         {/* Account Details */}
         {userName !== 'Guest' && (
-        <section>
+        <Section>
           <div className="flex items-baseline justify-between mb-4">
             <h2 className="text-2xl font-semibold text-white">Account Details</h2>
             <span className="text-sm text-gray-400">Your account information</span>
@@ -133,18 +130,17 @@ export default function Account() {
               </div>
             </div>
           </div>
-        </section>
+        </Section>
         )}
 
         {/* Mood Trend Section - REMOVED */}
         {/* Music Player - REMOVED */}
 
         {/* Saved Titles Section */}
-        <section>
+        <Section>
           <SavedTitlesSection titles={savedTitles} />
-        </section>
-      </main>
-
+        </Section>
+      </Main>
     </div>
   );
 }

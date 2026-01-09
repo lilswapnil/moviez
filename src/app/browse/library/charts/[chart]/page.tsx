@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { chartFetchers, normalizeChartItems, getChartCategory } from '@/lib/utils/charts-mapping';
 import { getChartNameFromSlug, chartSlugs } from '@/lib/utils/chart-slugs';
 import ChartResultsContent from '../ChartResultsContent';
+import Main from '@/components/common/Main';
+import Header from '@/components/common/Header';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,7 +34,7 @@ export default async function ChartResults({ params }: ChartResultsProps) {
 
   return (
     <div className="mt-20 px-6 py-16">
-      <main className="max-w-6xl mx-auto space-y-8">
+      <Main className="space-y-8">
         <div className="flex items-center gap-4">
           <Link
             href="/browse/library"
@@ -41,11 +43,11 @@ export default async function ChartResults({ params }: ChartResultsProps) {
             &larr; Back to Library
           </Link>
         </div>
-        <header className="space-y-2">
+        <Header className="space-y-2">
           <h1 className="text-4xl font-bold text-white">{chartName}</h1>
-        </header>
+        </Header>
         <ChartResultsContent initialItems={items} slug={slug} />
-      </main>
+      </Main>
     </div>
   );
 }

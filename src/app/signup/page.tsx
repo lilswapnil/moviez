@@ -32,11 +32,24 @@ export default function Signup() {
       return;
     }
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const res = await fetch("/api/v1/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Signup failed");
+        setLoading(false);
+        return;
+      }
       setSuccess(true);
       setTimeout(() => router.push('/login'), 1200);
-    }, 1200);
+    } catch (err: any) {
+      setError("Signup failed");
+    }
+    setLoading(false);
   };
 
   return (

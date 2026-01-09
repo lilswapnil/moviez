@@ -59,13 +59,32 @@ export default function Login() {
     fetchMovies();
   }, []);
 
+  const [loginError, setLoginError] = useState("");
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // TODO: Implement actual login logic
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    setLoginError("");
+    try {
+      const res = await fetch("/api/v1/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setLoginError(data.error || "Login failed");
+        setIsLoading(false);
+        return;
+      }
+      // Store JWT token in localStorage
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+      }
+      router.push("/browse/home");
+    } catch (err: any) {
+      setLoginError("Login failed");
+    }
+    setIsLoading(false);
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -92,12 +111,10 @@ export default function Login() {
       <div className="absolute inset-0 w-full h-full">
         <div className="absolute inset-0 bg-gradient-to-br from-red-950/30 via-black to-black"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black"></div>
-        
         {/* Movie poster shimmer effect */}
         {isLoadingMovies && (
           <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900"></div>
         )}
-
         {/* Movie grid background */}
         {movies.length > 0 && (
           <div className="flex flex-row gap-0 p-0 h-[220px] w-full overflow-x-auto opacity-80 items-center justify-center">
@@ -129,10 +146,8 @@ export default function Login() {
           </div>
         )}
       </div>
-
       {/* Dark Overlay with app gradient */}
       <div className="absolute inset-0 bg-gradient-to-t from-red-950/80 via-black/60 to-transparent"></div>
-
       {/* Content */}
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
         <div className="w-full max-w-sm">
@@ -152,101 +167,97 @@ export default function Login() {
               </div>
               <p className="text-gray-400">Discover your next favorite movie or show</p>
             </div>
-
             {/* Login Form */}
             <form onSubmit={handleLogin} className="space-y-5">
-            {/* Email Input */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                Email Address
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
-                required
-              />
-            </div>
-
-            {/* Password Input */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
-                Password
-              </label>
-              <div className="relative">
+              {/* Email Input */}
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                  Email Address
+                </label>
                 <input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all pr-10"
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
                   required
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
-                >
-                  {showPassword ? '🙈' : '👁️'}
-                </button>
+              </div>
+              {/* Password Input */}
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all pr-10"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                  >
+                    {showPassword ? '🙈' : '👁️'}
+                  </button>
+                </div>
+              </div>
+              {/* Error Message */}
+              {loginError && (
+                <div className="text-red-500 text-sm text-center">{loginError}</div>
+              )}
+              {/* Remember & Forgot */}
+              <div className="flex items-center justify-between">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4 rounded bg-white/10 border border-white/20 accent-red-500 cursor-pointer"
+                  />
+                  <span className="text-sm text-gray-400">Remember me</span>
+                </label>
+                <Link href="#" className="text-sm text-red-500 hover:text-red-400 transition-colors">
+                  Forgot password?
+                </Link>
+              </div>
+              {/* Login Button */}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold hover:from-red-700 hover:to-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-red-500/20"
+              >
+                {isLoading ? 'Signing in...' : 'Sign In'}
+              </button>
+            </form>
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-white/10"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-black text-gray-400">or</span>
               </div>
             </div>
-
-            {/* Remember & Forgot */}
-            <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 rounded bg-white/10 border border-white/20 accent-red-500 cursor-pointer"
-                />
-                <span className="text-sm text-gray-400">Remember me</span>
-              </label>
-              <Link href="#" className="text-sm text-red-500 hover:text-red-400 transition-colors">
-                Forgot password?
-              </Link>
-            </div>
-
-            {/* Login Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold hover:from-red-700 hover:to-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-red-500/20"
+            {/* Sign Up Button */}
+            <Link
+              href="/signup"
+              className="w-full block text-center px-4 py-3 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold hover:from-red-600 hover:to-red-700 transition-all shadow-lg shadow-red-500/20 mb-3"
             >
-              {isLoading ? 'Signing in...' : 'Sign In'}
+              Sign Up
+            </Link>
+            {/* Continue as Guest Button */}
+            <button
+              type="button"
+              onClick={handleContinueAsGuest}
+              className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white font-semibold hover:bg-white/15 hover:border-white/30 transition-all"
+            >
+              Continue as Guest
             </button>
-          </form>
-
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/10"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-black text-gray-400">or</span>
-            </div>
           </div>
-
-          {/* Sign Up Button */}
-          <Link
-            href="/signup"
-            className="w-full block text-center px-4 py-3 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold hover:from-red-600 hover:to-red-700 transition-all shadow-lg shadow-red-500/20 mb-3"
-          >
-            Sign Up
-          </Link>
-
-          {/* Continue as Guest Button */}
-          <button
-            type="button"
-            onClick={handleContinueAsGuest}
-            className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white font-semibold hover:bg-white/15 hover:border-white/30 transition-all"
-          >
-            Continue as Guest
-          </button>
-          </div>
-
           {/* Footer Links */}
           <div className="mt-8 flex justify-center gap-6 text-sm text-gray-500 text-center">
             <Link href="#" className="hover:text-gray-400 transition-colors">

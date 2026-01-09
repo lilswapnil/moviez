@@ -22,7 +22,15 @@ export async function GET(request: Request) {
       );
     }
 
-    const episodes = (data.episodes || []).map((ep: any) => ({
+    const episodes = (data.episodes || []).map((ep: {
+      id: number;
+      episode_number: number;
+      name: string;
+      still_path: string | null;
+      overview: string;
+      air_date: string;
+      vote_average: number;
+    }) => ({
       id: ep.id,
       episode_number: ep.episode_number,
       name: ep.name,
