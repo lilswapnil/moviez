@@ -81,7 +81,7 @@ export default function Login() {
         localStorage.setItem('token', data.token);
       }
       router.push("/browse/home");
-    } catch (err: any) {
+    } catch (err: unknown) {
       setLoginError("Login failed");
     }
     setIsLoading(false);
