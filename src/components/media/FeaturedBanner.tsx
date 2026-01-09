@@ -321,9 +321,30 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
       {/* Dark overlay for text readability */}
       <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent z-10"></div>
       
+      {/* Top-left Theater-Style Title */}
+      <div className="absolute top-24 left-12 z-20 max-w-4xl pointer-events-none">
+        <h1
+          className="
+            text-white
+            font-extrabold
+            tracking-tight
+            leading-none
+            drop-shadow-[0_6px_24px_rgba(0,0,0,0.85)]
+            text-5xl
+            sm:text-6xl
+            md:text-7xl
+            lg:text-8xl
+            xl:text-9xl
+          "
+        >
+          {featuredItem.title || featuredItem.name}
+        </h1>
+      </div>
+
+
+
       {/* Content */}
       <div className="absolute bottom-0 left-0 z-20 pb-24 px-12 max-w-2xl">
-        <h1 className="text-6xl font-bold text-white mb-4">{featuredItem.title || featuredItem.name}</h1>
         <p className="text-xl text-gray-300 mb-4 leading-relaxed line-clamp-3">
           {featuredItem.overview}
         </p>
