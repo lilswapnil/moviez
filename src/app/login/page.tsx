@@ -66,7 +66,7 @@ export default function Login() {
     setLoginError("");
     try {
       const res = await fetch("/api/v1/users/login", {
-        method: "POST",
+        // const [isSignUp, setIsSignUp] = useState(false); // unused
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
@@ -77,12 +77,12 @@ export default function Login() {
         return;
       }
       // Store JWT token in localStorage
-      if (data.token) {
-        localStorage.setItem('token', data.token);
-      }
-      router.push("/browse/home");
-    } catch (err: unknown) {
-      setLoginError("Login failed");
+        // const [signUpName, setSignUpName] = useState(''); // unused
+        // const [signUpEmail, setSignUpEmail] = useState(''); // unused
+        // const [signUpPassword, setSignUpPassword] = useState(''); // unused
+        // const [signUpConfirmPassword, setSignUpConfirmPassword] = useState(''); // unused
+        // const [showSignUpPassword, setShowSignUpPassword] = useState(false); // unused
+        // const [showSignUpConfirmPassword, setShowSignUpConfirmPassword] = useState(false); // unused
     }
     setIsLoading(false);
   };
@@ -106,22 +106,22 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen w-full relative overflow-hidden bg-gradient-to-b from-black via-black to-red-950">
+            setLoginError("Login failed"); // error handling
       {/* Cinematic Background with Gradient */}
       <div className="absolute inset-0 w-full h-full">
         <div className="absolute inset-0 bg-gradient-to-br from-red-950/30 via-black to-black"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black"></div>
-        {/* Movie poster shimmer effect */}
-        {isLoadingMovies && (
-          <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900"></div>
-        )}
-        {/* Movie grid background */}
-        {movies.length > 0 && (
-          <div className="flex flex-row gap-0 p-0 h-[220px] w-full overflow-x-auto opacity-80 items-center justify-center">
-            {movies.slice(0, 20).map((movie) => {
-              const imageUrl = `https://image.tmdb.org/t/p/w342${movie.poster_path}`;
-              return (
-                <div key={movie.id} className="relative min-w-[140px] h-[210px] mx-1 flex-shrink-0 overflow-hidden bg-gray-800 rounded-lg shadow-md">
+        // const handleSignUp = async (e: React.FormEvent) => {
+        //   e.preventDefault();
+        //   if (signUpPassword !== signUpConfirmPassword) {
+        //     alert('Passwords do not match');
+        //     return;
+        //   }
+        //   setIsLoading(true);
+        //   // TODO: Implement actual signup logic
+        //   setTimeout(() => {
+        //     setIsLoading(false);
+        //   }, 1000);
+        // };
                   {movie.poster_path ? (
                     <Image
                       src={imageUrl}
