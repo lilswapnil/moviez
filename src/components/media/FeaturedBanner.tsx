@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getImageUrl } from '@/lib/api/tmdb-client';
 import type { Trailer, Movie, TVShow, Anime, Cartoon } from '@/lib/api/tmdb-types';
@@ -257,7 +258,7 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
     return () => {
       cancelled = true;
     };
-  }, [featuredItem?.id, featuredItem?.kind]);
+  }, [featuredItem, featuredItem?.id, featuredItem?.kind]);
 
   const goToNext = () => {
     if (allItems.length === 0) return;
@@ -409,11 +410,15 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
             onMouseEnter={() => setHoveredPoster('prev')}
             onMouseLeave={() => setHoveredPoster(null)}
           >
-            <img
+            <Image
               src={getImageUrl(allItems[(safeIndex - 1 + allItems.length) % allItems.length].poster_path, 'w500')}
               alt="Previous poster"
+              width={64}
+              height={96}
               className={`w-16 h-24 object-cover rounded-md border-2 border-white/30 group-hover:border-red-600 transition-all duration-300 ${hoveredPoster === 'prev' ? 'opacity-100' : 'opacity-60'}`}
               style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}
+              priority
+              unoptimized={false}
             />
           </motion.button>
 
@@ -430,11 +435,15 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
             onMouseEnter={() => setHoveredPoster('next')}
             onMouseLeave={() => setHoveredPoster(null)}
           >
-            <img
+            <Image
               src={getImageUrl(allItems[(safeIndex + 1) % allItems.length].poster_path, 'w500')}
               alt="Next poster"
+              width={64}
+              height={96}
               className={`w-16 h-24 object-cover rounded-md border-2 border-white/30 group-hover:border-red-600 transition-all duration-300 ${hoveredPoster === 'next' ? 'opacity-100' : 'opacity-60'}`}
               style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}
+              priority
+              unoptimized={false}
             />
           </motion.button>
         </>

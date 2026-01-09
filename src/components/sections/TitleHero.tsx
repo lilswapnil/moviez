@@ -124,8 +124,8 @@ export default function TitleHero({ item, displayType, trailerType, children }: 
   useEffect(() => {
     try {
       const saved = localStorage.getItem('savedTitles');
-      const savedTitles = saved ? JSON.parse(saved) : [];
-      const isTitleSaved = savedTitles.some((title: any) => title.id === item.id);
+      const savedTitles: TitleHeroItem[] = saved ? JSON.parse(saved) : [];
+      const isTitleSaved = savedTitles.some((title) => title.id === item.id);
       setIsSaved(isTitleSaved);
     } catch (error) {
       console.error('Failed to load saved titles:', error);
@@ -135,7 +135,7 @@ export default function TitleHero({ item, displayType, trailerType, children }: 
   const handleSave = () => {
     try {
       const saved = localStorage.getItem('savedTitles');
-      const savedTitles = saved ? JSON.parse(saved) : [];
+      const savedTitles: TitleHeroItem[] = saved ? JSON.parse(saved) : [];
       
       if (!isSaved) {
         // Determine type and name based on what's available
@@ -157,7 +157,7 @@ export default function TitleHero({ item, displayType, trailerType, children }: 
         setIsSaved(true);
       } else {
         // Remove from saved
-        const updatedTitles = savedTitles.filter((title: any) => title.id !== item.id);
+        const updatedTitles = savedTitles.filter((title) => title.id !== item.id);
         localStorage.setItem('savedTitles', JSON.stringify(updatedTitles));
         setIsSaved(false);
       }

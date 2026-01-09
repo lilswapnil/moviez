@@ -425,8 +425,8 @@ export async function getTVCredits(tvId: number): Promise<CastMember[]> {
 const MAX_TRAILER_FAILURES = 3;
 let movieTrailerFailureCount = 0;
 let tvTrailerFailureCount = 0;
-let movieTrailerFetchDisabled = false;
-let tvTrailerFetchDisabled = false;
+// let movieTrailerFetchDisabled = false; // unused
+// let tvTrailerFetchDisabled = false; // unused
 
 /**
  * Fetch trailers for a movie
@@ -452,9 +452,9 @@ export async function getMovieTrailers(movieId: number): Promise<Trailer[]> {
     return teasers.length > 0 ? teasers : videos;
   } catch (error) {
     movieTrailerFailureCount += 1;
-    if (movieTrailerFailureCount >= MAX_TRAILER_FAILURES) {
-      movieTrailerFetchDisabled = true;
-    }
+    // if (movieTrailerFailureCount >= MAX_TRAILER_FAILURES) {
+    //   movieTrailerFetchDisabled = true;
+    // }
     console.error('Error fetching movie trailers:', error);
     return [];
   }
@@ -488,9 +488,9 @@ export async function getTVTrailers(tvId: number): Promise<Trailer[]> {
     return teasers.length > 0 ? teasers : videos;
   } catch (error) {
     tvTrailerFailureCount += 1;
-    if (tvTrailerFailureCount >= MAX_TRAILER_FAILURES) {
-      tvTrailerFetchDisabled = true;
-    }
+    // if (tvTrailerFailureCount >= MAX_TRAILER_FAILURES) {
+    //   tvTrailerFetchDisabled = true;
+    // }
     console.error('Error fetching TV trailers:', error);
     return [];
   }

@@ -15,7 +15,7 @@ interface SavedTitle {
   poster_path: string | null;
 }
 export default function Account({}: AccountPageProps) {
-  const [greeting, setGreeting] = useState('Good Evening');
+  const [greeting] = useState('Good Evening'); // setGreeting unused
   const [userName, setUserName] = useState('Scott');
   const [isGuest, setIsGuest] = useState(false);
   const [savedTitles, setSavedTitles] = useState<SavedTitle[]>([]);

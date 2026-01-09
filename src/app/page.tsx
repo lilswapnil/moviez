@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export default function Home() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true); // unused
 
   useEffect(() => {
     const isGuest = localStorage.getItem('isGuest') === 'true';

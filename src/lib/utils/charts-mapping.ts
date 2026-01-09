@@ -18,7 +18,7 @@ import {
   getPopularCartoonShows,
   getTopRatedCartoonShows,
   getKidsFavoriteCartoons,
-  getTrendingCartoons,
+  // getTrendingCartoons, // unused
   getUpcomingCartoons,
   getFamilyCartoonShows,
 } from '../api/tmdb-client';
