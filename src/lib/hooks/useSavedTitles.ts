@@ -2,10 +2,12 @@ import { useState, useCallback } from 'react';
 
 export interface SavedTitle {
   id: number;
+  title: string;
   name?: string;
-  title?: string;
   type: 'movie' | 'show';
   posterPath?: string;
+  rating?: number;
+  releaseYear?: number;
 }
 
 export const useSavedTitles = () => {

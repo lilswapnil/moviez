@@ -4,6 +4,8 @@ import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getImageUrl } from '@/lib/api/tmdb-client';
 import type { Trailer } from '@/lib/api/tmdb-types';
+import type { SavedTitle } from '@/lib/hooks/useSavedTitles';
+
 
 interface TitleHeroItem {
   id: number;
@@ -124,7 +126,7 @@ export default function TitleHero({ item, displayType, trailerType, children }: 
   useEffect(() => {
     try {
       const saved = localStorage.getItem('savedTitles');
-      const savedTitles: TitleHeroItem[] = saved ? JSON.parse(saved) : [];
+      const savedTitles: SavedTitle[] = saved ? JSON.parse(saved) : [];
       const isTitleSaved = savedTitles.some((title) => title.id === item.id);
       setIsSaved(isTitleSaved);
     } catch (error) {
@@ -135,19 +137,19 @@ export default function TitleHero({ item, displayType, trailerType, children }: 
   const handleSave = () => {
     try {
       const saved = localStorage.getItem('savedTitles');
-      const savedTitles: TitleHeroItem[] = saved ? JSON.parse(saved) : [];
+      const savedTitles: SavedTitle[] = saved ? JSON.parse(saved) : [];
       
       if (!isSaved) {
         // Determine type and name based on what's available
         const titleType = displayType === 'Movie' ? 'movie' : 'show';
         const titleName = item.title;
         
-        const newTitle = {
+        const newTitle: SavedTitle = {
           id: item.id,
           title: titleName,
           name: titleName,
           type: titleType,
-          posterPath: item.posterPath,
+          posterPath: item.posterPath ?? undefined,
           rating: item.voteAverage,
           releaseYear: item.releaseYear,
         };

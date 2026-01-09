@@ -1,9 +1,9 @@
 
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
 
-const prisma = new PrismaClient();
+import "dotenv/config";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import bcrypt from 'bcrypt';
 
 export async function POST(request: Request) {
   const { name, email, password } = await request.json();
@@ -25,6 +25,12 @@ export async function POST(request: Request) {
     const { password: _, ...userWithoutPassword } = user;
     return NextResponse.json({ user: userWithoutPassword });
   } catch (error: unknown) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    let errorMessage = 'Unknown error';
+    if (typeof error === 'object' && error !== null && 'message' in error) {
+      errorMessage = String((error as { message?: unknown }).message);
+    } else if (typeof error === 'string') {
+      errorMessage = error;
+    }
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
