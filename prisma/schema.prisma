@@ -5,9 +5,10 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
-  // output   = "./src/generated/prisma"  // Use default output for Vercel compatibility
+  provider   = "prisma-client-js"
+  engineType = "library"
 }
+
 
 datasource db {
   provider = "postgresql"

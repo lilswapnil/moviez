@@ -1,10 +1,10 @@
 
+
+import "dotenv/config";
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-
-const prisma = new PrismaClient();
 
 export async function POST(request: Request) {
   const { email, password } = await request.json();
@@ -31,6 +31,12 @@ export async function POST(request: Request) {
     );
     return NextResponse.json({ user: userWithoutPassword, token });
   } catch (error: unknown) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    let errorMessage = 'Unknown error';
+    if (typeof error === 'object' && error !== null && 'message' in error) {
+      errorMessage = String((error as { message?: unknown }).message);
+    } else if (typeof error === 'string') {
+      errorMessage = error;
+    }
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

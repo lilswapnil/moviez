@@ -8,12 +8,8 @@ import Header from '@/components/common/Header';
 import Section from '@/components/common/Section';
 
 // Accept params prop for Next.js App Router type compatibility
+import type { SavedTitle } from '@/lib/hooks/useSavedTitles';
 type AccountPageProps = { params?: Record<string, unknown> };
-interface SavedTitle {
-  id: number;
-  title: string;
-  poster_path: string | null;
-}
 export default function Account({}: AccountPageProps) {
   const [greeting] = useState('Good Evening'); // setGreeting unused
   const [userName, setUserName] = useState('Scott');

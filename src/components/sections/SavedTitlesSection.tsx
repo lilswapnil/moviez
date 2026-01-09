@@ -3,17 +3,10 @@
 import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getTitleUrl as getTitleUrlUtil } from '@/lib/utils/url';
 
-interface SavedTitle {
-  id: number;
-  title: string;
-  name: string;
-  type: 'movie' | 'show';
-  posterPath?: string | null;
-  rating?: number;
-  releaseYear?: number;
-}
+import { getTitleUrl } from '@/lib/utils/url';
+
+import type { SavedTitle } from '@/lib/hooks/useSavedTitles';
 
 interface SavedTitlesSectionProps {
   titles: SavedTitle[];
@@ -61,9 +54,9 @@ export default function SavedTitlesSection({ titles }: SavedTitlesSectionProps) 
     }
   };
 
-  const getTitleUrl = (title: SavedTitle) => {
+  const buildTitleUrl = (title: SavedTitle) => {
     const type = title.type === 'movie' ? 'movies' : 'shows';
-    return getTitleUrlUtil(type, title.id);
+    return getTitleUrl(type, title.id);
   };
 
   // Return early with hooks already called
@@ -117,14 +110,14 @@ export default function SavedTitlesSection({ titles }: SavedTitlesSectionProps) 
         {titles.map((title) => (
           <Link
             key={title.id}
-            href={getTitleUrl(title)}
+            href={buildTitleUrl(title)}
             className="flex-shrink-0 w-[190px] cursor-pointer group transition-transform hover:scale-105 snap-start"
           >
             <div className="relative aspect-[2/3] overflow-hidden bg-gray-800 shadow-lg rounded-lg">
               {title.posterPath ? (
                 <Image
                   src={`https://image.tmdb.org/t/p/w500${title.posterPath}`}
-                  alt={title.title || title.name}
+                  alt={title.title ? title.title : (title.name ? title.name : 'Saved Title')}
                   fill
                   className="object-cover"
                   sizes="200px"
