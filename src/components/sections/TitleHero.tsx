@@ -194,7 +194,9 @@ export default function TitleHero({ item, displayType, trailerType, children }: 
           <p className="mt-8 text-lg text-white/70 italic">{item.tagline}</p>
         ) : null}
 
-        <h1 className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-bold text-white">
+        <h1
+          className="text-white font-extrabold tracking-tight leading-none drop-shadow-[0_6px_24px_rgba(0,0,0,0.85)] text-4xl sm:text-4xl md:text-4xl lg:text-4xl xl:text-4xl"
+        >
           {item.title}
         </h1>
 

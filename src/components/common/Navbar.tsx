@@ -23,7 +23,7 @@ export default function Navbar() {
 
     useEffect(() => {
         // Avoid direct setState in effect: use a local variable and only update if changed
-        const q = searchParams.get("q") ?? "";
+        const q = searchParams?.get("q") ?? "";
         setSearchTerm((prev) => (prev !== q ? q : prev));
     }, [searchParams]);
 
