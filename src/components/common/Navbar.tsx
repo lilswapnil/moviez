@@ -72,7 +72,7 @@ export default function Navbar() {
                 type="text" 
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="Search movies..." 
+                placeholder="Search movies, tv, anime..." 
                 className="w-full px-4 py-2.5 pr-12 rounded-full bg-black/50 border border-white/20 text-white placeholder:text-white/60 focus:outline-none focus:bg-black/60 focus:border-red-500/50 transition-colors"
             />
             <button
