@@ -172,88 +172,30 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
   // Fetch trailer when item changes
   useEffect(() => {
     if (!featuredItem) return;
-    const itemKey = `${featuredItem.kind}-${featuredItem.id}`;
-    const failureCount = trailerFailureCountsRef.current[itemKey] ?? 0;
-
-    if (failureCount >= MAX_TRAILER_FAILURES) {
-      console.warn(`Skipping trailer fetch for ${itemKey} after repeated failures.`);
-      setTrailer(null);
-      setShowTrailer(false);
-      setIsPlaying(false);
-      return;
-    }
-    
     let cancelled = false;
-    const setTrailerSafely = (value: Trailer | null) => {
-      if (!cancelled) {
-        setTrailer(value);
-        // Auto-play only if we found a valid trailer
-        if (value && value.key) {
-          setShowTrailer(true);
-          setIsPlaying(true);
-        }
-      }
-    };
-
-    const hasCache = Object.prototype.hasOwnProperty.call(trailerCacheRef.current, itemKey);
-    if (hasCache) {
-      const cachedTrailer = trailerCacheRef.current[itemKey];
-      setTrailerSafely(cachedTrailer);
-      return () => {
-        cancelled = true;
-      };
-    }
-
+    setTrailer(null);
+    setShowTrailer(false);
+    setIsPlaying(false);
     const fetchTrailer = async () => {
-      setTrailer(null);
-      setShowTrailer(false);
-      setIsPlaying(false);
-      
       try {
         const response = await fetch(`/api/v1/trailers?type=${featuredItem.kind}&id=${featuredItem.id}`, {
-          method: 'GET',
           cache: 'no-store',
         });
-
         if (!response.ok) {
-          throw new Error(`Trailer request failed: ${response.status}`);
+          throw new Error(`Trailer request failed with status ${response.status}`);
         }
-
         const data = await response.json();
-        const allVideos: Trailer[] = Array.isArray(data.results) ? data.results : [];
-        // Filter to only official trailers/teasers with specific naming
-        const validTrailers = allVideos.filter(
-          (video) => 
-            (video.type === 'Teaser' || video.type === 'Trailer') && 
-            isLandscapeVideo(video.key) &&
-            (video.name?.includes('Official Trailer') || video.name?.includes('Official Teaser Trailer'))
-        );
-
-        if (validTrailers.length > 0) {
-          trailerFailureCountsRef.current[itemKey] = 0;
-          trailerCacheRef.current[itemKey] = validTrailers[0];
-          setTrailerSafely(validTrailers[0]);
-        } else {
-          // No valid trailers found, cache null to skip future fetches
-          const updatedFailures = (trailerFailureCountsRef.current[itemKey] ?? 0) + 1;
-          trailerFailureCountsRef.current[itemKey] = updatedFailures;
-          if (updatedFailures >= MAX_TRAILER_FAILURES) {
-            trailerCacheRef.current[itemKey] = null;
-          }
-          console.warn(`No valid trailers found for ${itemKey} (attempt ${updatedFailures}/${MAX_TRAILER_FAILURES}).`);
+        const videos: Trailer[] = Array.isArray(data.results) ? data.results : [];
+        if (!cancelled) {
+          setTrailer(videos[0] ?? null);
         }
       } catch (error) {
-        const updatedFailures = (trailerFailureCountsRef.current[itemKey] ?? 0) + 1;
-        trailerFailureCountsRef.current[itemKey] = updatedFailures;
-        if (updatedFailures >= MAX_TRAILER_FAILURES) {
-          trailerCacheRef.current[itemKey] = null;
-          console.error(`Stopping trailer fetches for ${itemKey} after ${updatedFailures} failures.`, error);
-        } else {
-          console.error(`Error fetching trailer for ${itemKey} (attempt ${updatedFailures}/${MAX_TRAILER_FAILURES}):`, error);
+        console.error('Failed to load trailer:', error);
+        if (!cancelled) {
+          setTrailer(null);
         }
       }
     };
-    
     fetchTrailer();
     return () => {
       cancelled = true;
@@ -393,70 +335,11 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
               : 'movies'
             }/${featuredItem.id}`}
             className="px-8 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white font-semibold rounded-lg transition-colors flex items-center justify-center"
-            style={{ textDecoration: 'none' }}
           >
             More Info
           </a>
-        </div>
-      </div>
-
-
-      {/* Only Next Poster Preview at Bottom Right */}
-      {allItems.length > 1 && (
-        <motion.button
-          onClick={goToNext}
-          className={`absolute bottom-8 right-8 z-10 flex flex-col items-center group bg-black/10 hover:bg-black/30 rounded-lg p-1 transition-all shadow-lg ${showTrailer && isPlaying ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
-          style={{ width: 144, height: 216, pointerEvents: 'auto' }}
-          aria-label="Next title"
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: hoveredPoster === 'next' ? 1 : 0.7, y: 0 }}
-          exit={{ opacity: 0, y: 40 }}
-          transition={{ duration: 0.4, ease: 'easeInOut' }}
-          onMouseEnter={() => setHoveredPoster('next')}
-          onMouseLeave={() => setHoveredPoster(null)}
-        >
-          <Image
-            src={getImageUrl(allItems[(safeIndex + 1) % allItems.length].poster_path, 'w500')}
-            alt="Next poster"
-            width={144}
-            height={216}
-            className={`w-36 h-54 object-cover rounded-md border-2 border-white/30 group-hover:border-red-600 transition-all duration-300 ${hoveredPoster === 'next' ? 'opacity-100' : 'opacity-85'}`}
-            style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}
-            priority
-            unoptimized={false}
-          />
-        </motion.button>
-      )}
-
-      {/* Pagination Dots with Left/Right Buttons */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
-        <button
-          onClick={goToPrev}
-          aria-label="Previous title"
-          className="w-8 h-8 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/70 text-white transition-colors"
-        >
-          <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M13 16l-5-6 5-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-        </button>
-        {allItems.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => goToSlide(index)}
-            className={`transition-all ${
-              index === safeIndex 
-                ? 'w-8 h-2 bg-red-600' 
-                : 'w-2 h-2 bg-white/50 hover:bg-white/80'
-            } rounded-full`}
-            aria-label={`Go to item ${index + 1}`}
-          />
-        ))}
-        <button
-          onClick={goToNext}
-          aria-label="Next title"
-          className="w-8 h-8 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/70 text-white transition-colors"
-        >
-          <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M7 4l5 6-5 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-        </button>
+        </div> {/* flex gap-4 */}
       </div>
     </div>
   );
-}
+} 
