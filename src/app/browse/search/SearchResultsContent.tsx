@@ -96,7 +96,11 @@ export default function SearchResultsContent({ initialItems, query }: SearchResu
                   </div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                  <h2 className="text-white font-bold text-sm mb-2 line-clamp-3">{title}</h2>
+                  <h2
+                    className="text-white font-extrabold tracking-tight leading-none drop-shadow-[0_6px_24px_rgba(0,0,0,0.85)] text-xl sm:text-2xl md:text-3xl lg:text-4xl mb-2 line-clamp-3"
+                  >
+                    {title}
+                  </h2>
                   <div className="flex items-center gap-2 text-xs text-gray-200">
                     <span className="flex items-center">
                       <span className="mr-1">⭐</span>

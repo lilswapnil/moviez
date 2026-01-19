@@ -394,63 +394,42 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
       </div>
 
 
-      {/* Poster Previews for Previous/Next */}
+      {/* Only Next Poster Preview at Bottom Right */}
       {allItems.length > 1 && (
-        <>
-          {/* Previous Poster */}
-          <motion.button
-            onClick={goToPrev}
-            className="absolute left-8 top-1/2 -translate-y-1/2 z-10 flex flex-col items-center group bg-black/10 hover:bg-black/30 rounded-lg p-1 transition-all shadow-lg"
-            style={{ width: 72, pointerEvents: 'auto' }}
-            aria-label="Previous title"
-            initial={{ opacity: 0, x: -40 }}
-            animate={{ opacity: hoveredPoster === 'prev' ? 1 : 0.5, x: 0 }}
-            exit={{ opacity: 0, x: -40 }}
-            transition={{ duration: 0.4, ease: 'easeInOut' }}
-            onMouseEnter={() => setHoveredPoster('prev')}
-            onMouseLeave={() => setHoveredPoster(null)}
-          >
-            <Image
-              src={getImageUrl(allItems[(safeIndex - 1 + allItems.length) % allItems.length].poster_path, 'w500')}
-              alt="Previous poster"
-              width={64}
-              height={96}
-              className={`w-16 h-24 object-cover rounded-md border-2 border-white/30 group-hover:border-red-600 transition-all duration-300 ${hoveredPoster === 'prev' ? 'opacity-100' : 'opacity-85'}`}
-              style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}
-              priority
-              unoptimized={false}
-            />
-          </motion.button>
-
-          {/* Next Poster */}
-          <motion.button
-            onClick={goToNext}
-            className="absolute right-8 top-1/2 -translate-y-1/2 z-10 flex flex-col items-center group bg-black/10 hover:bg-black/30 rounded-lg p-1 transition-all shadow-lg"
-            style={{ width: 72, pointerEvents: 'auto' }}
-            aria-label="Next title"
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: hoveredPoster === 'next' ? 1 : 0.5, x: 0 }}
-            exit={{ opacity: 0, x: 40 }}
-            transition={{ duration: 0.4, ease: 'easeInOut' }}
-            onMouseEnter={() => setHoveredPoster('next')}
-            onMouseLeave={() => setHoveredPoster(null)}
-          >
-            <Image
-              src={getImageUrl(allItems[(safeIndex + 1) % allItems.length].poster_path, 'w500')}
-              alt="Next poster"
-              width={64}
-              height={96}
-              className={`w-16 h-24 object-cover rounded-md border-2 border-white/30 group-hover:border-red-600 transition-all duration-300 ${hoveredPoster === 'next' ? 'opacity-100' : 'opacity-85'}`}
-              style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}
-              priority
-              unoptimized={false}
-            />
-          </motion.button>
-        </>
+        <motion.button
+          onClick={goToNext}
+          className="absolute bottom-8 right-8 z-10 flex flex-col items-center group bg-black/10 hover:bg-black/30 rounded-lg p-1 transition-all shadow-lg"
+          style={{ width: 144, height: 216, pointerEvents: 'auto' }}
+          aria-label="Next title"
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: hoveredPoster === 'next' ? 1 : 0.7, y: 0 }}
+          exit={{ opacity: 0, y: 40 }}
+          transition={{ duration: 0.4, ease: 'easeInOut' }}
+          onMouseEnter={() => setHoveredPoster('next')}
+          onMouseLeave={() => setHoveredPoster(null)}
+        >
+          <Image
+            src={getImageUrl(allItems[(safeIndex + 1) % allItems.length].poster_path, 'w500')}
+            alt="Next poster"
+            width={144}
+            height={216}
+            className={`w-36 h-54 object-cover rounded-md border-2 border-white/30 group-hover:border-red-600 transition-all duration-300 ${hoveredPoster === 'next' ? 'opacity-100' : 'opacity-85'}`}
+            style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}
+            priority
+            unoptimized={false}
+          />
+        </motion.button>
       )}
 
-      {/* Pagination Dots */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-2">
+      {/* Pagination Dots with Left/Right Buttons */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
+        <button
+          onClick={goToPrev}
+          aria-label="Previous title"
+          className="w-8 h-8 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/70 text-white transition-colors"
+        >
+          <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M13 16l-5-6 5-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        </button>
         {allItems.map((_, index) => (
           <button
             key={index}
@@ -463,6 +442,13 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
             aria-label={`Go to item ${index + 1}`}
           />
         ))}
+        <button
+          onClick={goToNext}
+          aria-label="Next title"
+          className="w-8 h-8 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/70 text-white transition-colors"
+        >
+          <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M7 4l5 6-5 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        </button>
       </div>
     </div>
   );
