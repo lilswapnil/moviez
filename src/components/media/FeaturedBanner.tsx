@@ -320,10 +320,10 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
       )}
       
       {/* Dark overlay for text readability */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent z-10"></div>
-      
+      <div className={`absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent z-10 transition-opacity duration-500 ${showTrailer && isPlaying ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}></div>
+
       {/* Top-left Theater-Style Title */}
-      <div className="absolute top-24 left-12 z-20 max-w-4xl pointer-events-none">
+      <div className={`absolute top-24 left-12 z-20 max-w-4xl pointer-events-none transition-opacity duration-500 ${showTrailer && isPlaying ? 'opacity-0' : 'opacity-100'}`}>
         <h1
           className="
             text-white
@@ -342,14 +342,12 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
         </h1>
       </div>
 
-
-
       {/* Content */}
-      <div className="absolute bottom-0 left-0 z-20 pb-24 px-12 max-w-2xl">
-        <p className="text-xl text-gray-300 mb-4 leading-relaxed line-clamp-3">
+      <div className={`absolute bottom-0 left-0 z-20 pb-24 px-12 max-w-2xl`}>
+        <p className={`text-xl text-gray-300 mb-4 leading-relaxed line-clamp-3 transition-opacity duration-500 ${showTrailer && isPlaying ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
           {featuredItem.overview}
         </p>
-        <div className="flex items-center gap-4 mb-6 text-gray-300">
+        <div className={`flex items-center gap-4 mb-6 text-gray-300 transition-opacity duration-500 ${showTrailer && isPlaying ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
           <span className="flex items-center gap-1">
             ⭐ {featuredItem.vote_average.toFixed(1)}
           </span>
@@ -370,10 +368,19 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
             disabled={!trailer}
             className="px-8 py-3 bg-red-600 hover:bg-red-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors flex items-center gap-2"
           >
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-            </svg>
-            {showTrailer && isPlaying ? 'Pause' : 'Play Now'}
+            {showTrailer && isPlaying ? (
+              // Pause icon
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <rect x="4.5" y="4" width="3" height="12" rx="1" />
+                <rect x="12.5" y="4" width="3" height="12" rx="1" />
+              </svg>
+            ) : (
+              // Play icon
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <polygon points="6,4 16,10 6,16" />
+              </svg>
+            )}
+            {showTrailer && isPlaying ? 'Pause' : 'Play'}
           </button>
           <a
             href={`/title/${
@@ -398,7 +405,7 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
       {allItems.length > 1 && (
         <motion.button
           onClick={goToNext}
-          className="absolute bottom-8 right-8 z-10 flex flex-col items-center group bg-black/10 hover:bg-black/30 rounded-lg p-1 transition-all shadow-lg"
+          className={`absolute bottom-8 right-8 z-10 flex flex-col items-center group bg-black/10 hover:bg-black/30 rounded-lg p-1 transition-all shadow-lg ${showTrailer && isPlaying ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
           style={{ width: 144, height: 216, pointerEvents: 'auto' }}
           aria-label="Next title"
           initial={{ opacity: 0, y: 40 }}
