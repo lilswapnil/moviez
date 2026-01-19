@@ -36,20 +36,54 @@ export default function Login() {
     const fetchMovies = async () => {
       try {
         console.log('Fetching movies...');
-        const response = await fetch('/api/v1/data?type=movies&category=top_rated&page=1');
+        let response = await fetch('/api/v1/data?type=movies&category=top_rated&page=1');
         console.log('Response status:', response.status);
-        const data = await response.json();
+        let data = await response.json();
         console.log('Fetched data:', data);
+        let movies: Movie[] = [];
         if (Array.isArray(data) && data.length > 0) {
-          console.log('Movies found:', data.length);
-          console.log('First movie:', data[0]);
-          setMovies(data);
+          movies = data;
         } else if (data.results && Array.isArray(data.results)) {
-          console.log('Movies found:', data.results.length);
-          setMovies(data.results);
-        } else {
-          console.log('No results in data');
+          movies = data.results;
         }
+        // Fallback: try popular if no results
+        if (!movies.length) {
+          console.log('No results in data, trying popular...');
+          response = await fetch('/api/v1/data?type=movies&category=popular&page=1');
+          data = await response.json();
+          if (Array.isArray(data) && data.length > 0) {
+            movies = data;
+          } else if (data.results && Array.isArray(data.results)) {
+            movies = data.results;
+          }
+        }
+        // Fallback: fetch directly from TMDB if still empty
+        if (!movies.length) {
+          console.log('No results from API, fetching from TMDB directly...');
+          const tmdbRes1 = await fetch('https://api.themoviedb.org/3/movie/popular?language=en-US&page=1', {
+            headers: {
+              Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
+              'Content-Type': 'application/json',
+            },
+          });
+          const tmdbRes2 = await fetch('https://api.themoviedb.org/3/movie/popular?language=en-US&page=2', {
+            headers: {
+              Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
+              'Content-Type': 'application/json',
+            },
+          });
+          const tmdbData1 = await tmdbRes1.json();
+          const tmdbData2 = await tmdbRes2.json();
+          let tmdbMovies: Movie[] = [];
+          if (tmdbData1.results && Array.isArray(tmdbData1.results)) {
+            tmdbMovies = tmdbData1.results;
+          }
+          if (tmdbData2.results && Array.isArray(tmdbData2.results)) {
+            tmdbMovies = tmdbMovies.concat(tmdbData2.results);
+          }
+          movies = tmdbMovies.slice(0, 40);
+        }
+        setMovies(movies);
       } catch (error) {
         console.error('Failed to fetch movies:', error);
       } finally {
@@ -111,32 +145,38 @@ export default function Login() {
         )}
         {/* Movie grid background */}
         {movies.length > 0 && (
-          <div className="flex flex-row gap-0 p-0 h-[220px] w-full overflow-x-auto opacity-80 items-center justify-center">
-            {movies.slice(0, 20).map((movie) => {
-              const imageUrl = `https://image.tmdb.org/t/p/w342${movie.poster_path}`;
-              return (
-                <div key={movie.id} className="relative min-w-[140px] h-[210px] mx-1 flex-shrink-0 overflow-hidden bg-gray-800 rounded-lg shadow-md">
-                  {movie.poster_path ? (
-                    <Image
-                      src={imageUrl}
-                      alt={movie.title}
-                      fill
-                      className="object-cover hover:scale-105 transition-transform duration-300"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                      }}
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center p-2">
-                      <p className="text-gray-300 text-xs text-center font-semibold line-clamp-3">
-                        {movie.title}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+          <div className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none select-none p-0 m-0">
+            <div className="grid grid-cols-10 grid-rows-4 gap-0 w-full h-full opacity-70 p-0 m-0">
+              {movies.slice(0, 40).map((movie) => {
+                const imageUrl = `https://image.tmdb.org/t/p/w342${movie.poster_path}`;
+                return (
+                  <div
+                    key={movie.id}
+                    className="relative aspect-[2/3] w-full h-full bg-gray-800 overflow-hidden"
+                  >
+                    {movie.poster_path ? (
+                      <Image
+                        src={imageUrl}
+                        alt={movie.title}
+                        fill
+                        className="object-contain object-center bg-black"
+                        style={{ zIndex: 0 }}
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center p-2">
+                        <p className="text-gray-300 text-xs text-center font-semibold line-clamp-3">
+                          {movie.title}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>

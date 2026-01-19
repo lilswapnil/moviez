@@ -415,7 +415,7 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
               alt="Previous poster"
               width={64}
               height={96}
-              className={`w-16 h-24 object-cover rounded-md border-2 border-white/30 group-hover:border-red-600 transition-all duration-300 ${hoveredPoster === 'prev' ? 'opacity-100' : 'opacity-60'}`}
+              className={`w-16 h-24 object-cover rounded-md border-2 border-white/30 group-hover:border-red-600 transition-all duration-300 ${hoveredPoster === 'prev' ? 'opacity-100' : 'opacity-85'}`}
               style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}
               priority
               unoptimized={false}
@@ -440,7 +440,7 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
               alt="Next poster"
               width={64}
               height={96}
-              className={`w-16 h-24 object-cover rounded-md border-2 border-white/30 group-hover:border-red-600 transition-all duration-300 ${hoveredPoster === 'next' ? 'opacity-100' : 'opacity-60'}`}
+              className={`w-16 h-24 object-cover rounded-md border-2 border-white/30 group-hover:border-red-600 transition-all duration-300 ${hoveredPoster === 'next' ? 'opacity-100' : 'opacity-85'}`}
               style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}
               priority
               unoptimized={false}
