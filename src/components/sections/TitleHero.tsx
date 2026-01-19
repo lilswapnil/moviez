@@ -195,7 +195,7 @@ export default function TitleHero({ item, displayType, trailerType, children }: 
         ) : null}
 
         <h1
-          className="text-white font-extrabold tracking-tight leading-none drop-shadow-[0_6px_24px_rgba(0,0,0,0.85)] text-4xl sm:text-4xl md:text-4xl lg:text-4xl xl:text-4xl"
+          className="text-white font-extrabold tracking-tight leading-none drop-shadow-[0_6px_24px_rgba(0,0,0,0.85)] text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl"
         >
           {item.title}
         </h1>
