@@ -1,3 +1,68 @@
+// --- Streaming Providers Types ---
+export interface WatchProvider {
+  display_priority: number;
+  logo_path: string;
+  provider_id: number;
+  provider_name: string;
+  type?: string;
+  link?: string;
+}
+
+export interface WatchProvidersResult {
+  link?: string;
+  flatrate?: WatchProvider[];
+  rent?: WatchProvider[];
+  buy?: WatchProvider[];
+  ads?: WatchProvider[];
+  free?: WatchProvider[];
+}
+
+export interface WatchProvidersResponse {
+  id: number;
+  results: {
+    [country: string]: WatchProvidersResult;
+  };
+}
+
+/**
+ * Fetch watch providers for a movie
+ */
+export async function getMovieWatchProviders(movieId: number, country: string = 'US'): Promise<WatchProvidersResult | null> {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/movie/${movieId}/watch/providers?api_key=${TMDB_API_KEY}`,
+      { next: { revalidate: 3600 } }
+    );
+    if (!response.ok) {
+      throw new Error(`Failed to fetch movie watch providers: ${response.status}`);
+    }
+    const data = (await response.json()) as WatchProvidersResponse;
+    return data.results?.[country] ?? null;
+  } catch (error) {
+    console.error('Error fetching movie watch providers:', error);
+    return null;
+  }
+}
+
+/**
+ * Fetch watch providers for a TV show
+ */
+export async function getTVWatchProviders(tvId: number, country: string = 'US'): Promise<WatchProvidersResult | null> {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/tv/${tvId}/watch/providers?api_key=${TMDB_API_KEY}`,
+      { next: { revalidate: 3600 } }
+    );
+    if (!response.ok) {
+      throw new Error(`Failed to fetch TV watch providers: ${response.status}`);
+    }
+    const data = (await response.json()) as WatchProvidersResponse;
+    return data.results?.[country] ?? null;
+  } catch (error) {
+    console.error('Error fetching TV watch providers:', error);
+    return null;
+  }
+}
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p';
