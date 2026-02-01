@@ -14,7 +14,7 @@ A modern streaming discovery platform built with Next.js that surfaces curated f
 </p>
 
 <p align="center">
-  <img src="./frontend/assets/screenshots.png" width="60%" alt="Moviez Screenshot" />
+  <img src="./frontend/assets/screenshots.png" width="70%" alt="Moviez Screenshot" />
 </p>
 
 ## ✨ Features
