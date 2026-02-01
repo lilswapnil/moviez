@@ -1,0 +1,8 @@
+{
+  "/(details)/title/[type]/[id]/page": "app/(details)/title/[type]/[id]/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/v1/trailers/route": "app/api/v1/trailers/route.js",
+  "/browse/home/page": "app/browse/home/page.js",
+  "/browse/search/page": "app/browse/search/page.js",
+  "/page": "app/page.js"
+}
