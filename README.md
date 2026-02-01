@@ -7,6 +7,12 @@ A modern streaming discovery platform built with Next.js that surfaces curated f
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-38B2AC?logo=tailwind-css)
 
+## 📸 Screenshot
+
+<p align="center">
+  <img src="moviez/frontend/assets/moviz-preview.png" width="80%" alt="Moviez Preview" />
+</p>
+
 ## ✨ Features
 
 - **Featured Content**: Hero banner with trailer playback for new releases
