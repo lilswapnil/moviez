@@ -24,6 +24,7 @@ export default function Account({}: AccountPageProps) {
   const [recommendations, setRecommendations] = useState<RecommendationResult[]>([]);
   const [recommendationsLoading, setRecommendationsLoading] = useState(false);
   const [recommendationsError, setRecommendationsError] = useState<string | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
   useEffect(() => {
     // Only update state if needed
     const userIsGuest = localStorage.getItem('isGuest') === 'true';
@@ -35,6 +36,7 @@ export default function Account({}: AccountPageProps) {
     if (saved) {
       setSavedTitles(JSON.parse(saved));
     }
+    setIsHydrated(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -158,6 +160,11 @@ export default function Account({}: AccountPageProps) {
             <div className="text-sm text-gray-400">Loading recommendations...</div>
           ) : recommendationsError ? (
             <div className="text-sm text-red-400">{recommendationsError}</div>
+          ) : savedTitles.length === 0 ? (
+            <Card variant="default" radius="xl" className="text-center py-12">
+              <p className="text-gray-400 mb-2">Browse and save titles to get recommendations</p>
+              <p className="text-gray-500 text-sm">We will personalize picks based on what you save.</p>
+            </Card>
           ) : recommendations.length === 0 ? (
             <div className="text-sm text-gray-400">Save a few titles to personalize recommendations.</div>
           ) : (
@@ -183,7 +190,7 @@ export default function Account({}: AccountPageProps) {
         </Section>
 
         {/* Account Details */}
-        {userName !== 'Guest' && (
+        {isHydrated && !isGuest && (
         <Section>
           <div className="flex items-baseline justify-between mb-4">
             <h2 className="text-2xl font-semibold text-white">Account Details</h2>
