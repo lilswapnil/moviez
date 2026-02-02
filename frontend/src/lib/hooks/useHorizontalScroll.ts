@@ -11,7 +11,7 @@ type UseHorizontalScrollOptions = {
 };
 
 type UseHorizontalScrollResult = {
-  scrollContainerRef: RefObject<HTMLDivElement>;
+  scrollContainerRef: RefObject<HTMLDivElement | null>;
   canScrollLeft: boolean;
   canScrollRight: boolean;
   scrollLeft: () => void;
@@ -24,7 +24,7 @@ export default function useHorizontalScroll({
   itemsPerScroll,
   deps = [],
 }: UseHorizontalScrollOptions): UseHorizontalScrollResult {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 

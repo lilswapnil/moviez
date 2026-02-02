@@ -14,9 +14,7 @@ interface SimilarTitlesProps {
 }
 
 export default function SimilarTitles({ items, titleType }: SimilarTitlesProps) {
-  if (!items || items.length === 0) {
-    return null;
-  }
+  const safeItems = Array.isArray(items) ? items : [];
 
   const {
     scrollContainerRef,
@@ -27,8 +25,12 @@ export default function SimilarTitles({ items, titleType }: SimilarTitlesProps) 
   } = useHorizontalScroll({
     itemWidth: 190,
     gap: 16,
-    deps: [items.length],
+    deps: [safeItems.length],
   });
+
+  if (safeItems.length === 0) {
+    return null;
+  }
 
   const getItemTitle = (item: Movie | TVShow): string => {
     return 'title' in item ? item.title : item.name;
@@ -55,7 +57,7 @@ export default function SimilarTitles({ items, titleType }: SimilarTitlesProps) 
         ref={scrollContainerRef}
         className="flex gap-2 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory"
       >
-        {items.map((item) => {
+        {safeItems.map((item) => {
           const title = getItemTitle(item);
           const date = getItemDate(item);
           const year = date ? new Date(date).getFullYear() : '';

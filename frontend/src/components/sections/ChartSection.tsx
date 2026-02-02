@@ -59,7 +59,9 @@ export default function ChartSection({ title, charts }: ChartSectionProps) {
               shape="pill"
               className={safePage === index ? 'bg-red-500 hover:bg-red-500' : undefined}
               aria-label={`Go to page ${index + 1}`}
-            />
+            >
+              <span className="sr-only">{`Go to page ${index + 1}`}</span>
+            </Button>
           ))}
         </div>
       )}

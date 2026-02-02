@@ -4,7 +4,7 @@ type SelectVariant = 'default' | 'solid';
 type SelectSize = 'sm' | 'md';
 type SelectShape = 'rounded' | 'pill';
 
-interface SelectProps extends ComponentPropsWithoutRef<'select'> {
+interface SelectProps extends Omit<ComponentPropsWithoutRef<'select'>, 'size'> {
   variant?: SelectVariant;
   size?: SelectSize;
   shape?: SelectShape;

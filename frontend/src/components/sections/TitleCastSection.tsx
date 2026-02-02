@@ -15,11 +15,8 @@ const MAX_CAST_ITEMS = 18;
 const ITEMS_PER_PAGE = 6;
 
 export default function TitleCastSection({ cast, variant = 'standalone' }: TitleCastSectionProps) {
-  if (!cast || cast.length === 0) {
-    return null;
-  }
-
-  const sorted = [...cast]
+  const safeCast = Array.isArray(cast) ? cast : [];
+  const sorted = [...safeCast]
     .filter((member) => Boolean(member.name))
     .sort((a, b) => {
       const orderA = Number.isFinite(a.order) ? a.order! : Number.MAX_SAFE_INTEGER;
@@ -27,10 +24,6 @@ export default function TitleCastSection({ cast, variant = 'standalone' }: Title
       return orderA - orderB;
     })
     .slice(0, MAX_CAST_ITEMS);
-
-  if (sorted.length === 0) {
-    return null;
-  }
 
   const [currentPage, setCurrentPage] = useState(0);
   const totalPages = Math.max(1, Math.ceil(sorted.length / ITEMS_PER_PAGE));
@@ -79,6 +72,10 @@ export default function TitleCastSection({ cast, variant = 'standalone' }: Title
   const goToNext = () => {
     setCurrentPage((prev) => Math.min(totalPages - 1, prev + 1));
   };
+
+  if (sorted.length === 0) {
+    return null;
+  }
 
   return (
     <section className={containerClass}>
@@ -163,7 +160,9 @@ export default function TitleCastSection({ cast, variant = 'standalone' }: Title
               shape="pill"
               className={safePage === index ? 'bg-red-500 hover:bg-red-500' : undefined}
               aria-label={`Go to cast page ${index + 1}`}
-            />
+            >
+              <span className="sr-only">{`Go to cast page ${index + 1}`}</span>
+            </Button>
           ))}
         </div>
       ) : null}
