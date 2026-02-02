@@ -280,7 +280,7 @@ export default function Signup() {
                 disabled={loading}
                 variant="gradient"
                 size="md"
-                className="w-full"
+                className="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold hover:from-red-700 hover:to-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-red-500/20"
               >
                 {loading ? "Creating..." : "Sign Up"}
               </Button>

@@ -280,7 +280,7 @@ export default function Login() {
                 disabled={isLoading}
                 variant="gradient"
                 size="md"
-                className="w-full"
+                className="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold hover:from-red-700 hover:to-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-red-500/20"
               >
                 {isLoading ? 'Signing in...' : 'Sign In'}
               </Button>
@@ -294,9 +294,12 @@ export default function Login() {
               </div>
             </div>
             {/* Sign Up Button */}
-            <Button href="/signup" variant="gradient" size="md" className="w-full mb-3">
-              Sign Up
-            </Button>
+    
+        {/* Create an account button */}
+            <div className="mt-8 text-center text-gray-400 text-sm flex items-center justify-center gap-2">
+            Create an account{' '}
+              <Link href="/signup" className="underline hover:text-white">Sign up</Link>
+            </div>
             {/* Continue as Guest Button */}
             <Button
               type="button"
