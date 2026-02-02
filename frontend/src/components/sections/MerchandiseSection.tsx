@@ -20,9 +20,7 @@ interface MerchandiseSectionProps {
 }
 
 export default function MerchandiseSection({ items, title = 'More from this Franchise' }: MerchandiseSectionProps) {
-  if (!items || items.length === 0) {
-    return null;
-  }
+  const safeItems = Array.isArray(items) ? items : [];
 
   const {
     scrollContainerRef,
@@ -33,8 +31,12 @@ export default function MerchandiseSection({ items, title = 'More from this Fran
   } = useHorizontalScroll({
     itemWidth: 190,
     gap: 16,
-    deps: [items.length],
+    deps: [safeItems.length],
   });
+
+  if (safeItems.length === 0) {
+    return null;
+  }
 
   return (
     <div className="py-4">
@@ -53,7 +55,7 @@ export default function MerchandiseSection({ items, title = 'More from this Fran
         ref={scrollContainerRef}
         className="flex gap-2 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory"
       >
-        {items.map((item) => {
+        {safeItems.map((item) => {
           const year = item.releaseDate ? new Date(item.releaseDate).getFullYear() : '';
           const imageUrl = item.posterPath
             ? `https://image.tmdb.org/t/p/w500${item.posterPath}`

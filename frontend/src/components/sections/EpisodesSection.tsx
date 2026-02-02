@@ -28,9 +28,7 @@ interface EpisodesSectionProps {
 }
 
 export default function EpisodesSection({ seasons, tvId }: EpisodesSectionProps) {
-  if (!seasons || seasons.length === 0) {
-    return null;
-  }
+  const hasSeasons = Array.isArray(seasons) && seasons.length > 0;
 
   const [selectedSeason, setSelectedSeason] = useState(0);
   const [episodes, setEpisodes] = useState<Episode[]>([]);
@@ -48,9 +46,15 @@ export default function EpisodesSection({ seasons, tvId }: EpisodesSectionProps)
     deps: [episodes.length],
   });
 
-  const currentSeason = seasons[selectedSeason];
+  const currentSeason = hasSeasons ? seasons[selectedSeason] : undefined;
 
   useEffect(() => {
+    if (!currentSeason) {
+      setEpisodes([]);
+      setLoading(false);
+      return;
+    }
+
     const fetchEpisodes = async () => {
       setLoading(true);
       try {
@@ -69,7 +73,11 @@ export default function EpisodesSection({ seasons, tvId }: EpisodesSectionProps)
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollLeft = 0;
     }
-  }, [selectedSeason, currentSeason.season_number, tvId]);
+  }, [currentSeason, selectedSeason, scrollContainerRef, tvId]);
+
+  if (!hasSeasons) {
+    return null;
+  }
 
 
   return (

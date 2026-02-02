@@ -11,11 +11,11 @@ import Input from '@/components/common/Input';
 export default function Navbar() {
 
     const [isScrolled, setIsScrolled] = useState(false);
-    const [searchTerm, setSearchTerm] = useState("");
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const router = useRouter();
     const searchParams = useSearchParams();
     const pathname = usePathname();
+    const searchQuery = searchParams?.get("q") ?? "";
 
     // Disable scroll when mobile menu is open
     useEffect(() => {
@@ -37,15 +37,10 @@ export default function Navbar() {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    useEffect(() => {
-        // Avoid direct setState in effect: use a local variable and only update if changed
-        const q = searchParams?.get("q") ?? "";
-        setSearchTerm((prev) => (prev !== q ? q : prev));
-    }, [searchParams]);
-
     const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const term = searchTerm.trim();
+        const formData = new FormData(event.currentTarget);
+        const term = String(formData.get("q") ?? "").trim();
         if (term) {
             router.push(getSearchUrl(term));
         } else {
@@ -115,11 +110,11 @@ export default function Navbar() {
                         </svg>
                     </Button>
                     {/* Search bar in mobile menu */}
-                    <form className="w-11/12 max-w-md mx-auto relative mb-4" onSubmit={handleSearch}>
+                    <form className="w-11/12 max-w-md mx-auto relative mb-4" onSubmit={handleSearch} key={`mobile-${searchQuery}`}>
                         <Input
                             type="text"
-                            value={searchTerm}
-                            onChange={(event) => setSearchTerm(event.target.value)}
+                            name="q"
+                            defaultValue={searchQuery}
                             placeholder="Search movies, tv, anime..."
                             variant="search"
                             size="sm"
@@ -157,11 +152,11 @@ export default function Navbar() {
             )}
 
             {/* Search bar (unchanged) */}
-            <form className="max-w-md relative hidden sm:block" onSubmit={handleSearch}>
+            <form className="max-w-md relative hidden sm:block" onSubmit={handleSearch} key={`desktop-${searchQuery}`}>
                 <Input 
                     type="text" 
-                    value={searchTerm}
-                    onChange={(event) => setSearchTerm(event.target.value)}
+                    name="q"
+                    defaultValue={searchQuery}
                     placeholder="Search movies, tv, anime..." 
                     variant="search"
                     size="sm"
