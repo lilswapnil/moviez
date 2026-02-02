@@ -1,15 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// This will be replaced with Azure ML integration
-export async function POST(req: NextRequest) {
-  // Parse user info from request (e.g., userId)
-  const { userId } = await req.json();
+import { recommendFromTmdb } from '@/lib/recommendations/tmdb-recommender';
 
-  // TODO: Integrate with Azure ML API here
-  // Placeholder response
+type RecommendationRequest = {
+  prompt?: string;
+  type?: 'movie' | 'show';
+  limit?: number;
+};
+
+export async function POST(req: NextRequest) {
+  const { prompt, type = 'movie', limit = 15 } = (await req.json()) as RecommendationRequest;
+
+  if (!prompt || prompt.trim().length === 0) {
+    return NextResponse.json({ error: 'prompt is required' }, { status: 400 });
+  }
+
+  if (!process.env.TMDB_API_KEY) {
+    return NextResponse.json({ error: 'TMDB_API_KEY is not configured' }, { status: 500 });
+  }
+
+  const recommendations = await recommendFromTmdb(prompt, type, limit);
+
   return NextResponse.json({
-    recommendations: [],
-    message: 'Azure ML integration pending',
-    userId,
+    recommendations,
+    meta: {
+      prompt,
+      type,
+      limit,
+    },
   });
 }
