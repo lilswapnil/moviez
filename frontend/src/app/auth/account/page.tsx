@@ -140,6 +140,48 @@ export default function Account({}: AccountPageProps) {
           </div>
         </Card>
 
+        {/* Saved Titles Section */}
+        <Section>
+          <SavedTitlesSection titles={savedTitles} />
+        </Section>
+
+        {/* Mood Trend Section - REMOVED */}
+        {/* Music Player - REMOVED */}
+
+        {/* Recommendations Section */}
+        <Section>
+          <div className="flex items-baseline justify-between mb-4">
+            <h2 className="text-2xl font-semibold text-white">Recommended For You</h2>
+            <span className="text-sm text-gray-400">Based on your saved titles</span>
+          </div>
+          {recommendationsLoading ? (
+            <div className="text-sm text-gray-400">Loading recommendations...</div>
+          ) : recommendationsError ? (
+            <div className="text-sm text-red-400">{recommendationsError}</div>
+          ) : recommendations.length === 0 ? (
+            <div className="text-sm text-gray-400">Save a few titles to personalize recommendations.</div>
+          ) : (
+            <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
+              {recommendations.map((item) => {
+                const imageUrl = item.poster_path ? getImageUrl(item.poster_path, 'w500') : null;
+                const href = getTitleUrl(item.kind === 'movie' ? 'movies' : 'shows', item.id);
+
+                return (
+                  <PosterCard
+                    key={`${item.kind}-${item.id}`}
+                    href={href}
+                    title={item.title}
+                    imageUrl={imageUrl}
+                    sizes="200px"
+                    linkClassName="w-full max-w-[190px] mx-auto group transition-transform hover:scale-105"
+                    overlayMeta={<span>⭐ {item.vote_average.toFixed(1)}</span>}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </Section>
+
         {/* Account Details */}
         {userName !== 'Guest' && (
         <Section>
@@ -203,48 +245,6 @@ export default function Account({}: AccountPageProps) {
           </div>
         </Section>
         )}
-
-        {/* Mood Trend Section - REMOVED */}
-        {/* Music Player - REMOVED */}
-
-        {/* Recommendations Section */}
-        <Section>
-          <div className="flex items-baseline justify-between mb-4">
-            <h2 className="text-2xl font-semibold text-white">Recommended For You</h2>
-            <span className="text-sm text-gray-400">Based on your saved titles</span>
-          </div>
-          {recommendationsLoading ? (
-            <div className="text-sm text-gray-400">Loading recommendations...</div>
-          ) : recommendationsError ? (
-            <div className="text-sm text-red-400">{recommendationsError}</div>
-          ) : recommendations.length === 0 ? (
-            <div className="text-sm text-gray-400">Save a few titles to personalize recommendations.</div>
-          ) : (
-            <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
-              {recommendations.map((item) => {
-                const imageUrl = item.poster_path ? getImageUrl(item.poster_path, 'w500') : null;
-                const href = getTitleUrl(item.kind === 'movie' ? 'movies' : 'shows', item.id);
-
-                return (
-                  <PosterCard
-                    key={`${item.kind}-${item.id}`}
-                    href={href}
-                    title={item.title}
-                    imageUrl={imageUrl}
-                    sizes="200px"
-                    linkClassName="w-full max-w-[190px] mx-auto group transition-transform hover:scale-105"
-                    overlayMeta={<span>⭐ {item.vote_average.toFixed(1)}</span>}
-                  />
-                );
-              })}
-            </div>
-          )}
-        </Section>
-
-        {/* Saved Titles Section */}
-        <Section>
-          <SavedTitlesSection titles={savedTitles} />
-        </Section>
       </Main>
     </div>
   );
