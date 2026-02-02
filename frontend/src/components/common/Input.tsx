@@ -4,7 +4,7 @@ type InputVariant = 'default' | 'search';
 type InputSize = 'sm' | 'md';
 type InputShape = 'rounded' | 'pill';
 
-interface InputProps extends ComponentPropsWithoutRef<'input'> {
+interface InputProps extends Omit<ComponentPropsWithoutRef<'input'>, 'size'> {
   variant?: InputVariant;
   size?: InputSize;
   shape?: InputShape;
