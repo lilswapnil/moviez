@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { getImageUrl } from '@/lib/api/tmdb-client';
 import type { Trailer } from '@/lib/api/tmdb-types';
 import type { SavedTitle } from '@/lib/hooks/useSavedTitles';
+import Button from '@/components/common/Button';
 
 
 interface TitleHeroItem {
@@ -179,16 +180,18 @@ export default function TitleHero({ item, displayType, trailerType, children }: 
       <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-black/20" />
       <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black via-black/50 to-transparent z-5" />
 
-      <div className="relative z-10 px-6 pt-32 pb-24 md:px-12 lg:px-16">
+      <div className="relative z-10 px-6 pt-32 pb-[50px] md:px-12 lg:px-16">
         <div className="max-w-3xl">
-        <button
+        <Button
           type="button"
           onClick={handleBack}
-          className="inline-flex items-center gap-2 text-sm text-white/80 hover:text-white transition-colors"
+          variant="text"
+          size="sm"
+          className="flex gap-[5px] px-0 py-0 text-sm font-normal"
         >
           <span aria-hidden="true">&larr;</span>
           Back
-        </button>
+        </Button>
 
         {item.tagline ? (
           <p className="mt-8 text-lg text-white/70 italic">{item.tagline}</p>
@@ -247,47 +250,52 @@ export default function TitleHero({ item, displayType, trailerType, children }: 
         ) : null}
 
         <div className="mt-10 flex flex-wrap gap-4">
-          <button
+          <Button
             type="button"
             onClick={() => setIsModalOpen(true)}
             disabled={!trailer}
-            className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-8 py-3 font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-gray-600"
+            size="lg"
+            className="disabled:bg-gray-600 w-[120px] flex items-center justify-center gap-[5px]"
           >
             <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
             </svg>
             {playButtonLabel}
-          </button>
+          </Button>
 
-          <button
+          <Button
             type="button"
             onClick={handleSave}
-            className={`inline-flex items-center gap-2 rounded-lg px-8 py-3 font-semibold transition-colors ${
+            variant="outline"
+            size="lg"
+            className={
               isSaved
-                ? 'border border-red-500/50 bg-red-500/20 text-white hover:bg-red-500/30'
-                : 'border border-white/20 bg-white/10 text-white hover:bg-white/20'
-            }`}
+                ? 'w-[150px] border border-red-500/50 bg-red-500/20 text-white hover:bg-red-500/30 flex gap-[5px]'
+                : 'w-[150px] flex gap-[5px]'
+            }
           >
             <span aria-hidden="true">{isSaved ? '♥' : '♡'}</span>
             {saveLabel}
-          </button>
+          </Button>
         </div>
         </div>
       </div>
 
-      {children ? <div className="relative z-10 px-6 md:px-12 lg:px-16 pt-30">{children}</div> : null}
+      {children ? <div className="relative z-10 px-6 md:px-12 lg:px-16 pt-[50px]">{children}</div> : null}
       {isModalOpen && trailer ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4">
           <div className="relative w-full max-w-4xl">
-            <button
+            <Button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="absolute -top-10 right-0 text-white transition-colors hover:text-gray-300"
+              variant="text"
+              size="icon"
+              className="absolute -top-10 right-0 text-white hover:text-gray-300 p-0"
             >
               <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
-            </button>
+            </Button>
             <div className="aspect-video overflow-hidden rounded-lg bg-black">
               <iframe
                 key={trailer.key}

@@ -1,7 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import Select from '@/components/common/Select';
+import SectionHeader from '@/components/common/SectionHeader';
+import ScrollControls from '@/components/common/ScrollControls';
+import useHorizontalScroll from '@/lib/hooks/useHorizontalScroll';
 
 interface Episode {
   id: number;
@@ -31,9 +35,18 @@ export default function EpisodesSection({ seasons, tvId }: EpisodesSectionProps)
   const [selectedSeason, setSelectedSeason] = useState(0);
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(false);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
+  const {
+    scrollContainerRef,
+    canScrollLeft,
+    canScrollRight,
+    scrollLeft,
+    scrollRight,
+  } = useHorizontalScroll({
+    itemWidth: 300,
+    gap: 40,
+    itemsPerScroll: 4,
+    deps: [episodes.length],
+  });
 
   const currentSeason = seasons[selectedSeason];
 
@@ -58,99 +71,50 @@ export default function EpisodesSection({ seasons, tvId }: EpisodesSectionProps)
     }
   }, [selectedSeason, currentSeason.season_number, tvId]);
 
-  const checkScroll = () => {
-    if (scrollContainerRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-      setCanScrollLeft(scrollLeft > 0);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
-    }
-  };
-
-  useEffect(() => {
-    checkScroll();
-    const scrollContainer = scrollContainerRef.current;
-    if (scrollContainer) {
-      scrollContainer.addEventListener('scroll', checkScroll);
-      return () => scrollContainer.removeEventListener('scroll', checkScroll);
-    }
-  }, [episodes]);
-
-  const scrollLeft = () => {
-    if (scrollContainerRef.current) {
-      const itemWidth = 300;
-      const gap = 40;
-      const scrollAmount = 4 * (itemWidth + gap);
-      scrollContainerRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    }
-  };
-
-  const scrollRight = () => {
-    if (scrollContainerRef.current) {
-      const itemWidth = 300;
-      const gap = 40;
-      const scrollAmount = 4 * (itemWidth + gap);
-      scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-  };
 
   return (
     <div className="py-8">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-white">Episodes</h2>
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <select
-              value={selectedSeason}
-              onChange={(e) => {
-                setSelectedSeason(Number(e.target.value));
-              }}
-              className="appearance-none px-4 py-2 bg-black/50 hover:bg-black/70 text-white rounded-lg transition-colors cursor-pointer border border-gray-700 pr-10 text-sm"
-            >
-              {seasons.map((season, idx) => (
-                <option key={season.season_number} value={idx}>
-                  {season.name}
-                </option>
-              ))}
-            </select>
-            <svg
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
-          </div>
-          {!loading && episodes.length > 0 && (
-            <div className="flex gap-2">
-              <button
-                onClick={scrollLeft}
-                disabled={!canScrollLeft}
-                className={`p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors ${
-                  !canScrollLeft ? 'opacity-30 cursor-not-allowed' : ''
-                }`}
-                aria-label="Scroll left"
+      <SectionHeader
+        title="Episodes"
+        rightSlot={
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <Select
+                value={selectedSeason}
+                onChange={(e) => {
+                  setSelectedSeason(Number(e.target.value));
+                }}
+                variant="solid"
+                size="sm"
+                shape="rounded"
+                className="appearance-none cursor-pointer pr-10"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <button
-                onClick={scrollRight}
-                disabled={!canScrollRight}
-                className={`p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors ${
-                  !canScrollRight ? 'opacity-30 cursor-not-allowed' : ''
-                }`}
-                aria-label="Scroll right"
+                {seasons.map((season, idx) => (
+                  <option key={season.season_number} value={idx}>
+                    {season.name}
+                  </option>
+                ))}
+              </Select>
+              <svg
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
             </div>
-          )}
-        </div>
-      </div>
+            {!loading && episodes.length > 0 && (
+              <ScrollControls
+                onScrollLeft={scrollLeft}
+                onScrollRight={scrollRight}
+                canScrollLeft={canScrollLeft}
+                canScrollRight={canScrollRight}
+              />
+            )}
+          </div>
+        }
+      />
 
       {loading ? (
         <div className="flex items-center justify-center py-12">
@@ -221,15 +185,6 @@ export default function EpisodesSection({ seasons, tvId }: EpisodesSectionProps)
         </div>
       )}
 
-      <style jsx global>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
     </div>
   );
 }

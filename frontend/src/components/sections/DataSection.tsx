@@ -19,8 +19,12 @@ export default function DataSection({
   type,
   category,
 }: DataSectionProps) {
-  const [movies, setMovies] = useState(initialMovies);
-  const [shows, setShows] = useState(initialShows);
+  const isUpcomingCategory = category === 'upcoming' || category.endsWith('_upcoming');
+  const filterByPoster = <T extends { poster_path?: string | null }>(items: T[]) =>
+    isUpcomingCategory ? items.filter((item) => Boolean(item.poster_path)) : items;
+
+  const [movies, setMovies] = useState(filterByPoster(initialMovies));
+  const [shows, setShows] = useState(filterByPoster(initialShows));
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -33,9 +37,9 @@ export default function DataSection({
       const newData = await response.json();
 
       if (type === 'movies') {
-        setMovies((prev) => [...prev, ...newData]);
+        setMovies((prev) => [...prev, ...filterByPoster(newData)]);
       } else {
-        setShows((prev) => [...prev, ...newData]);
+        setShows((prev) => [...prev, ...filterByPoster(newData)]);
       }
 
       setPage((prev) => prev + 1);

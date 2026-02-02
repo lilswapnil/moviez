@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Button from '@/components/common/Button';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,12 +11,9 @@ export default function NotFound() {
         <p className="text-gray-400 text-lg mb-8">
           Sorry, we couldn&apos;t find the page you&apos;re looking for.
         </p>
-        <Link 
-          href="/" 
-          className="inline-block px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors"
-        >
+        <Button href="/" size="md">
           Go Back Home
-        </Link>
+        </Button>
       </div>
     </div>
   );

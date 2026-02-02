@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { getTitleUrl } from '@/lib/utils/url';
 import { getImageUrl } from '@/lib/api/tmdb-client';
 import type { ChartResultItem } from '@/lib/utils/charts-mapping';
+import Button from '@/components/common/Button';
+import PosterFrame from '@/components/common/PosterFrame';
 
 interface SearchResultsContentProps {
   initialItems: ChartResultItem[];
@@ -80,7 +82,7 @@ export default function SearchResultsContent({ initialItems, query }: SearchResu
               href={href}
               className="group cursor-pointer transition-all duration-300 hover:shadow-2xl"
             >
-              <div className="relative aspect-[2/3] overflow-hidden bg-gray-900 shadow-lg">
+              <PosterFrame variant="dark">
                 {posterPath ? (
                   <Image
                     src={getImageUrl(posterPath, 'w500')}
@@ -111,20 +113,16 @@ export default function SearchResultsContent({ initialItems, query }: SearchResu
                     ) : null}
                   </div>
                 </div>
-              </div>
+              </PosterFrame>
             </Link>
           );
         })}
       </div>
       {hasMore ? (
         <div className="flex justify-center mt-12">
-          <button
-            onClick={handleLoadMore}
-            disabled={isLoading}
-            className="px-8 py-3 bg-red-600 hover:bg-red-700 disabled:bg-red-800 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+          <Button onClick={handleLoadMore} disabled={isLoading} size="lg">
             {isLoading ? 'Loading...' : 'Load More'}
-          </button>
+          </Button>
         </div>
       ) : null}
     </>

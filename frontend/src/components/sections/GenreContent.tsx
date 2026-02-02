@@ -6,6 +6,9 @@ import type { Movie, TVShow } from '@/lib/api/tmdb-types';
 import Image from 'next/image';
 import Link from 'next/link';
 import { getTitleUrl } from '@/lib/utils/url';
+import Button from '@/components/common/Button';
+import Select from '@/components/common/Select';
+import PosterFrame from '@/components/common/PosterFrame';
 
 interface GenreContentProps {
   initialResults: (Movie | TVShow)[];
@@ -75,17 +78,20 @@ export default function GenreContent({
         <label htmlFor="genre-sort" className="text-sm text-white/70">
           Sort by
         </label>
-        <select
+        <Select
           id="genre-sort"
           value={sortOption}
           onChange={(event) => setSortOption(event.target.value as SortOption)}
-          className="w-full max-w-xs rounded-full border border-white/15 bg-black/50 px-4 py-2 text-sm text-white focus:border-red-500/60 focus:outline-none"
+          variant="default"
+          size="sm"
+          shape="pill"
+          className="w-full max-w-xs"
         >
           <option value="popularity">Most Popular</option>
           <option value="rating">Top Rated</option>
           <option value="newest">Newest First</option>
           <option value="oldest">Oldest First</option>
-        </select>
+        </Select>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
         {sortedResults.map((item) => {
@@ -97,7 +103,7 @@ export default function GenreContent({
               href={getTitleUrl(type, item.id)}
               className="group block transition-all duration-300 hover:shadow-2xl"
             >
-              <div className="relative aspect-[2/3] overflow-hidden bg-gray-800 shadow-lg">
+              <PosterFrame>
                 {item.poster_path ? (
                   <Image
                     src={getImageUrl(item.poster_path, 'w500')}
@@ -127,20 +133,16 @@ export default function GenreContent({
                     <span>{new Date(date || '').getFullYear()}</span>
                   </div>
                 </div>
-              </div>
+              </PosterFrame>
             </Link>
           );
         })}
       </div>
 
       <div className="flex justify-center mt-12">
-        <button
-          onClick={handleLoadMore}
-          disabled={isLoading}
-          className="px-8 py-3 bg-red-600 hover:bg-red-700 disabled:bg-red-800 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
+        <Button onClick={handleLoadMore} disabled={isLoading} size="lg">
           {isLoading ? 'Loading...' : 'Load More'}
-        </button>
+        </Button>
       </div>
     </>
   );
