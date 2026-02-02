@@ -60,7 +60,7 @@ export default function SavedTitlesSection({ titles }: SavedTitlesSectionProps) 
       />
       <div
         ref={scrollContainerRef}
-        className="flex gap-2 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory"
+        className="flex items-start justify-start gap-[3px] overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory"
       >
         {titles.map((title) => {
           const resolvedTitle = title.title || title.name || 'Saved Title';

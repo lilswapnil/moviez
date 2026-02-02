@@ -50,7 +50,7 @@ export default function PosterCard({
           )
         )}
         {showOverlay ? (
-          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
+          <div className="absolute right-0 bottom-0 w-full h-[275px] bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
             <h3 className="text-white font-semibold text-sm mb-1 line-clamp-2">{title}</h3>
             {overlayMeta ? (
               <div className="flex items-center gap-2 text-xs text-gray-300">{overlayMeta}</div>
