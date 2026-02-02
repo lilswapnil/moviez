@@ -5,6 +5,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { getSearchUrl, getAccountUrl } from '@/lib/utils/url';
+import Button from '@/components/common/Button';
+import Input from '@/components/common/Input';
 
 export default function Navbar() {
 
@@ -83,8 +85,10 @@ export default function Navbar() {
 
             {/* Hamburger for mobile */}
             <div className="sm:hidden flex items-center">
-                <button
+                <Button
                     type="button"
+                    variant="text"
+                    size="icon"
                     className="p-2 text-white/80 hover:text-white focus:outline-none"
                     aria-label="Open menu"
                     onClick={() => setShowMobileMenu(true)}
@@ -92,14 +96,16 @@ export default function Navbar() {
                     <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
-                </button>
+                </Button>
             </div>
 
             {/* Mobile menu overlay */}
             {showMobileMenu && (
                 <div className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-start pt-16 gap-8 text-2xl">
-                    <button
+                    <Button
                         type="button"
+                        variant="text"
+                        size="icon"
                         className="absolute top-5 right-5 p-2 text-white/60 hover:text-white"
                         aria-label="Close menu"
                         onClick={() => setShowMobileMenu(false)}
@@ -107,20 +113,25 @@ export default function Navbar() {
                         <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
-                    </button>
+                    </Button>
                     {/* Search bar in mobile menu */}
                     <form className="w-11/12 max-w-md mx-auto relative mb-4" onSubmit={handleSearch}>
-                        <input
+                        <Input
                             type="text"
                             value={searchTerm}
                             onChange={(event) => setSearchTerm(event.target.value)}
                             placeholder="Search movies, tv, anime..."
-                            className="w-full px-4 py-2.5 pr-12 rounded-full bg-black/70 border border-white/20 text-white placeholder:text-white/60 focus:outline-none focus:bg-black/80 focus:border-red-500/50 transition-colors"
+                            variant="search"
+                            size="sm"
+                            shape="pill"
+                            className="pr-12 bg-black/70 focus:bg-black/80 focus:border-red-500/50"
                             autoFocus
                         />
-                        <button
+                        <Button
                             type="submit"
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors"
+                            variant="text"
+                            size="icon"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors p-0"
                             aria-label="Search"
                         >
                             <svg
@@ -131,7 +142,7 @@ export default function Navbar() {
                             >
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
-                        </button>
+                        </Button>
                     </form>
                     <Link href="/" className={linkClassName('/')} onClick={() => setShowMobileMenu(false)}>
                         Home
@@ -147,16 +158,21 @@ export default function Navbar() {
 
             {/* Search bar (unchanged) */}
             <form className="max-w-md relative hidden sm:block" onSubmit={handleSearch}>
-                <input 
+                <Input 
                     type="text" 
                     value={searchTerm}
                     onChange={(event) => setSearchTerm(event.target.value)}
                     placeholder="Search movies, tv, anime..." 
-                    className="w-full px-4 py-2.5 pr-12 rounded-full bg-black/50 border border-white/20 text-white placeholder:text-white/60 focus:outline-none focus:bg-black/60 focus:border-red-500/50 transition-colors"
+                    variant="search"
+                    size="sm"
+                    shape="pill"
+                    className="pr-12 focus:border-red-500/50"
                 />
-                <button
+                <Button
                     type="submit"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors"
+                    variant="text"
+                    size="icon"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors p-0"
                     aria-label="Search"
                 >
                     <svg 
@@ -167,7 +183,7 @@ export default function Navbar() {
                     >
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
-                </button>
+                </Button>
             </form>
         </nav>
     );

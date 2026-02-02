@@ -4,6 +4,7 @@ import TitleCastSection from '@/components/sections/TitleCastSection';
 import SimilarTitles from '@/components/sections/SimilarTitles';
 import MerchandiseSection from '@/components/sections/MerchandiseSection';
 import EpisodesSection from '@/components/sections/EpisodesSection';
+import Button from '@/components/common/Button';
 import { getMovieCredits, getMovieDetails, getTVCredits, getTVShowDetails, getSimilarMovies, getSimilarTVShows, getCollectionDetails, getMovieWatchProviders, getTVWatchProviders } from '@/lib/api/tmdb-client';
 import Image from 'next/image';
 
@@ -174,11 +175,14 @@ export default async function TitlePage({ params }: TitlePageProps) {
           <div className="mb-6 flex flex-wrap gap-3 items-center">
             <span className="text-white/80 font-semibold mr-2">Available on:</span>
             {streamingPlatforms.map((provider) => (
-              <a
+              <Button
                 key={provider.provider_id}
                 href={providerLink || '#'}
                 target="_blank"
                 rel="noopener noreferrer"
+                variant="outline"
+                size="sm"
+                shape="pill"
                 className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-medium transition-colors"
               >
                 {provider.logo_path && (
@@ -191,7 +195,7 @@ export default async function TitlePage({ params }: TitlePageProps) {
                   />
                 )}
                 {provider.provider_name}
-              </a>
+              </Button>
             ))}
           </div>
         )}

@@ -4,6 +4,10 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Button from '@/components/common/Button';
+import Input from '@/components/common/Input';
+import Card from '@/components/common/Card';
+import PosterFrame from '@/components/common/PosterFrame';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 interface Movie {
@@ -158,9 +162,10 @@ export default function Login() {
               {movies.slice(0, 40).map((movie) => {
                 const imageUrl = `https://image.tmdb.org/t/p/w342${movie.poster_path}`;
                 return (
-                  <div
+                  <PosterFrame
                     key={movie.id}
-                    className="relative aspect-[2/3] w-full h-full bg-gray-800 overflow-hidden"
+                    variant="plain"
+                    className="w-full h-full"
                   >
                     {movie.poster_path ? (
                       <Image
@@ -181,7 +186,7 @@ export default function Login() {
                         </p>
                       </div>
                     )}
-                  </div>
+                  </PosterFrame>
                 );
               })}
             </div>
@@ -194,7 +199,7 @@ export default function Login() {
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
         <div className="w-full max-w-sm">
           {/* Login Card */}
-          <div className="rounded-2xl bg-white/5 border border-white/10 p-6 shadow-lg shadow-black/50 backdrop-blur-sm">
+          <Card variant="elevatedBlur" radius="2xl" className="p-6">
             {/* Logo */}
             <div className="text-center mb-6">
               <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg mb-3 shadow-lg">
@@ -216,13 +221,12 @@ export default function Login() {
                 <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
                   Email Address
                 </label>
-                <input
+                <Input
                   id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
                   required
                 />
               </div>
@@ -232,23 +236,25 @@ export default function Login() {
                   Password
                 </label>
                 <div className="relative">
-                  <input
+                  <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all pr-10"
+                    className="pr-10"
                     required
                   />
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                    variant="text"
+                    size="icon"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors p-0"
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
                     {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
-                  </button>
+                  </Button>
                 </div>
               </div>
               {/* Error Message */}
@@ -269,13 +275,15 @@ export default function Login() {
                 </Link>
               </div>
               {/* Login Button */}
-              <button
+              <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold hover:from-red-700 hover:to-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-red-500/20"
+                variant="gradient"
+                size="md"
+                className="w-full"
               >
                 {isLoading ? 'Signing in...' : 'Sign In'}
-              </button>
+              </Button>
             </form>
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
@@ -286,21 +294,20 @@ export default function Login() {
               </div>
             </div>
             {/* Sign Up Button */}
-            <Link
-              href="/signup"
-              className="w-full block text-center px-4 py-3 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold hover:from-red-600 hover:to-red-700 transition-all shadow-lg shadow-red-500/20 mb-3"
-            >
+            <Button href="/signup" variant="gradient" size="md" className="w-full mb-3">
               Sign Up
-            </Link>
+            </Button>
             {/* Continue as Guest Button */}
-            <button
+            <Button
               type="button"
               onClick={handleContinueAsGuest}
-              className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white font-semibold hover:bg-white/15 hover:border-white/30 transition-all"
+              variant="outline"
+              size="md"
+              className="w-full"
             >
               Continue as Guest
-            </button>
-          </div>
+            </Button>
+          </Card>
           {/* Footer Links */}
           <div className="mt-8 flex justify-center gap-6 text-sm text-gray-500 text-center">
             <Link href="#" className="hover:text-gray-400 transition-colors">

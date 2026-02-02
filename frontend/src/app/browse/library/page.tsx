@@ -1,6 +1,4 @@
-import Link from 'next/link';
 import { movieGenres, tvGenres, animeGenres, cartoonGenres } from '@/lib/constants/genres.const';
-import { getGenreUrl } from '@/lib/utils/url';
 import ChartSection, { ChartWithPreview } from '@/components/sections/ChartSection';
 import type { ChartPreviewItem } from '@/features/library/components/ChartPreviewRow';
 import type { Movie, TVShow } from '@/lib/api/tmdb-types';
@@ -8,6 +6,7 @@ import { chartSectionsConfig, chartFetchers } from '@/lib/utils/charts-mapping';
 import Main from '@/components/common/Main';
 import Header from '@/components/common/Header';
 import Section from '@/components/common/Section';
+import GenreSection from '@/components/sections/GenreSection';
 
 export const dynamic = 'force-dynamic';
 
@@ -77,77 +76,33 @@ export default async function Library() {
           ))}
         </Section>
 
-        <Section>
-          <div className="flex items-baseline justify-between mb-4">
-            <h2 className="text-2xl font-semibold text-white">Movie Genres</h2>
-            <span className="text-sm text-gray-400">Tap a genre to explore</span>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-            {movieGenres.map((genre) => (
-              <Link
-                key={genre}
-                href={getGenreUrl('movies', genre)}
-                className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white hover:border-red-500/60 hover:bg-red-500/10 transition-colors"
-              >
-                {genre}
-              </Link>
-            ))}
-          </div>
-        </Section>
+        <GenreSection
+          title="Movie Genres"
+          subtitle="Tap a genre to explore"
+          genres={movieGenres}
+          type="movies"
+        />
 
-        <Section>
-          <div className="flex items-baseline justify-between mb-4">
-            <h2 className="text-2xl font-semibold text-white">TV Genres</h2>
-            <span className="text-sm text-gray-400">Discover series by mood</span>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-            {tvGenres.map((genre) => (
-              <Link
-                key={genre}
-                href={getGenreUrl('shows', genre)}
-                className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white hover:border-red-500/60 hover:bg-red-500/10 transition-colors"
-              >
-                {genre}
-              </Link>
-            ))}
-          </div>
-        </Section>
+        <GenreSection
+          title="TV Genres"
+          subtitle="Discover series by mood"
+          genres={tvGenres}
+          type="shows"
+        />
 
-        <Section>
-          <div className="flex items-baseline justify-between mb-4">
-            <h2 className="text-2xl font-semibold text-white">Anime Genres</h2>
-            <span className="text-sm text-gray-400">Find your favorite anime style</span>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-            {animeGenres.map((genre) => (
-              <Link
-                key={genre}
-                href={getGenreUrl('animes', genre)}
-                className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white hover:border-red-500/60 hover:bg-red-500/10 transition-colors"
-              >
-                {genre}
-              </Link>
-            ))}
-          </div>
-        </Section>
+        <GenreSection
+          title="Anime Genres"
+          subtitle="Find your favorite anime style"
+          genres={animeGenres}
+          type="animes"
+        />
 
-        <Section>
-          <div className="flex items-baseline justify-between mb-4">
-            <h2 className="text-2xl font-semibold text-white">Cartoon Genres</h2>
-            <span className="text-sm text-gray-400">Enjoy animated fun for all ages</span>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-            {cartoonGenres.map((genre) => (
-              <Link
-                key={genre}
-                href={getGenreUrl('cartoons', genre)}
-                className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white hover:border-red-500/60 hover:bg-red-500/10 transition-colors"
-              >
-                {genre}
-              </Link>
-            ))}
-          </div>
-        </Section>
+        <GenreSection
+          title="Cartoon Genres"
+          subtitle="Enjoy animated fun for all ages"
+          genres={cartoonGenres}
+          type="cartoons"
+        />
       </Main>
     </div>
   );

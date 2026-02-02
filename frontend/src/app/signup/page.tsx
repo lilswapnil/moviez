@@ -4,6 +4,10 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import Button from '@/components/common/Button';
+import Input from '@/components/common/Input';
+import Card from '@/components/common/Card';
+import PosterFrame from '@/components/common/PosterFrame';
 
 interface Movie {
   id: number;
@@ -136,9 +140,10 @@ export default function Signup() {
               {movies.slice(0, 40).map((movie) => {
                 const imageUrl = `https://image.tmdb.org/t/p/w342${movie.poster_path}`;
                 return (
-                  <div
+                  <PosterFrame
                     key={movie.id}
-                    className="relative aspect-[2/3] w-full h-full bg-gray-800 overflow-hidden"
+                    variant="plain"
+                    className="w-full h-full"
                   >
                     {movie.poster_path ? (
                       <Image
@@ -159,7 +164,7 @@ export default function Signup() {
                         </p>
                       </div>
                     )}
-                  </div>
+                  </PosterFrame>
                 );
               })}
             </div>
@@ -172,7 +177,7 @@ export default function Signup() {
       {/* Content */}
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
         <div className="w-full max-w-sm">
-          <div className="rounded-2xl bg-white/5 border border-white/10 p-6 shadow-lg shadow-black/50 backdrop-blur-sm">
+        <Card variant="elevatedBlur" radius="2xl" className="p-6">
             {/* Logo */}
             <div className="text-center mb-6">
               <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg mb-3 shadow-lg">
@@ -194,13 +199,12 @@ export default function Signup() {
                 <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
                   Name
                 </label>
-                <input
+                <Input
                   id="name"
                   type="text"
                   value={name}
                   onChange={e => setName(e.target.value)}
                   placeholder="Your Name"
-                  className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
                   required
                 />
               </div>
@@ -208,13 +212,12 @@ export default function Signup() {
                 <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
                   Email Address
                 </label>
-                <input
+                <Input
                   id="email"
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
                   required
                 />
               </div>
@@ -223,23 +226,25 @@ export default function Signup() {
                   Password
                 </label>
                 <div className="relative">
-                  <input
+                  <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all pr-10"
+                    className="pr-10"
                     required
                   />
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                    variant="text"
+                    size="icon"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors p-0"
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
                     {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
-                  </button>
+                  </Button>
                 </div>
               </div>
               <div>
@@ -247,41 +252,45 @@ export default function Signup() {
                   Confirm Password
                 </label>
                 <div className="relative">
-                  <input
+                  <Input
                     id="confirmPassword"
                     type={showConfirmPassword ? 'text' : 'password'}
                     value={confirmPassword}
                     onChange={e => setConfirmPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all pr-10"
+                    className="pr-10"
                     required
                   />
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                    variant="text"
+                    size="icon"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors p-0"
                     aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
                   >
                     {showConfirmPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
-                  </button>
+                  </Button>
                 </div>
               </div>
               {error && <div className="text-red-500 text-sm text-center">{error}</div>}
               {success && <div className="text-green-400 text-sm text-center">Account created! Redirecting...</div>}
-              <button
+              <Button
                 type="submit"
                 disabled={loading}
-                className="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold hover:from-red-700 hover:to-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-red-500/20"
+                variant="gradient"
+                size="md"
+                className="w-full"
               >
                 {loading ? "Creating..." : "Sign Up"}
-              </button>
+              </Button>
             </form>
 
             <div className="mt-8 text-center text-gray-400 text-sm">
               Already have an account?{' '}
               <Link href="/login" className="underline hover:text-white">Log in</Link>
             </div>
-          </div>
+          </Card>
 
           {/* Footer Links */}
           <div className="mt-8 flex justify-center gap-6 text-sm text-gray-500 text-center">

@@ -5,6 +5,7 @@ import { getImageUrl } from '@/lib/api/tmdb-client';
 import Link from 'next/link';
 import { chartNameToSlug } from '@/lib/utils/chart-slugs';
 import { getChartUrl } from '@/lib/utils/url';
+import PosterFrame from '@/components/common/PosterFrame';
 
 export type ChartPreviewItem = {
   id: number;
@@ -34,7 +35,7 @@ export default function ChartPreviewRow({ name, items }: ChartPreviewRowProps) {
         {displayItems.length > 0 ? (
           displayItems.map((item) => (
             <div key={item.id} className="w-16 flex-shrink-0">
-              <div className="relative aspect-[2/3] overflow-hidden bg-white/5 border border-white/10">
+              <PosterFrame variant="bordered">
                 {item.poster_path ? (
                   <Image
                     src={getImageUrl(item.poster_path, 'w500')}
@@ -48,7 +49,7 @@ export default function ChartPreviewRow({ name, items }: ChartPreviewRowProps) {
                     {item.title}
                   </div>
                 )}
-              </div>
+              </PosterFrame>
               <p className="mt-1 text-[10px] text-gray-300 line-clamp-2 text-center">
                 {item.title}
               </p>

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { getImageUrl } from '@/lib/api/tmdb-client';
 import type { CastMember } from '@/lib/api/tmdb-types';
+import Button from '@/components/common/Button';
 
 interface TitleCastSectionProps {
   cast: CastMember[];
@@ -65,10 +66,7 @@ export default function TitleCastSection({ cast, variant = 'standalone' }: Title
       ? 'flex flex-nowrap justify-center gap-4'
       : 'flex flex-nowrap justify-center gap-8';
 
-  const navButtonClass =
-    variant === 'overlay'
-      ? 'p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed'
-      : 'p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed';
+  const navButtonVariant = variant === 'overlay' ? 'ghostLight' : 'ghost';
 
   const goToPage = (page: number) => {
     setCurrentPage(Math.max(0, Math.min(page, totalPages - 1)));
@@ -88,28 +86,32 @@ export default function TitleCastSection({ cast, variant = 'standalone' }: Title
         <h2 className={headingClass}>Cast</h2>
         {totalPages > 1 ? (
           <div className="flex items-center gap-2">
-            <button
+            <Button
               type="button"
               onClick={goToPrev}
               disabled={safePage === 0}
-              className={navButtonClass}
+              variant={navButtonVariant}
+              size="icon"
+              shape="pill"
               aria-label="Previous cast page"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
               onClick={goToNext}
               disabled={safePage >= totalPages - 1}
-              className={navButtonClass}
+              variant={navButtonVariant}
+              size="icon"
+              shape="pill"
               aria-label="Next cast page"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
-            </button>
+            </Button>
           </div>
         ) : null}
       </div>
@@ -152,15 +154,14 @@ export default function TitleCastSection({ cast, variant = 'standalone' }: Title
       {totalPages > 1 ? (
         <div className="mt-6 flex justify-center gap-2">
           {Array.from({ length: totalPages }, (_, index) => (
-            <button
+            <Button
               key={index}
               type="button"
               onClick={() => goToPage(index)}
-              className={`h-2 w-2 rounded-full transition-colors ${
-                safePage === index
-                  ? 'bg-red-500'
-                  : 'bg-white/30 hover:bg-white/60'
-              }`}
+              variant="dot"
+              size="dot"
+              shape="pill"
+              className={safePage === index ? 'bg-red-500 hover:bg-red-500' : undefined}
               aria-label={`Go to cast page ${index + 1}`}
             />
           ))}

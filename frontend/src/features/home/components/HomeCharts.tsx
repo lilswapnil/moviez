@@ -2,10 +2,13 @@
 
 import { getImageUrl } from '@/lib/api/tmdb-client';
 import type { Movie, TVShow } from '@/lib/api/tmdb-types';
-import Image from 'next/image';
-import Link from 'next/link';
 import { getTitleUrl } from '@/lib/utils/url';
-import { useRef, useState, useEffect } from 'react';
+import { useState } from 'react';
+import Button from '@/components/common/Button';
+import PosterCard from '@/components/common/PosterCard';
+import SectionHeader from '@/components/common/SectionHeader';
+import ScrollControls from '@/components/common/ScrollControls';
+import useHorizontalScroll from '@/lib/hooks/useHorizontalScroll';
 
 interface DataItem {
   id: number;
@@ -50,132 +53,72 @@ export default function HomeCards({ title, movies = [], shows = [], onShowMore, 
       first_air_date: s.first_air_date
     }))
   ];
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-
-  const checkScroll = () => {
-    if (scrollContainerRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-      setCanScrollLeft(scrollLeft > 0);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
-    }
-  };
-
-  useEffect(() => {
-    checkScroll();
-    const scrollContainer = scrollContainerRef.current;
-    if (scrollContainer) {
-      scrollContainer.addEventListener('scroll', checkScroll);
-      return () => scrollContainer.removeEventListener('scroll', checkScroll);
-    }
-  }, []);
-
-  const scrollLeft = () => {
-    if (scrollContainerRef.current) {
-      const containerWidth = scrollContainerRef.current.clientWidth;
-      const itemWidth = 206; 
-      const itemsToScroll = Math.floor(containerWidth / itemWidth);
-      const scrollAmount = itemsToScroll * itemWidth;
-      scrollContainerRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    }
-  };
-
-  const scrollRight = () => {
-    if (scrollContainerRef.current) {
-      const containerWidth = scrollContainerRef.current.clientWidth;
-      const itemWidth = 206; // 190px width + 16px gap
-      const itemsToScroll = Math.floor(containerWidth / itemWidth);
-      const scrollAmount = itemsToScroll * itemWidth;
-      scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-  };
+  const {
+    scrollContainerRef,
+    canScrollLeft,
+    canScrollRight,
+    scrollLeft,
+    scrollRight,
+  } = useHorizontalScroll({
+    itemWidth: 190,
+    gap: 16,
+    deps: [items.length],
+  });
 
   return (
     <div className="mb-12 px-11">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-white">{title}</h2>
-        <div className="flex gap-2">
-          <button 
-            onClick={scrollLeft}
-            disabled={!canScrollLeft}
-            className={`p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors ${
-              !canScrollLeft ? 'opacity-30 cursor-not-allowed' : ''
-            }`}
-            aria-label="Scroll left"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          {canScrollRight ? (
-            <button 
-              onClick={scrollRight}
-              disabled={!canScrollRight}
-              className={`p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors ${
-                !canScrollRight ? 'opacity-30 cursor-not-allowed' : ''
-              }`}
-              aria-label="Scroll right"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          ) : (
-            onShowMore && (
-              <button
-                onClick={onShowMore}
-                disabled={isLoading}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold"
-              >
-                {isLoading ? 'Loading...' : 'Show More'}
-              </button>
-            )
-          )}
-        </div>
-      </div>
+      <SectionHeader
+        title={title}
+        rightSlot={
+          <ScrollControls
+            onScrollLeft={scrollLeft}
+            onScrollRight={scrollRight}
+            canScrollLeft={canScrollLeft}
+            canScrollRight={canScrollRight}
+            showRight={canScrollRight}
+            rightFallback={
+              onShowMore ? (
+                <Button
+                  onClick={onShowMore}
+                  disabled={isLoading}
+                  variant="outline"
+                  size="sm"
+                  shape="pill"
+                  className="px-3 py-1"
+                >
+                  {isLoading ? 'Loading...' : 'Show More'}
+                </Button>
+              ) : null
+            }
+          />
+        }
+      />
       <div 
         ref={scrollContainerRef}
-        className="flex gap-1 sm:gap-4 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory md:gap-4 md:pb-6"
+        className="flex gap-1 sm:gap-2 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory md:gap-2 md:pb-6"
       >
         {items.map((item) => {
           const isMovie = 'release_date' in item;
           const titleType = isMovie ? 'movies' : 'shows';
+          const imageUrl = item.poster_path ? getImageUrl(item.poster_path, 'w500') : null;
+          const year = new Date(item.release_date || item.first_air_date || '').getFullYear();
+
           return (
-            <Link
+            <PosterCard
               key={item.id}
               href={getTitleUrl(titleType, item.id)}
-              className="flex-shrink-0 w-[140px] sm:w-[160px] md:w-[190px] cursor-pointer group transition-transform hover:scale-105 snap-start"
-            >
-              <div className="relative aspect-[2/3] overflow-hidden bg-gray-800 shadow-lg">
-                {item.poster_path ? (
-                  <Image
-                    src={getImageUrl(item.poster_path, 'w500')}
-                    alt={item.title || ''}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 140px, (max-width: 768px) 160px, 190px"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-300 bg-gradient-to-br from-gray-700 to-gray-900 p-4">
-                    <p className="text-center font-semibold line-clamp-3 text-sm">
-                      {item.title}
-                    </p>
-                  </div>
-                )}
-                {/* Hover overlay */}
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
-                  <h3 className="text-white font-semibold text-sm mb-1 line-clamp-2">
-                    {item.title}
-                  </h3>
-                  <div className="flex items-center gap-2 text-xs text-gray-300">
-                    <span>⭐ {item.vote_average.toFixed(1)}</span>
-                    <span>•</span>
-                    <span>{new Date(item.release_date || item.first_air_date || '').getFullYear()}</span>
-                  </div>
-                </div>
-              </div>
-            </Link>
+              title={item.title}
+              imageUrl={imageUrl}
+              sizes="(max-width: 640px) 140px, (max-width: 768px) 160px, 190px"
+              linkClassName="flex-shrink-0 w-[140px] sm:w-[160px] md:w-[190px] cursor-pointer group transition-transform hover:scale-105 snap-start"
+              overlayMeta={
+                <>
+                  <span>⭐ {item.vote_average.toFixed(1)}</span>
+                  <span>•</span>
+                  <span>{year}</span>
+                </>
+              }
+            />
           );
         })}
       </div>

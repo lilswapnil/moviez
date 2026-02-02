@@ -6,6 +6,8 @@ import SavedTitlesSection from '@/components/sections/SavedTitlesSection';
 import Main from '@/components/common/Main';
 import Header from '@/components/common/Header';
 import Section from '@/components/common/Section';
+import Button from '@/components/common/Button';
+import Card from '@/components/common/Card';
 
 // Accept params prop for Next.js App Router type compatibility
 import type { SavedTitle } from '@/lib/hooks/useSavedTitles';
@@ -39,7 +41,7 @@ export default function Account({}: AccountPageProps) {
         </Header>
 
         {/* User Profile Card */}
-        <div className="rounded-xl bg-white/5 border border-white/10 p-6 shadow-lg shadow-black/30 hover:border-red-500/60 hover:bg-red-500/5 transition-colors">
+        <Card variant="elevatedHover" radius="xl" className="p-6">
           <div className="flex items-start gap-6">
             <div className={`w-24 h-24 rounded-full flex items-center justify-center flex-shrink-0 ${
               userName === 'Guest' 
@@ -58,17 +60,14 @@ export default function Account({}: AccountPageProps) {
               ) : (
                 <>
                   <p className="text-gray-400 mb-4">Guest user • No account linked</p>
-                  <Link
-                    href="/signup"
-                    className="inline-block mt-2 px-6 py-2 rounded-lg bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold hover:from-red-700 hover:to-red-600 transition-all shadow-lg shadow-red-500/20"
-                  >
+                  <Button href="/signup" variant="gradient" size="sm" className="mt-2">
                     Create Account
-                  </Link>
+                  </Button>
                 </>
               )}
             </div>
           </div>
-        </div>
+        </Card>
 
         {/* Account Details */}
         {userName !== 'Guest' && (
@@ -79,7 +78,7 @@ export default function Account({}: AccountPageProps) {
           </div>
           <div className="grid gap-6 lg:grid-cols-2">
             {/* Contact Card */}
-            <div className="rounded-xl bg-white/5 border border-white/10 p-6 shadow-lg shadow-black/30 hover:border-red-500/60 hover:bg-red-500/5 transition-colors">
+            <Card variant="elevatedHover" radius="xl" className="p-6">
               <div className="flex items-center gap-3 mb-6">
                 <span className="text-2xl">✉️</span>
                 <h3 className="text-xl font-semibold text-white">Contact</h3>
@@ -93,15 +92,20 @@ export default function Account({}: AccountPageProps) {
                   <div>
                     <label className="text-gray-400 text-sm">Profile:</label>
                   </div>
-                  <button className="text-gray-400 hover:text-red-500 transition-colors text-sm font-medium">
+                  <Button
+                    type="button"
+                    variant="text"
+                    size="sm"
+                    className="px-0 py-0 text-sm font-medium text-gray-400 hover:text-red-500"
+                  >
                     View
-                  </button>
+                  </Button>
                 </div>
               </div>
-            </div>
+            </Card>
 
             {/* Settings Card */}
-            <div className="rounded-xl bg-white/5 border border-white/10 p-6 shadow-lg shadow-black/30 hover:border-red-500/60 hover:bg-red-500/5 transition-colors">
+            <Card variant="elevatedHover" radius="xl" className="p-6">
               <div className="flex items-center gap-3 mb-6">
                 <span className="text-2xl">⚙️</span>
                 <h3 className="text-xl font-semibold text-white">Settings</h3>
@@ -124,7 +128,7 @@ export default function Account({}: AccountPageProps) {
                   <p className="text-white mt-1">Allowed</p>
                 </div>
               </div>
-            </div>
+            </Card>
           </div>
         </Section>
         )}

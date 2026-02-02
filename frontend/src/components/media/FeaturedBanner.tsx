@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getImageUrl } from '@/lib/api/tmdb-client';
+import Button from '@/components/common/Button';
 import type { Trailer, Movie, TVShow, Anime, Cartoon } from '@/lib/api/tmdb-types';
 
 function hashString(value: string): number {
@@ -338,16 +339,18 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
           <span>{new Date(featuredItem.release_date || featuredItem.first_air_date || '').getFullYear()}</span>
         </div>
         <div className="flex gap-4 transition-opacity duration-500">
-          <button
+          <Button
             onClick={goToPrev}
             aria-label="Previous"
-            className="px-3 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition-colors flex items-center justify-center"
+            variant="secondary"
+            size="sm"
+            className="px-3 py-2"
             disabled={allItems.length <= 1}
           >
             {/* Left arrow */}
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><polygon points="13,4 7,10 13,16" /></svg>
-          </button>
-          <button 
+          </Button>
+          <Button
             onClick={() => {
               if (showTrailer && isPlaying) {
                 setShowTrailer(false);
@@ -358,7 +361,8 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
               }
             }}
             disabled={!trailer}
-            className="px-8 py-3 bg-red-600 hover:bg-red-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors flex items-center gap-2"
+            size="hero"
+            className="disabled:bg-gray-600 w-20 !flex items-center justify-center"
           >
             {showTrailer && isPlaying ? (
               // Pause icon
@@ -373,8 +377,8 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
               </svg>
             )}
             {showTrailer && isPlaying ? 'Pause' : 'Play'}
-          </button>
-          <a
+          </Button>
+          <Button
             href={`/title/$
               {featuredItem.kind === 'movie' ? 'movies'
               : featuredItem.kind === 'tv' ? 'shows'
@@ -384,10 +388,12 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
               : featuredItem.kind === 'international' ? 'movies' // treat international as movies
               : 'movies'
             }/${featuredItem.id}`}
-            className="px-8 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white font-semibold rounded-lg transition-colors flex items-center justify-center"
+            variant="secondary"
+            size="hero"
+            className="backdrop-blur-sm !flex flex-col items-center justify-center"
           >
             More Info
-          </a>
+          </Button>
         </div>
       </div>
     </div>

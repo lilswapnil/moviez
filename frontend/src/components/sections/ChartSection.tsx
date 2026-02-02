@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from 'react';
 import ChartPreviewRow, { type ChartPreviewItem } from '@/features/library/components/ChartPreviewRow';
+import Button from '@/components/common/Button';
+import Card from '@/components/common/Card';
 
 export interface ChartWithPreview {
   name: string;
@@ -32,7 +34,7 @@ export default function ChartSection({ title, charts }: ChartSectionProps) {
   };
 
   return (
-    <div className="rounded-2xl bg-white/5 border border-white/10 p-5 shadow-lg shadow-black/30">
+    <Card variant="elevated" radius="2xl" className="p-5">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-semibold text-white">{title}</h2>
         <span className="text-sm text-gray-400">Top trends right now</span>
@@ -49,17 +51,18 @@ export default function ChartSection({ title, charts }: ChartSectionProps) {
       {totalPages > 1 && (
         <div className="flex justify-center gap-2 mt-4">
           {Array.from({ length: totalPages }, (_, index) => (
-            <button
+            <Button
               key={index}
               onClick={() => goToPage(index)}
-              className={`h-2 w-2 rounded-full transition-colors ${
-                safePage === index ? 'bg-red-500' : 'bg-white/30 hover:bg-white/60'
-              }`}
+              variant="dot"
+              size="dot"
+              shape="pill"
+              className={safePage === index ? 'bg-red-500 hover:bg-red-500' : undefined}
               aria-label={`Go to page ${index + 1}`}
             />
           ))}
         </div>
       )}
-    </div>
+    </Card>
   );
 }
