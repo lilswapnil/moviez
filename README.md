@@ -183,8 +183,8 @@ Set `TMDB_API_KEY` in your hosting provider's environment variables.
 
 ## Preview
 <p align="center">
-  <img src="./frontend/assets/screenshots.png" width="49%" alt="Moviez Screenshot" />
-  <img src="./frontend/assets/result.png" width="49%" alt="Moviez Screenshot" />
+  <img src="./frontend/assets/screenshots.png" width="90%" alt="Moviez Screenshot" />
+  <img src="./frontend/assets/result.png" width="90%" alt="Moviez Screenshot" />
 </p>
 
 ## 🤝 Contributing
