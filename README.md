@@ -13,10 +13,6 @@ A modern streaming discovery platform built with Next.js that surfaces curated f
   <img src="./frontend/assets/moviz-preview.png" width="80%" alt="Moviez Preview" />
 </p>
 
-<p align="center">
-  <img src="./frontend/assets/screenshots.png" width="70%" alt="Moviez Screenshot" />
-</p>
-
 ## ✨ Features
 
 - **Featured Content**: Hero banner with trailer playback for new releases
@@ -187,9 +183,8 @@ Set `TMDB_API_KEY` in your hosting provider's environment variables.
 
 ## Preview
 <p align="center">
-  <img src="assets/preview.jpeg" alt="preview" width="1000">
-  <br/>
-  <em>Preview</em>
+  <img src="./frontend/assets/screenshots.png" width="70%" alt="Moviez Screenshot" />
+  <img src="./frontend/assets/result.png" width="70%" alt="Moviez Screenshot" />
 </p>
 
 ## 🤝 Contributing
