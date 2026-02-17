@@ -170,9 +170,19 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
 
   const featuredItem = allItems[safeIndex];
 
-  // Fetch trailer when item changes
+  // Fetch trailer when item changes (use cache to avoid repeated fetches and EMFILE)
   useEffect(() => {
     if (!featuredItem) return;
+    const cacheKey = `${featuredItem.kind}-${featuredItem.id}`;
+    const cached = trailerCacheRef.current[cacheKey];
+
+    if (cached !== undefined) {
+      setTrailer(cached);
+      setShowTrailer(false);
+      setIsPlaying(false);
+      return;
+    }
+
     let cancelled = false;
     setTrailer(null);
     setShowTrailer(false);
@@ -187,11 +197,14 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
         }
         const data = await response.json();
         const videos: Trailer[] = Array.isArray(data.results) ? data.results : [];
+        const result = videos[0] ?? null;
+        trailerCacheRef.current[cacheKey] = result;
         if (!cancelled) {
-          setTrailer(videos[0] ?? null);
+          setTrailer(result);
         }
       } catch (error) {
         console.error('Failed to load trailer:', error);
+        trailerCacheRef.current[cacheKey] = null;
         if (!cancelled) {
           setTrailer(null);
         }
