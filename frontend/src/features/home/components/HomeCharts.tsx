@@ -53,6 +53,9 @@ export default function HomeCards({ title, movies = [], shows = [], onShowMore, 
       first_air_date: s.first_air_date
     }))
   ];
+
+  if (items.length < 6) return null;
+
   const {
     scrollContainerRef,
     canScrollLeft,
