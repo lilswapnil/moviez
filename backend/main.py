@@ -6,7 +6,7 @@ load_dotenv()
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routes import health, data, charts, proxy, movie
+from routes import health, data, charts, proxy, auth, users
 
 app = FastAPI(
     title="Moviez API",
@@ -26,6 +26,8 @@ app.include_router(health.router, prefix="/health", tags=["health"])
 app.include_router(data.router, prefix="/api/v1", tags=["data"])
 app.include_router(charts.router, prefix="/api/v1", tags=["charts"])
 app.include_router(proxy.router, prefix="/api/v1", tags=["proxy"])
+app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
+app.include_router(users.router, prefix="/api/v1/users", tags=["users"])
 
 
 @app.get("/")

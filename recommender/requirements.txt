@@ -1,0 +1,16 @@
+kagglehub
+pandas
+numpy
+matplotlib
+seaborn
+dotenv
+scikit-learn
+
+torch
+transformers
+ipywidgets
+langchain-community
+langchain-openai
+langchain-chroma
+
+

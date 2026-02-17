@@ -23,6 +23,8 @@ const nextConfig: NextConfig = {
       { source: '/api/v1/movie/:path*', destination: `${backend}/api/v1/movie/:path*` },
       { source: '/api/v1/tv/:path*', destination: `${backend}/api/v1/tv/:path*` },
       { source: '/api/v1/collection/:path*', destination: `${backend}/api/v1/collection/:path*` },
+      { source: '/api/v1/auth/:path*', destination: `${backend}/api/v1/auth/:path*` },
+      { source: '/api/v1/users/:path*', destination: `${backend}/api/v1/users/:path*` },
     ];
   },
   images: {
