@@ -350,37 +350,42 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
             {/* Left arrow */}
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><polygon points="13,4 7,10 13,16" /></svg>
           </Button>
+          {trailer ? (
+            <Button
+              onClick={() => {
+                if (showTrailer && isPlaying) {
+                  setShowTrailer(false);
+                  setIsPlaying(false);
+                } else {
+                  setShowTrailer(true);
+                  setIsPlaying(true);
+                }
+              }}
+              variant="primary"
+              size="hero"
+              className="flex min-w-0 w-20 items-center justify-center px-4"
+            >
+              {showTrailer && isPlaying ? (
+                <>
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <rect x="4.5" y="4" width="3" height="12" rx="1" />
+                    <rect x="12.5" y="4" width="3" height="12" rx="1" />
+                  </svg>
+                  Pause
+                </>
+              ) : (
+                <>
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <polygon points="6,4 16,10 6,16" />
+                  </svg>
+                  Play
+                </>
+              )}
+            </Button>
+          ) : null}
           <Button
-            onClick={() => {
-              if (showTrailer && isPlaying) {
-                setShowTrailer(false);
-                setIsPlaying(false);
-              } else if (trailer) {
-                setShowTrailer(true);
-                setIsPlaying(true);
-              }
-            }}
-            disabled={!trailer}
-            size="hero"
-            className="disabled:bg-gray-600 w-20 !flex items-center justify-center"
-          >
-            {showTrailer && isPlaying ? (
-              // Pause icon
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <rect x="4.5" y="4" width="3" height="12" rx="1" />
-                <rect x="12.5" y="4" width="3" height="12" rx="1" />
-              </svg>
-            ) : (
-              // Play icon
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <polygon points="6,4 16,10 6,16" />
-              </svg>
-            )}
-            {showTrailer && isPlaying ? 'Pause' : 'Play'}
-          </Button>
-          <Button
-            href={`/title/$
-              {featuredItem.kind === 'movie' ? 'movies'
+            href={`/title/${
+              featuredItem.kind === 'movie' ? 'movies'
               : featuredItem.kind === 'tv' ? 'shows'
               : featuredItem.kind === 'anime' ? 'animes'
               : featuredItem.kind === 'cartoon' ? 'cartoons'

@@ -1,7 +1,11 @@
 // Shared constants and configuration
+// Base URL for API calls - use empty string when same-origin (browser), full URL on server
+export function getApiBase(): string {
+  if (typeof window !== 'undefined') return '';
+  return process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+}
+
 export const API_CONFIG = {
-  apiKey: process.env.TMDB_API_KEY,
-  baseUrl: 'https://api.themoviedb.org/3',
   imageBaseUrl: 'https://image.tmdb.org/t/p',
 } as const;
 

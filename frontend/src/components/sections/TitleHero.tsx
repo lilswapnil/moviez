@@ -115,12 +115,6 @@ export default function TitleHero({ item, displayType, trailerType, children }: 
   const hasGenres = Array.isArray(item.genres) && item.genres.length > 0;
   const ratingLabel = Number.isFinite(item.voteAverage) && item.voteAverage > 0 ? item.voteAverage.toFixed(1) : 'NR';
 
-  const playButtonLabel = trailer
-    ? 'Play Trailer'
-    : isFetchingTrailer
-    ? 'Loading Trailer...'
-    : 'Trailer Unavailable';
-
   const saveLabel = isSaved ? 'Added to Library' : 'Add to Library';
 
   // Load saved titles from localStorage on mount
@@ -250,18 +244,19 @@ export default function TitleHero({ item, displayType, trailerType, children }: 
         ) : null}
 
         <div className="mt-10 flex flex-wrap gap-4">
-          <Button
-            type="button"
-            onClick={() => setIsModalOpen(true)}
-            disabled={!trailer}
-            size="lg"
-            className="disabled:bg-gray-600 w-[120px] flex items-center justify-center gap-[5px]"
-          >
-            <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-            </svg>
-            {playButtonLabel}
-          </Button>
+          {trailer ? (
+            <Button
+              type="button"
+              onClick={() => setIsModalOpen(true)}
+              size="lg"
+              className="flex w-[120px]"
+            >
+              <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+              </svg>
+              Play Trailer
+            </Button>
+          ) : null}
 
           <Button
             type="button"

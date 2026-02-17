@@ -41,7 +41,7 @@ export default function Login() {
     const fetchMovies = async () => {
       try {
         console.log('Fetching movies...');
-        let response = await fetch('/api/v1/data?type=movies&category=top_rated&page=1');
+        let response = await fetch('/api/v1/data?type=movies&category=top&page=1');
         console.log('Response status:', response.status);
         let data = await response.json();
         console.log('Fetched data:', data);
@@ -61,32 +61,6 @@ export default function Login() {
           } else if (data.results && Array.isArray(data.results)) {
             movies = data.results;
           }
-        }
-        // Fallback: fetch directly from TMDB if still empty
-        if (!movies.length) {
-          console.log('No results from API, fetching from TMDB directly...');
-          const tmdbRes1 = await fetch('https://api.themoviedb.org/3/movie/popular?language=en-US&page=1', {
-            headers: {
-              Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
-              'Content-Type': 'application/json',
-            },
-          });
-          const tmdbRes2 = await fetch('https://api.themoviedb.org/3/movie/popular?language=en-US&page=2', {
-            headers: {
-              Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
-              'Content-Type': 'application/json',
-            },
-          });
-          const tmdbData1 = await tmdbRes1.json();
-          const tmdbData2 = await tmdbRes2.json();
-          let tmdbMovies: Movie[] = [];
-          if (tmdbData1.results && Array.isArray(tmdbData1.results)) {
-            tmdbMovies = tmdbData1.results;
-          }
-          if (tmdbData2.results && Array.isArray(tmdbData2.results)) {
-            tmdbMovies = tmdbMovies.concat(tmdbData2.results);
-          }
-          movies = tmdbMovies.slice(0, 40);
         }
         setMovies(movies);
       } catch (error) {
@@ -280,7 +254,7 @@ export default function Login() {
                 disabled={isLoading}
                 variant="gradient"
                 size="md"
-                className="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold hover:from-red-700 hover:to-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-red-500/20"
+                className="w-full"
               >
                 {isLoading ? 'Signing in...' : 'Sign In'}
               </Button>

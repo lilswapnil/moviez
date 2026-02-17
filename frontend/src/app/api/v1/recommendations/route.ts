@@ -15,10 +15,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'prompt is required' }, { status: 400 });
   }
 
-  if (!process.env.TMDB_API_KEY) {
-    return NextResponse.json({ error: 'TMDB_API_KEY is not configured' }, { status: 500 });
-  }
-
   const recommendations = await recommendFromTmdb(prompt, type, limit);
 
   return NextResponse.json({
