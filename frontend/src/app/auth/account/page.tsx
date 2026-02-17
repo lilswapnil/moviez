@@ -6,9 +6,12 @@ import SavedTitlesSection from '@/components/sections/SavedTitlesSection';
 import Main from '@/components/common/Main';
 import Header from '@/components/common/Header';
 import Section from '@/components/common/Section';
+import SectionHeader from '@/components/common/SectionHeader';
+import ScrollControls from '@/components/common/ScrollControls';
 import Button from '@/components/common/Button';
 import Card from '@/components/common/Card';
 import PosterCard from '@/components/common/PosterCard';
+import useHorizontalScroll from '@/lib/hooks/useHorizontalScroll';
 import { getImageUrl } from '@/lib/api/tmdb-client';
 import { getTitleUrl } from '@/lib/utils/url';
 
@@ -104,6 +107,18 @@ export default function Account({}: AccountPageProps) {
     };
   }, [savedTitles]);
 
+  const {
+    scrollContainerRef,
+    canScrollLeft,
+    canScrollRight,
+    scrollLeft,
+    scrollRight,
+  } = useHorizontalScroll({
+    itemWidth: 190,
+    gap: 16,
+    deps: [recommendations.length],
+  });
+
   return (
     <div className="mt-4 px-12 py-16">
       <Main className="space-y-12">
@@ -151,11 +166,25 @@ export default function Account({}: AccountPageProps) {
         {/* Music Player - REMOVED */}
 
         {/* Recommendations Section */}
-        <Section>
-          <div className="flex items-baseline justify-between mb-4">
-            <h2 className="text-2xl font-semibold text-white">Recommended For You</h2>
-            <span className="text-sm text-gray-400">Based on your saved titles</span>
-          </div>
+        <Section className="py-4">
+          <SectionHeader
+            title="Recommended For You"
+            rightSlot={
+              recommendations.length > 0 ? (
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-gray-400">Based on your saved titles</span>
+                  <ScrollControls
+                    onScrollLeft={scrollLeft}
+                    onScrollRight={scrollRight}
+                    canScrollLeft={canScrollLeft}
+                    canScrollRight={canScrollRight}
+                  />
+                </div>
+              ) : (
+                <span className="text-sm text-gray-400">Based on your saved titles</span>
+              )
+            }
+          />
           {recommendationsLoading ? (
             <div className="text-sm text-gray-400">Loading recommendations...</div>
           ) : recommendationsError ? (
@@ -168,7 +197,10 @@ export default function Account({}: AccountPageProps) {
           ) : recommendations.length === 0 ? (
             <div className="text-sm text-gray-400">Save a few titles to personalize recommendations.</div>
           ) : (
-            <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
+            <div
+              ref={scrollContainerRef}
+              className="flex items-start justify-start gap-4 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory"
+            >
               {recommendations.map((item) => {
                 const imageUrl = item.poster_path ? getImageUrl(item.poster_path, 'w500') : null;
                 const href = getTitleUrl(item.kind === 'movie' ? 'movies' : 'shows', item.id);
@@ -179,8 +211,8 @@ export default function Account({}: AccountPageProps) {
                     href={href}
                     title={item.title}
                     imageUrl={imageUrl}
-                    sizes="200px"
-                    linkClassName="w-full max-w-[190px] mx-auto group transition-transform hover:scale-105"
+                    sizes="(max-width: 640px) 140px, (max-width: 768px) 160px, 190px"
+                    linkClassName="flex-shrink-0 w-[140px] sm:w-[160px] md:w-[190px] cursor-pointer group transition-transform hover:scale-105 snap-start"
                     overlayMeta={<span>⭐ {item.vote_average.toFixed(1)}</span>}
                   />
                 );
