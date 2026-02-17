@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///Users/lilswapnil/Github/moviez/src/app/page.tsx"],"sourcesContent":["'use client';\n\nimport { useEffect, useState } from 'react';\nimport { useRouter } from 'next/navigation';\n\nexport const dynamic = 'force-dynamic';\n\nexport default function Home() {\n  const router = useRouter();\n  // const [isLoading, setIsLoading] = useState(true); // unused\n\n  useEffect(() => {\n    const isGuest = localStorage.getItem('isGuest') === 'true';\n    \n    if (!isGuest) {\n      // Not logged in and not a guest, redirect to login\n      router.push('/login');\n    } else {\n      // Guest user, redirect to home\n      router.push('/browse/home');\n    }\n  }, [router]);\n\n  return (\n    <div className=\"min-h-screen bg-black flex items-center justify-center\">\n      <div className=\"text-gray-400\">Loading...</div>\n    </div>\n  );\n}\n"],"names":[],"mappings":";;;;;;;AAEA;AACA;AAHA;;;;AAKO,MAAM,UAAU;AAER,SAAS;IACtB,MAAM,SAAS,IAAA,+IAAS;IACxB,8DAA8D;IAE9D,IAAA,kNAAS,EAAC;QACR,MAAM,UAAU,aAAa,OAAO,CAAC,eAAe;QAEpD,IAAI,CAAC,SAAS;YACZ,mDAAmD;YACnD,OAAO,IAAI,CAAC;QACd,OAAO;YACL,+BAA+B;YAC/B,OAAO,IAAI,CAAC;QACd;IACF,GAAG;QAAC;KAAO;IAEX,qBACE,8OAAC;QAAI,WAAU;kBACb,cAAA,8OAAC;YAAI,WAAU;sBAAgB;;;;;;;;;;;AAGrC"}}]
+}
