@@ -1,0 +1,24 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8001:8000"
+    env_file:
+      - .env
+    environment:
+      - TMDB_API_KEY=${TMDB_API_KEY}
+      - TMDB_BEARER_TOKEN=${TMDB_BEARER_TOKEN}
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - BACKEND_URL=http://backend:8000
+      - NEXT_PUBLIC_BACKEND_URL=http://backend:8000
+    depends_on:
+      - backend

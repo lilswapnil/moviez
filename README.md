@@ -165,6 +165,14 @@ docker build -t moviez .
 docker run -p 3000:3000 -e TMDB_API_KEY=your_key moviez
 ```
 
+### Docker Compose (Frontend + Backend)
+```bash
+export TMDB_API_KEY=your_tmdb_api_key
+docker compose up --build
+```
+
+Frontend runs at http://localhost:3000 and the backend at http://localhost:8000.
+
 ### Manual (Node)
 ```bash
 npm run build
