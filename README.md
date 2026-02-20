@@ -1,10 +1,12 @@
 # 🎬 Moviez
 
-A modern streaming discovery platform built with Next.js that surfaces curated film, TV, anime, and cartoon content with live metadata from TMDB.
+A full-stack movie discovery platform combining **semantic search**, **AI-powered recommendations**, and **modern streaming UI**. Search for movies by natural language descriptions, discover similar titles using embeddings, and browse curated content with TMDB metadata.
 
 ![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
 ![React](https://img.shields.io/badge/React-18-blue?logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
+![Python](https://img.shields.io/badge/Python-3.9+-blue?logo=python)
+![FastAPI](https://img.shields.io/badge/FastAPI-latest-009688?logo=fastapi)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-38B2AC?logo=tailwind-css)
 
 ## 📸 Screenshot
@@ -15,216 +17,327 @@ A modern streaming discovery platform built with Next.js that surfaces curated f
 
 ## ✨ Features
 
-- **Featured Content**: Hero banner with trailer playback for new releases
-- **Smart Discovery**: Browse content by genre, chart rankings, and trending popularity
-- **Library View**: Horizontally scrollable chart sections with live pagination
-- **Dynamic Routing**: Genre-based content discovery backed by server-side pagination APIs
-- **Guest Mode**: Continue browsing without authentication
-- **Responsive Design**: Beautiful glass-morphism UI that works on all devices
-- **Fast Loading**: Server-side rendering with optimized Next.js patterns
+### 🔍 Smart Discovery
+- **Semantic Search**: Find movies by natural language descriptions
+  - "Show me adventure movies with magical worlds"
+  - "Find movies about friendship and personal growth"
+- **Similarity Search**: Get recommendations based on any movie
+- **Semantic Clusters**: Movies grouped by thematic semantic IDs
+
+### 🎥 Content Browsing
+- **Featured Content**: Hero banner with trailers
+- **Genre Navigation**: Browse by genre with live pagination
+- **Trending & Top-Rated**: Charts and rankings from TMDB
+- **Responsive Design**: Glass-morphism UI on all devices
+
+### 🤖 ML-Powered Recommendations
+- **Pre-computed Embeddings**: 87K+ movies with all-mpnet-base-v2 embeddings
+- **Cosine Similarity**: Fast k-nearest neighbor recommendations
+- **Semantic ID Clustering**: Thematic movie grouping
+- **Interactive Visualizations**: t-SNE embedding space exploration
+
+### 🔐 User Features
+- **Authentication**: Login & signup with account management
+- **Guest Mode**: Browse without authentication
+- **User Library**: Save favorites and watchlist
 
 ## 🛠️ Tech Stack
 
+### Frontend
 - **Framework**: Next.js 16 (App Router, Server Components, Turbopack)
 - **Language**: TypeScript 5
-- **Styling**: Tailwind CSS v4 with custom design system
-- **Data Fetching**: TMDB REST API (server-side)
-- **Build Tool**: Turbopack for fast dev/prod builds
+- **Styling**: Tailwind CSS v4
+- **Data Fetching**: Server-side with SWR for real-time updates
 
-## 📋 Prerequisites
+### Backend
+- **Runtime**: Python 3.9+
+- **Framework**: FastAPI
+- **TMDB Integration**: REST API proxy with caching
+- **Authentication**: JWT tokens
 
-- Node.js 18+ (tested with latest LTS)
-- npm/pnpm/yarn
-- TMDB API key (get it free at [themoviedb.org](https://www.themoviedb.org/settings/api))
-
-## 🚀 Quick Start
-
-### 1. Clone & Install
-```bash
-git clone https://github.com/lilswapnil/moviez.git
-cd moviez
-npm install
-```
-
-### 2. Configure Environment
-Create `.env.local` in the project root:
-```bash
-TMDB_API_KEY=your_tmdb_api_key_here
-```
-
-See `.env.example` for all available options.
-
-### 3. Start Development Server
-```bash
-npm run dev
-```
-Open [http://localhost:3000](http://localhost:3000) (or [http://localhost:3005](http://localhost:3005) if port is in use)
-
-## 📖 Available Scripts
-
-| Command | Purpose |
-|---------|---------|
-| `npm run dev` | Start Turbopack dev server with hot reload |
-| `npm run build` | Create optimized production build |
-| `npm run start` | Serve production build |
-| `npm run lint` | Run ESLint checks |
+### ML/Recommender
+- **Embeddings**: all-mpnet-base-v2 (768-dim vectors)
+- **Dataset**: 87.5K movies with pre-computed embeddings
+- **Similarity**: Cosine distance with NumPy/scikit-learn
+- **Analysis**: pandas, scikit-learn, matplotlib
 
 ## 📁 Project Structure
 
 ```
 moviez/
-├── app/                          # Next.js App Router
-│   ├── (auth)/                  # Auth pages (account, login)
-│   ├── (browse)/                # Content browsing (library, search, genres)
-│   ├── (details)/               # Title detail pages
-│   ├── api/v1/                  # Versioned API routes
-│   └── globals.css              # Global styles
-├── components/                  # Reusable UI components
-│   ├── common/                  # Common components (Navbar, Footer)
-│   ├── media/                   # Media-related components
-│   ├── sections/                # Page sections (ChartSection, DataSection)
-│   └── layout/                  # Layout wrappers
-├── lib/                         # Shared utilities
-│   ├── api/                     # TMDB API client
-│   ├── constants/               # App constants (genres, charts)
-│   ├── hooks/                   # Custom React hooks
-│   ├── types/                   # TypeScript type definitions
-│   ├── utils/                   # Utility functions
-│   └── services/                # Business logic services
-├── public/                      # Static assets
-└── package.json
+├── frontend/                     # Next.js application
+│   ├── src/
+│   │   ├── app/                 # App Router (pages, layouts, API)
+│   │   ├── components/          # React components
+│   │   ├── lib/
+│   │   │   ├── api/            # TMDB client
+│   │   │   ├── hooks/          # Custom React hooks
+│   │   │   └── types/          # TypeScript definitions
+│   │   └── features/           # Feature-based organization
+│   ├── public/                 # Static assets
+│   └── package.json
+│
+├── backend/                      # FastAPI server
+│   ├── main.py                 # App entry point
+│   ├── tmdb_proxy.py          # TMDB API wrapper
+│   ├── routes/                # API route handlers
+│   │   ├── auth.py           # Authentication
+│   │   ├── movies.py         # Movie endpoints
+│   │   ├── data.py           # Data endpoints
+│   │   └── ...
+│   └── requirements.txt
+│
+├── recommender/                  # ML recommendation system
+│   ├── notebook/               # Jupyter analysis notebooks
+│   │   ├── data_exploration.ipynb
+│   │   ├── sentiment_analysis.ipynb
+│   │   └── vector_search.ipynb
+│   ├── data/
+│   │   ├── raw/               # Original datasets
+│   │   └── processed/         # Cleaned data
+│   ├── models/                # Pre-trained models
+│   ├── scripts/               # Training & processing scripts
+│   └── requirements.txt
+│
+└── docker-compose.yml          # Multi-container setup
 ```
 
-## 🔌 API Usage
+## 🚀 Quick Start
 
-All TMDB requests are made server-side to keep your API key secure:
+### Prerequisites
+- Node.js 18+ (frontend)
+- Python 3.9+ (backend & recommender)
+- TMDB API key ([get it free](https://www.themoviedb.org/settings/api))
 
-```typescript
-// Server Component
-import { getTopRatedMovies } from '@/lib/api/tmdb-client';
+### Option 1: Docker Compose (Recommended)
+```bash
+# Clone and setup
+git clone https://github.com/lilswapnil/moviez.git
+cd moviez
 
-export default async function Library() {
-  const movies = await getTopRatedMovies(1);
-  return <MovieGrid movies={movies} />;
-}
+# Configure environment
+export TMDB_API_KEY=your_tmdb_api_key_here
 
-// Client-side via internal API routes
-const response = await fetch('/api/v1/search?query=avatar');
-const results = await response.json();
+# Start all services
+docker compose up --build
+```
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000
+- API Docs: http://localhost:8000/docs
+
+### Option 2: Local Development
+
+#### Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+# Open http://localhost:3000
 ```
 
-### Available Endpoints
+#### Backend
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 
-| Endpoint | Purpose |
-|----------|---------|
-| `/api/v1/data` | Fetch curated content charts |
-| `/api/v1/search` | Search movies/shows |
-| `/api/v1/genres` | Get available genres |
-| `/api/v1/trailers` | Fetch trailer metadata |
-| `/api/v1/charts` | Get chart previews |
+export TMDB_API_KEY=your_api_key
+python main.py
+# Server runs on http://localhost:8000
+```
 
-## 🎨 Styling
+#### Recommender (Analysis)
+```bash
+cd recommender
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 
-The app uses Tailwind CSS v4 with a custom dark theme featuring:
-- Glass-morphism effects
-- Red accent colors
-- Smooth animations and transitions
-- Responsive grid layouts
+jupyter notebook notebook/
+```
 
-Customize colors and variables in `app/globals.css`.
+## 🔌 API Endpoints
+
+### Frontend Public Routes
+- `/` - Home with featured content
+- `/browse` - Browsable content library
+- `/search` - Search movies
+- `/browse/[genre]` - Genre-specific browsing
+- `/details/[id]` - Movie details page
+- `/login` - Authentication page
+
+### Backend REST API
+
+```python
+# Requires TMDB_API_KEY in Authorization header
+
+GET  /api/v1/health           # Health check
+GET  /api/v1/data/?category=trending&page=1  # Chart data
+GET  /api/v1/search?query=avatar              # Search movies
+GET  /api/v1/movies/{id}                      # Movie details
+GET  /api/v1/genres                           # All genres
+GET  /api/v1/charts                           # Chart listings
+
+POST /api/v1/auth/login       # Login user
+POST /api/v1/auth/signup      # Register user
+```
+
+### Recommender (Python SDK)
+
+```python
+from recommender.vectors import SemanticSearch
+from sklearn.metrics.pairwise import cosine_similarity
+
+# Load embeddings
+embeddings = np.array(df['all_mpnet_base_v2_embedding'].tolist())
+
+# Find similar movies
+def find_similar(title, n=5):
+    idx = df[df['title'] == title].index[0]
+    sims = cosine_similarity([embeddings[idx]], embeddings)[0]
+    return df.iloc[np.argsort(sims)[::-1][1:n+1]]
+
+# Semantic search by natural language
+from sentence_transformers import SentenceTransformer
+model = SentenceTransformer('all-mpnet-base-v2')
+query_vec = model.encode("friend adventure magic")
+similarities = cosine_similarity([query_vec], embeddings)[0]
+```
+
+## 🎓 ML Capabilities
+
+### Semantic Search
+- Encode natural language queries to embeddings
+- Find movies matching descriptions, moods, themes
+- Zero-shot classification without training data
+
+### Similarity Recommendations
+- Fast k-NN using cosine similarity
+- Efficient vector operations with NumPy
+- Scales to 87K+ movies
+
+### Embedding Analysis
+- t-SNE visualization of embedding space
+- Genre clustering analysis
+- Thematic grouping via semantic IDs
+
+### Usage Example
+See [`recommender/notebook/TMD/data_exploration.ipynb`](recommender/notebook/TMD/data_exploration.ipynb) for:
+- Loading 87.5K pre-computed embeddings
+- Semantic search implementation
+- Visualization of thematic clusters
+- Similarity-based recommendations
 
 ## 🔐 Environment Variables
 
 ```bash
-# Required
+# Frontend (.env.local)
 TMDB_API_KEY=your_tmdb_api_key
-
-# Optional
 NEXT_PUBLIC_TMDB_IMAGE_BASE_URL=https://image.tmdb.org/t/p
 NEXT_PUBLIC_APP_NAME=Moviez
+
+# Backend (.env or export)
+TMDB_API_KEY=your_tmdb_api_key
+DATABASE_URL=postgresql://user:pass@localhost/moviez
+SECRET_KEY=your_jwt_secret
+
+# Recommender (notebook env)
+# Uses huggingface datasets library for MovieLens-32M
 ```
+
+## 📊 Performance Metrics
+
+### Frontend
+- ⚡ Server-side rendering for fast LCP
+- 🔄 ISR for static content caching
+- 📦 Code splitting & lazy loading
+- 🖼️ Next.js Image optimization
+
+### Backend
+- 🚀 FastAPI async/await for concurrency
+- 💾 TMDB response caching
+- 📈 Pagination for large datasets
+- 🔐 JWT authentication
+
+### Recommender
+- ⚡ NumPy vectorized operations
+- 🎯 Pre-computed embeddings (no training)
+- 🔍 O(n) similarity search
+- 📉 Memory-efficient sparse matrices
 
 ## 📱 Browser Support
 
 - Chrome/Edge 90+
 - Firefox 88+
 - Safari 14+
-- Mobile browsers (iOS Safari, Chrome Android)
+- Mobile: iOS Safari, Chrome Android
 
 ## 🚀 Deployment
 
-### Vercel (Recommended)
+### Vercel + Railway
 ```bash
-npm install -g vercel
-vercel
+# Deploy frontend to Vercel
+cd frontend && vercel deploy
+
+# Deploy backend to Railway
+cd backend && railway up
 ```
 
-### Docker
+### Self-hosted
 ```bash
-docker build -t moviez .
-docker run -p 3000:3000 -e TMDB_API_KEY=your_key moviez
+# All services via Docker Compose
+docker compose up --build -d
 ```
 
-### Docker Compose (Frontend + Backend)
-```bash
-export TMDB_API_KEY=your_tmdb_api_key
-docker compose up --build
-```
-
-Frontend runs at http://localhost:3000 and the backend at http://localhost:8000.
-
-### Manual (Node)
-```bash
-npm run build
-npm run start
-```
-
-Set `TMDB_API_KEY` in your hosting provider's environment variables.
-
-## 📊 Performance
-
-- ⚡ Server-side rendering for fast initial load
-- 🔄 Incremental static regeneration (ISR)
-- 📦 Optimized bundle with code splitting
-- 🖼️ Next.js Image optimization
-- 🎯 Core Web Vitals optimized
-
-## Preview
-<p align="center">
-  <img src="./frontend/assets/screenshots.png" width="90%" alt="Moviez Screenshot" />
-  <img src="./frontend/assets/result.png" width="90%" alt="Moviez Screenshot" />
-</p>
+### Cloud Providers
+- **Frontend**: Vercel, Netlify, AWS Amplify
+- **Backend**: Railway, Heroku, AWS EC2
+- **ML**: Can run on backend or separate service (GPU if needed)
 
 ## 🤝 Contributing
 
-Contributions welcome! Please:
+1. Fork the repo
+2. Create feature branch: `git checkout -b feature/amazing-feature`
+3. Commit: `git commit -m 'Add amazing feature'`
+4. Push: `git push origin feature/amazing-feature`
+5. Submit PR
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+### Development Tips
+- Frontend uses TypeScript strict mode
+- Backend follows FastAPI best practices
+- Notebooks require Jupyter environment
+- All ML work uses scikit-learn conventions
+
+## 📚 Documentation
+
+- **Frontend**: See [frontend/README.md](frontend/README.md)
+- **Backend**: See [backend/README.md](backend/README.md)
+- **ML Analysis**: See [recommender/notebook/](recommender/notebook/)
+- **API Docs**: http://localhost:8000/docs (when backend running)
 
 ## 📄 License
 
-This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE) for details
 
 ## 🙏 Acknowledgments
 
-- [The Movie Database (TMDB)](https://www.themoviedb.org/) for the API
-- [Next.js](https://nextjs.org/) for the framework
-- [Tailwind CSS](https://tailwindcss.com/) for styling
-- Community for feedback and contributions
+- [The Movie Database (TMDB)](https://www.themoviedb.org/) - Movie data & metadata
+- [Hugging Face](https://huggingface.co/) - MovieLens-32M dataset
+- [SentenceTransformers](https://www.sbert.net/) - all-mpnet-base-v2 embeddings
+- [Next.js](https://nextjs.org/) - Frontend framework
+- [FastAPI](https://fastapi.tiangolo.com/) - Backend framework
+- [scikit-learn](https://scikit-learn.org/) - ML utilities
 
-## 📞 Support
+## 📞 Support & Links
 
-- 📖 [Documentation](./docs)
 - 🐛 [Report Issues](../../issues)
 - 💬 [Discussions](../../discussions)
-- 📧 [Email Support](mailto:support@moviez.local)
+- 🎬 [View Live](https://moviez.vercel.app)
+- 📧 Contact: [lilswapnil](https://github.com/lilswapnil)
 
 ---
 
 <div align="center">
-  Made with ❤️ by the Moviez team | Discover your next favorite movie
+  Made with ❤️ | Discover movies intelligently with semantic search & embeddings
 </div>
