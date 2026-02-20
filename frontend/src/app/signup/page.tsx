@@ -32,27 +32,30 @@ export default function Signup() {
   useEffect(() => {
     const fetchMovies = async () => {
       try {
-        console.log('Fetching movies...');
-        let response = await fetch('/api/v1/data?type=movies&category=top&page=1');
-        console.log('Response status:', response.status);
-        let data = await response.json();
-        console.log('Fetched data:', data);
-        let movies: Movie[] = [];
-        if (Array.isArray(data) && data.length > 0) {
-          movies = data;
-        } else if (data.results && Array.isArray(data.results)) {
-          movies = data.results;
-        }
-        // Fallback: try popular if no results
-        if (!movies.length) {
-          console.log('No results in data, trying popular...');
-          response = await fetch('/api/v1/data?type=movies&category=popular&page=1');
-          data = await response.json();
-          if (Array.isArray(data) && data.length > 0) {
-            movies = data;
-          } else if (data.results && Array.isArray(data.results)) {
-            movies = data.results;
+        const fetchCategory = async (category: string) => {
+          const pages = [1, 2];
+          const results: Movie[] = [];
+          for (const page of pages) {
+            const response = await fetch(
+              `/api/v1/data?type=movies&category=${category}&page=${page}`
+            );
+            const data = await response.json();
+            let pageMovies: Movie[] = [];
+            if (Array.isArray(data) && data.length > 0) {
+              pageMovies = data;
+            } else if (data.results && Array.isArray(data.results)) {
+              pageMovies = data.results;
+            }
+            if (pageMovies.length) {
+              results.push(...pageMovies);
+            }
           }
+          return results;
+        };
+
+        let movies = await fetchCategory('top');
+        if (!movies.length) {
+          movies = await fetchCategory('popular');
         }
         setMovies(movies);
       } catch (error) {
