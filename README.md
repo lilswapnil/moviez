@@ -122,8 +122,8 @@ export TMDB_API_KEY=your_tmdb_api_key_here
 docker compose up --build
 ```
 - Frontend: http://localhost:3000
-- Backend API: http://localhost:8000
-- API Docs: http://localhost:8000/docs
+- Backend API: http://localhost:8001
+- API Docs: http://localhost:8001/docs
 
 ### Option 2: Local Development
 

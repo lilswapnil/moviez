@@ -17,6 +17,8 @@ from tmdb_proxy import (
     get_movie_watch_providers,
     get_tv_watch_providers,
     get_collection,
+    get_movie_images,
+    get_tv_images,
 )
 
 router = APIRouter()
@@ -58,6 +60,19 @@ async def trailers(
     else:
         results = await get_tv_videos(item_id)
     return {"results": results}
+
+
+@router.get("/images")
+async def images(
+    type: str = Query(..., description="movie, tv, anime, cartoon, kdrama, or international"),
+    item_id: int = Query(..., alias="id"),
+):
+    """Fetch images (logos, backdrops, posters) for a title."""
+    if type in ("movie", "international"):
+        data = await get_movie_images(item_id)
+    else:
+        data = await get_tv_images(item_id)
+    return data
 
 
 @router.get("/genres")

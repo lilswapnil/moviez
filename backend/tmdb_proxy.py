@@ -257,3 +257,15 @@ async def get_movies_by_genre(genre_id: int, page: int = 1) -> list:
 async def get_tv_by_genre(genre_id: int, page: int = 1) -> list:
     data = await _get("/discover/tv", {"with_genres": genre_id, "page": page})
     return data.get("results", [])
+
+
+async def get_movie_images(movie_id: int) -> dict:
+    """Fetch images (logos, backdrops, posters) for a movie."""
+    data = await _get(f"/movie/{movie_id}/images", {"include_image_language": "en,null"})
+    return data
+
+
+async def get_tv_images(tv_id: int) -> dict:
+    """Fetch images (logos, backdrops, posters) for a TV show."""
+    data = await _get(f"/tv/{tv_id}/images", {"include_image_language": "en,null"})
+    return data

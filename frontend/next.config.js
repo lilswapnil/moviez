@@ -18,6 +18,7 @@ const nextConfig = {
       { source: "/api/v1/data", destination: `${dest}/api/v1/data` },
       { source: "/api/v1/search", destination: `${dest}/api/v1/search` },
       { source: "/api/v1/trailers", destination: `${dest}/api/v1/trailers` },
+      { source: "/api/v1/images", destination: `${dest}/api/v1/images` },
       { source: "/api/v1/charts", destination: `${dest}/api/v1/charts` },
       { source: "/api/v1/genres", destination: `${dest}/api/v1/genres` },
       { source: "/api/v1/episodes", destination: `${dest}/api/v1/episodes` },

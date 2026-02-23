@@ -69,8 +69,10 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
   const [trailer, setTrailer] = useState<Trailer | null>(null);
   const [showTrailer, setShowTrailer] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [logoPath, setLogoPath] = useState<string | null>(null);
   const trailerFailureCountsRef = useRef<Record<string, number>>({});
   const trailerCacheRef = useRef<Record<string, Trailer | null>>({});
+  const logoCacheRef = useRef<Record<string, string | null>>({});
   const MAX_TRAILER_FAILURES = 3;
 
   const allItems: FeaturedItem[] = useMemo(() => {
@@ -216,6 +218,50 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
     };
   }, [featuredItem, featuredItem?.id, featuredItem?.kind]);
 
+  // Fetch logo when item changes (use cache to avoid repeated fetches)
+  useEffect(() => {
+    if (!featuredItem) return;
+    const cacheKey = `${featuredItem.kind}-${featuredItem.id}`;
+    const cached = logoCacheRef.current[cacheKey];
+
+    if (cached !== undefined) {
+      setLogoPath(cached);
+      return;
+    }
+
+    let cancelled = false;
+    setLogoPath(null);
+    const fetchLogo = async () => {
+      try {
+        const response = await fetch(`/api/v1/images?type=${featuredItem.kind}&id=${featuredItem.id}`, {
+          cache: 'no-store',
+        });
+        if (!response.ok) {
+          throw new Error(`Images request failed with status ${response.status}`);
+        }
+        const data = await response.json();
+        const logos = Array.isArray(data.logos) ? data.logos : [];
+        // Find an English logo if available
+        const enLogo = logos.find((logo: any) => logo.iso_639_1 === 'en' || logo.iso_639_1 === null);
+        const result = enLogo?.file_path || (logos[0]?.file_path ?? null);
+        logoCacheRef.current[cacheKey] = result;
+        if (!cancelled) {
+          setLogoPath(result);
+        }
+      } catch (error) {
+        console.error('Failed to load logo:', error);
+        logoCacheRef.current[cacheKey] = null;
+        if (!cancelled) {
+          setLogoPath(null);
+        }
+      }
+    };
+    fetchLogo();
+    return () => {
+      cancelled = true;
+    };
+  }, [featuredItem, featuredItem?.id, featuredItem?.kind]);
+
   const goToNext = () => {
     if (allItems.length === 0) return;
     setCurrentIndex((prev) => (prev + 1) % allItems.length);
@@ -280,7 +326,7 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
             key={trailer.key}
             width="100%"
             height="100%"
-            src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=1&rel=0&controls=0&modestbranding=1&showinfo=0&iv_load_policy=3`}
+            src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=0&rel=0&controls=0&modestbranding=1&showinfo=0&iv_load_policy=3`}
             title={trailer.name}
             frameBorder="0"
             allowFullScreen
@@ -295,22 +341,37 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
 
       {/* Top-left Theater-Style Title */}
       <div className={`absolute top-24 left-12 z-20 max-w-4xl pointer-events-none transition-opacity duration-500 ${showTrailer && isPlaying ? 'opacity-0' : 'opacity-100'}`}>
-        <h1
-          className="
-            text-white
-            font-extrabold
-            tracking-tight
-            leading-none
-            drop-shadow-[0_6px_24px_rgba(0,0,0,0.85)]
-            text-5xl
-            sm:text-6xl
-            md:text-7xl
-            lg:text-8xl
-            xl:text-9xl
-          "
-        >
-          {featuredItem.title || featuredItem.name}
-        </h1>
+        {logoPath ? (
+          <div className="relative w-full max-w-4xl h-auto">
+            <Image
+              src={getImageUrl(logoPath, 'original')}
+              alt={featuredItem.title || featuredItem.name || 'Title Logo'}
+              width={800}
+              height={320}
+              className="object-contain drop-shadow-[0_6px_24px_rgba(0,0,0,0.85)]"
+              style={{ maxHeight: '320px', width: 'auto', height: 'auto' }}
+              priority
+              draggable={false}
+            />
+          </div>
+        ) : (
+          <h1
+            className="
+              text-white
+              font-extrabold
+              tracking-tight
+              leading-none
+              drop-shadow-[0_6px_24px_rgba(0,0,0,0.85)]
+              text-5xl
+              sm:text-6xl
+              md:text-7xl
+              lg:text-8xl
+              xl:text-9xl
+            "
+          >
+            {featuredItem.title || featuredItem.name}
+          </h1>
+        )}
       </div>
 
       {/* Poster previews for next 2 items at the right bottom edge of the banner, hidden when trailer is playing */}

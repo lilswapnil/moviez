@@ -7,6 +7,46 @@ import EpisodesSection from '@/components/sections/EpisodesSection';
 import Button from '@/components/common/Button';
 import { getMovieCredits, getMovieDetails, getTVCredits, getTVShowDetails, getSimilarMovies, getSimilarTVShows, getCollectionDetails, getMovieWatchProviders, getTVWatchProviders } from '@/lib/api/tmdb-client';
 import Image from 'next/image';
+import type { Trailer } from '@/lib/api/tmdb-types';
+
+// Server-side function to fetch title logo
+async function getTitleLogo(type: 'movie' | 'tv', id: number): Promise<string | null> {
+  try {
+    const backendUrl = process.env.BACKEND_URL || 'http://localhost:8001';
+    const response = await fetch(`${backendUrl}/api/v1/images?type=${type}&id=${id}`, {
+      cache: 'no-store',
+    });
+    if (!response.ok) {
+      return null;
+    }
+    const data = await response.json();
+    const logos = Array.isArray(data.logos) ? data.logos : [];
+    const enLogo = logos.find((logo: any) => logo.iso_639_1 === 'en' || logo.iso_639_1 === null);
+    return enLogo?.file_path || (logos[0]?.file_path ?? null);
+  } catch (error) {
+    console.error('Failed to fetch logo:', error);
+    return null;
+  }
+}
+
+// Server-side function to fetch all trailers
+async function getTitleTrailers(type: 'movie' | 'tv', id: number): Promise<Trailer[]> {
+  try {
+    const backendUrl = process.env.BACKEND_URL || 'http://localhost:8001';
+    const response = await fetch(`${backendUrl}/api/v1/trailers?type=${type}&id=${id}`, {
+      cache: 'no-store',
+    });
+    if (!response.ok) {
+      return [];
+    }
+    const data = await response.json();
+    const videos: Trailer[] = Array.isArray(data.results) ? data.results : [];
+    return videos;
+  } catch (error) {
+    console.error('Failed to fetch trailers:', error);
+    return [];
+  }
+}
 
 export const dynamic = 'force-dynamic';
 
@@ -34,11 +74,13 @@ export default async function TitlePage({ params }: TitlePageProps) {
   }
 
   if (routeType === 'movies') {
-    const [details, credits, similar, watchProviders] = await Promise.all([
+    const [details, credits, similar, watchProviders, logoPath, trailers] = await Promise.all([
       getMovieDetails(numericId),
       getMovieCredits(numericId),
       getSimilarMovies(numericId),
       getMovieWatchProviders(numericId, 'US'),
+      getTitleLogo('movie', numericId),
+      getTitleTrailers('movie', numericId),
     ]);
     if (!details) {
       notFound();
@@ -65,7 +107,7 @@ export default async function TitlePage({ params }: TitlePageProps) {
 
     const releaseYear = details.release_date ? new Date(details.release_date).getFullYear() : undefined;
     const runtimeMinutes = details.runtime ?? null;
-    const genres = details.genres?.map((genre) => genre.name) ?? [];
+    const genres = details.genres?.map((genre: any) => genre.name) ?? [];
 
     return (
       <main className="bg-black text-white min-h-screen">
@@ -85,12 +127,14 @@ export default async function TitlePage({ params }: TitlePageProps) {
           }}
           displayType="Movie"
           trailerType="movie"
+          logoPath={logoPath}
+          initialTrailer={trailers[0] ?? null}
         >
           {/* Streaming Platform Buttons */}
           {streamingPlatforms.length > 0 && (
             <div className="mb-6 flex flex-wrap gap-3 items-center">
               <span className="text-white/80 font-semibold mr-2">Available on:</span>
-              {streamingPlatforms.map((provider) => (
+              {streamingPlatforms.map((provider: any) => (
                 <a
                   key={provider.provider_id}
                   href={providerLink || '#'}
@@ -122,11 +166,13 @@ export default async function TitlePage({ params }: TitlePageProps) {
     );
   }
 
-  const [details, credits, similar, watchProviders] = await Promise.all([
+  const [details, credits, similar, watchProviders, logoPath, trailers] = await Promise.all([
     getTVShowDetails(numericId),
     getTVCredits(numericId),
     getSimilarTVShows(numericId),
     getTVWatchProviders(numericId, 'US'),
+    getTitleLogo('tv', numericId),
+    getTitleTrailers('tv', numericId),
   ]);
   if (!details) {
     notFound();
@@ -146,7 +192,7 @@ export default async function TitlePage({ params }: TitlePageProps) {
   const runtimeMinutes = Array.isArray(details.episode_run_time) && details.episode_run_time.length > 0
     ? details.episode_run_time[0]
     : null;
-  const genres = details.genres?.map((genre) => genre.name) ?? [];
+  const genres = details.genres?.map((genre: any) => genre.name) ?? [];
 
   const displayType =
     routeType === 'shows' ? 'TV Series' : routeType === 'animes' ? 'Anime Series' : 'Cartoon Series';
@@ -169,12 +215,14 @@ export default async function TitlePage({ params }: TitlePageProps) {
         }}
         displayType={displayType}
         trailerType="tv"
+        logoPath={logoPath}
+        initialTrailer={trailers[0] ?? null}
       >
         {/* Streaming Platform Buttons */}
         {streamingPlatforms.length > 0 && (
           <div className="mb-6 flex flex-wrap gap-3 items-center">
             <span className="text-white/80 font-semibold mr-2">Available on:</span>
-            {streamingPlatforms.map((provider) => (
+            {streamingPlatforms.map((provider: any) => (
               <Button
                 key={provider.provider_id}
                 href={providerLink || '#'}
