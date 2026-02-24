@@ -47,6 +47,20 @@ export async function getTVWatchProviders(tvId: number, country: string = 'US'):
   try { const r = await apiFetch(`/api/v1/tv/${tvId}/watch/providers?country=${country}`); if (!r.ok) return null; const d = (await r.json()) as WatchProvidersResponse; return d.results?.[country] ?? null; } catch (e) { console.error('Error fetching TV watch providers:', e); return null; }
 }
 
+export async function getMovieImages(movieId: number): Promise<Record<string, unknown>> {
+  if (typeof window === 'undefined') {
+    try { const s = await import('./tmdb-server'); return (await s.getMovieImages(movieId)) as Record<string, unknown>; } catch (e) { console.error('Error fetching movie images:', e); return { logos: [] }; }
+  }
+  try { const r = await apiFetch(`/api/v1/images?type=movie&id=${movieId}`); if (!r.ok) return { logos: [] }; return await r.json(); } catch (e) { console.error('Error fetching movie images:', e); return { logos: [] }; }
+}
+
+export async function getTVImages(tvId: number): Promise<Record<string, unknown>> {
+  if (typeof window === 'undefined') {
+    try { const s = await import('./tmdb-server'); return (await s.getTVImages(tvId)) as Record<string, unknown>; } catch (e) { console.error('Error fetching TV images:', e); return { logos: [] }; }
+  }
+  try { const r = await apiFetch(`/api/v1/images?type=tv&id=${tvId}`); if (!r.ok) return { logos: [] }; return await r.json(); } catch (e) { console.error('Error fetching TV images:', e); return { logos: [] }; }
+}
+
 export interface Movie {
   id: number;
   title: string;

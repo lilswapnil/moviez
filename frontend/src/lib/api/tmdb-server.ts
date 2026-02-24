@@ -240,3 +240,17 @@ export async function getTVWatchProviders(tvId: number, country = 'US') {
   const data = (await tmdbGet(`/tv/${tvId}/watch/providers`)) as { results?: Record<string, unknown> };
   return (data.results as Record<string, unknown>)?.[country] ?? null;
 }
+export async function getMovieImages(movieId: number) {
+  try {
+    return (await tmdbGet(`/movie/${movieId}/images`, { include_image_language: 'en,null' })) as Record<string, unknown>;
+  } catch {
+    return { logos: [] };
+  }
+}
+export async function getTVImages(tvId: number) {
+  try {
+    return (await tmdbGet(`/tv/${tvId}/images`, { include_image_language: 'en,null' })) as Record<string, unknown>;
+  } catch {
+    return { logos: [] };
+  }
+}
