@@ -317,7 +317,7 @@ export default function TitleHero({ item, displayType, trailerType, logoPath: in
               width={800}
               height={320}
               className="object-contain drop-shadow-[0_6px_24px_rgba(0,0,0,0.85)]"
-              style={{ maxHeight: '320px', width: 'auto', height: 'auto' }}
+              style={{ maxHeight: '320px', width: '600px', height: 'auto' }}
               priority
               draggable={false}
               onLoadingComplete={() => setIsImageLoaded(true)}

@@ -95,7 +95,19 @@ function resolveMediaType(
   item: Movie | TVShow,
   fallback: ChartCategory
 ): ChartCategory {
-  const isMovie = 'title' in item && typeof item.title === 'string';
+  // Check for media_type property first (from search results)
+  const mediaType = item.media_type;
+  if (mediaType === 'movie') {
+    return 'movie';
+  }
+  if (mediaType === 'tv') {
+    if (fallback === 'anime' || fallback === 'cartoon') {
+      return fallback;
+    }
+    return 'tv';
+  }
+  // Fallback to checking title property
+  const isMovie = 'title' in item && typeof item.title === 'string' && !('name' in item);
   if (isMovie) {
     return 'movie';
   }

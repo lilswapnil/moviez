@@ -665,13 +665,13 @@ function normalizeNumber(value: number | undefined | null): number {
 }
 
 function normalizeSearchItem(item: Record<string, unknown>): Movie | TVShow {
+  const mediaType = item.media_type as string;
+  const isMovie = mediaType === 'movie';
   const title = (item.title as string) || (item.name as string) || 'Untitled';
   const dateVal = (item.release_date as string) || (item.first_air_date as string);
   const year = dateVal && dateVal.length >= 4 ? parseInt(dateVal.slice(0, 4), 10) : undefined;
-  return {
+  const result: Record<string, unknown> = {
     id: item.id as number,
-    title,
-    name: title,
     overview: (item.overview as string) || '',
     poster_path: (item.poster_path as string) ?? '',
     backdrop_path: (item.backdrop_path as string) ?? '',
@@ -680,7 +680,15 @@ function normalizeSearchItem(item: Record<string, unknown>): Movie | TVShow {
     vote_average: (item.vote_average as number) ?? 0,
     popularity: (item.popularity as number) ?? 0,
     genre_ids: (item.genre_ids as number[]) ?? [],
-  } as Movie | TVShow;
+    media_type: mediaType,
+  };
+  // Only set title or name based on media type to preserve distinction
+  if (isMovie) {
+    result.title = title;
+  } else {
+    result.name = title;
+  }
+  return result as unknown as Movie | TVShow;
 }
 export async function searchTitles(query: string, page: number = 1): Promise<(Movie | TVShow)[]> {
   const trimmedQuery = query.trim();
@@ -700,12 +708,28 @@ export async function searchTitles(query: string, page: number = 1): Promise<(Mo
     if (!response.ok) return [];
     const data = await response.json();
     const items = data.items ?? [];
-    return items.map((item: { id: number; title: string; overview: string; posterPath: string | null; year?: number; voteAverage?: number; mediaType: string }) => ({
-      id: item.id, title: item.title, name: item.title, overview: item.overview,
-      poster_path: item.posterPath ?? '', backdrop_path: '',
-      release_date: item.year ? `${item.year}-01-01` : '', first_air_date: item.year ? `${item.year}-01-01` : '',
-      vote_average: item.voteAverage ?? 0, popularity: 0, genre_ids: [],
-    })) as (Movie | TVShow)[];
+    return items.map((item: { id: number; title: string; overview: string; posterPath: string | null; year?: number; voteAverage?: number; mediaType: string }) => {
+      const isMovie = item.mediaType === 'movie';
+      const result: Record<string, unknown> = {
+        id: item.id,
+        overview: item.overview,
+        poster_path: item.posterPath ?? '',
+        backdrop_path: '',
+        release_date: item.year ? `${item.year}-01-01` : '',
+        first_air_date: item.year ? `${item.year}-01-01` : '',
+        vote_average: item.voteAverage ?? 0,
+        popularity: 0,
+        genre_ids: [],
+        media_type: item.mediaType,
+      };
+      // Only set title or name based on media type
+      if (isMovie) {
+        result.title = item.title;
+      } else {
+        result.name = item.title;
+      }
+      return result as unknown as Movie | TVShow;
+    });
   } catch (error) {
     console.error('Error searching titles:', error);
     return [];

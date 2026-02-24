@@ -10,6 +10,7 @@ export interface Movie {
   popularity: number;
   genre_ids: number[];
   original_language?: string;
+  media_type?: string; // Added for search results
 }
 
 export interface TVShow {
@@ -24,6 +25,7 @@ export interface TVShow {
   genre_ids: number[];
   original_language?: string;
   origin_country?: string[];
+  media_type?: string; // Added for search results
 }
 
 export type Anime = TVShow;

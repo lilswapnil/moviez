@@ -22,7 +22,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   if (query) {
     const results = await searchTitles(query, 1);
-    initialItems = normalizeChartItems(results, 'tv');
+    initialItems = normalizeChartItems(results);
   }
 
   return (

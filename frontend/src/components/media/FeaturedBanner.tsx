@@ -72,7 +72,7 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
   const [logoPath, setLogoPath] = useState<string | null>(null);
   const trailerFailureCountsRef = useRef<Record<string, number>>({});
   const trailerCacheRef = useRef<Record<string, Trailer | null>>({});
-  const logoCacheRef = useRef<Record<string, string | null>>({});
+  const logoCacheRef = useRef<Record<string, string | null | undefined>>({});
   const MAX_TRAILER_FAILURES = 3;
 
   const allItems: FeaturedItem[] = useMemo(() => {
@@ -218,6 +218,39 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
     };
   }, [featuredItem, featuredItem?.id, featuredItem?.kind]);
 
+  // Fetch logos for all items on mount
+  useEffect(() => {
+    const fetchAllLogos = async () => {
+      for (const item of allItems) {
+        const cacheKey = `${item.kind}-${item.id}`;
+        if (cacheKey in logoCacheRef.current) {
+          continue; // Already fetched or being fetched
+        }
+        logoCacheRef.current[cacheKey] = undefined; // Mark as fetching
+        try {
+          const response = await fetch(`/api/v1/images?type=${item.kind}&id=${item.id}`, {
+            cache: 'no-store',
+          });
+          if (response.ok) {
+            const data = await response.json();
+            const logos = Array.isArray(data.logos) ? data.logos : [];
+            const enLogo = logos.find((logo: any) => logo.iso_639_1 === 'en' || logo.iso_639_1 === null);
+            const result = enLogo?.file_path || (logos[0]?.file_path ?? null);
+            logoCacheRef.current[cacheKey] = result;
+          } else {
+            logoCacheRef.current[cacheKey] = null;
+          }
+        } catch (error) {
+          console.error(`Failed to load logo for ${cacheKey}:`, error);
+          logoCacheRef.current[cacheKey] = null;
+        }
+      }
+    };
+    if (allItems.length > 0) {
+      fetchAllLogos();
+    }
+  }, [allItems]);
+
   // Fetch logo when item changes (use cache to avoid repeated fetches)
   useEffect(() => {
     if (!featuredItem) return;
@@ -349,7 +382,7 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
               width={800}
               height={320}
               className="object-contain drop-shadow-[0_6px_24px_rgba(0,0,0,0.85)]"
-              style={{ maxHeight: '320px', width: 'auto', height: 'auto' }}
+              style={{ maxHeight: '320px', width: '600px', height: 'auto' }}
               priority
               draggable={false}
             />
