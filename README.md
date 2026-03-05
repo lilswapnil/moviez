@@ -283,22 +283,19 @@ NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
 
 ## 🚀 Deployment
 
-### Vercel (Frontend) + Railway / Render / Fly.io (Backend)
+### Vercel (frontend only)
 
-The Python backend exceeds Vercel's serverless function size limit (~250 MB), so deploy it separately:
+1. **Deploy to Vercel** (Root Directory = `frontend`).
+2. **Set `TMDB_API_KEY`** in Vercel (Project Settings → Environment Variables). [Get a free key](https://www.themoviedb.org/settings/api).
+3. Next.js API routes call TMDB directly – no separate backend needed.
 
-1. **Deploy the backend** to [Railway](https://railway.app), [Render](https://render.com), or [Fly.io](https://fly.io). Add `TMDB_API_KEY` in that platform's env vars.
+### Optional: external backend (Railway / Render / Fly.io)
 
-2. **Deploy the frontend** to Vercel (Root Directory = `frontend`).
+If you prefer the Python backend:
 
-3. **Set environment variables in Vercel**:
-
-   | Variable | Value |
-   |----------|-------|
-   | `BACKEND_URL` | Your backend URL (e.g. `https://moviez-api.railway.app`) |
-   | `NEXT_PUBLIC_BACKEND_URL` | Same as `BACKEND_URL` |
-
-   Without `BACKEND_URL`, the frontend will not load content; rewrites proxy `/api/v1/*` to your backend.
+1. Deploy the backend and add `TMDB_API_KEY` there.
+2. In Vercel, set `BACKEND_URL` and `NEXT_PUBLIC_BACKEND_URL` to your backend URL.
+3. Rewrites will proxy `/api/v1/*` to the backend instead of the Next.js routes.
 
 ### Self-hosted
 ```bash

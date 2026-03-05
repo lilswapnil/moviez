@@ -1,0 +1,14 @@
+import { NextRequest, NextResponse } from "next/server";
+import { tmdbTv } from "@/lib/api/tmdb-server";
+
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const id = parseInt((await params).id, 10);
+  if (Number.isNaN(id)) return NextResponse.json({ detail: "Not found" }, { status: 404 });
+
+  try {
+    const data = await tmdbTv(id);
+    return NextResponse.json(data);
+  } catch {
+    return NextResponse.json({ detail: "Not found" }, { status: 404 });
+  }
+}

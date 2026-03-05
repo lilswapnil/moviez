@@ -1,7 +1,7 @@
 // Shared constants and configuration
 // Base URL for API calls:
-// - Client: always '' (same-origin; /api/v1/* hits backend via Python serverless or rewrites)
-// - Server: BACKEND_URL when set (external backend); else '' for same-origin (Vercel combined deploy)
+// - Client: always '' (same-origin; /api/v1/* hits Next.js routes or rewrites to external backend)
+// - Server: BACKEND_URL when set (external backend); else '' for same-origin (Next.js API routes)
 export function getApiBase(): string {
   if (typeof window !== 'undefined') return '';
 
