@@ -283,14 +283,20 @@ NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
 
 ## 🚀 Deployment
 
-### Vercel + Railway
-```bash
-# Deploy frontend to Vercel
-cd frontend && vercel deploy
+### Vercel + Railway (or Render, Fly.io, etc.)
 
-# Deploy backend to Railway
-cd backend && railway up
-```
+1. **Deploy the backend** to Railway, Render, or Fly.io so it has a public URL (e.g. `https://moviez-api.railway.app`).
+
+2. **Deploy the frontend** to Vercel (connect the repo and set root directory to `frontend` if needed).
+
+3. **Set environment variables in Vercel** (Project Settings → Environment Variables):
+
+   | Variable | Value |
+   |----------|-------|
+   | `BACKEND_URL` | `https://your-backend.railway.app` (your deployed backend URL) |
+   | `NEXT_PUBLIC_BACKEND_URL` | Same as `BACKEND_URL` |
+
+   Set `TMDB_API_KEY` in your backend's platform (Railway, Render, etc.), not in Vercel. Without `BACKEND_URL` in Vercel, the frontend will show "Loading featured content..." indefinitely because API rewrites are disabled when `BACKEND_URL` is missing or points to `localhost`.
 
 ### Self-hosted
 ```bash

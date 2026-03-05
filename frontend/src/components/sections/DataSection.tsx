@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { Movie, TVShow } from '@/lib/api/tmdb-types';
+import { fetchApi } from '@/lib/api/fetch-api';
 import HomeCharts from '@/features/home/components/HomeCharts';
 
 interface DataSectionProps {
@@ -31,7 +32,7 @@ export default function DataSection({
   const handleShowMore = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(
+      const response = await fetchApi(
         `/api/v1/data?type=${type}&category=${category}&page=${page + 1}`
       );
       const newData = await response.json();

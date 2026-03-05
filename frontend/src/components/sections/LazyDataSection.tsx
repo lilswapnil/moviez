@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import type { Movie, TVShow } from '@/lib/api/tmdb-types';
+import { fetchApi } from '@/lib/api/fetch-api';
 import DataSection from './DataSection';
 
 interface LazyDataSectionProps {
@@ -37,8 +38,10 @@ export default function LazyDataSection({ title, type, category }: LazyDataSecti
     if (!hasIntersected) return;
 
     const controller = new AbortController();
-    fetch(`/api/v1/data?type=${type}&category=${category}&page=1`, {
+    fetchApi(`/api/v1/data?type=${type}&category=${category}&page=1`, {
       signal: controller.signal,
+      retries: 2,
+      timeout: 15000,
     })
       .then((r) => r.json())
       .then((items) => {

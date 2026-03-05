@@ -1,11 +1,20 @@
 // Shared constants and configuration
-// Base URL for API calls - always use same-origin so rewrites can proxy to backend
+// Base URL for API calls
+// - Client: empty string (same-origin; rewrites proxy /api/v1/* to backend)
+// - Server: use BACKEND_URL directly when it's a production URL (Vercel/etc);
+//   otherwise fetch from app URL so rewrites proxy (local dev)
 export function getApiBase(): string {
   if (typeof window !== 'undefined') return '';
-  // Server: fetch from our own app; rewrites in next.config proxy /api/v1/* to backend
+
+  const backend =
+    process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '';
+  if (backend && !backend.includes('localhost')) {
+    return backend.replace(/\/$/, '');
+  }
+
   const appUrl =
     process.env.NEXT_PUBLIC_APP_URL ||
-    (typeof process.env.VERCEL_URL === 'string'
+    (typeof process.env.VERCEL_URL === 'string' && process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
       : 'http://localhost:3000');
   return appUrl;

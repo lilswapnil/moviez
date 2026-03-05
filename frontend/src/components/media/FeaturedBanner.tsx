@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getImageUrl } from '@/lib/api/tmdb-client';
+import { fetchApi } from '@/lib/api/fetch-api';
 import Button from '@/components/common/Button';
 import type { Trailer, Movie, TVShow, Anime, Cartoon } from '@/lib/api/tmdb-types';
 
@@ -191,7 +192,7 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
     setIsPlaying(false);
     const fetchTrailer = async () => {
       try {
-        const response = await fetch(`/api/v1/trailers?type=${featuredItem.kind}&id=${featuredItem.id}`, {
+        const response = await fetchApi(`/api/v1/trailers?type=${featuredItem.kind}&id=${featuredItem.id}`, {
           cache: 'no-store',
         });
         if (!response.ok) {
@@ -228,7 +229,7 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
         }
         logoCacheRef.current[cacheKey] = undefined; // Mark as fetching
         try {
-          const response = await fetch(`/api/v1/images?type=${item.kind}&id=${item.id}`, {
+          const response = await fetchApi(`/api/v1/images?type=${item.kind}&id=${item.id}`, {
             cache: 'no-store',
           });
           if (response.ok) {
@@ -266,7 +267,7 @@ export default function FeaturedBanner({ movies = [], shows = [], anime = [], ca
     setLogoPath(null);
     const fetchLogo = async () => {
       try {
-        const response = await fetch(`/api/v1/images?type=${featuredItem.kind}&id=${featuredItem.id}`, {
+        const response = await fetchApi(`/api/v1/images?type=${featuredItem.kind}&id=${featuredItem.id}`, {
           cache: 'no-store',
         });
         if (!response.ok) {

@@ -24,14 +24,12 @@ export interface WatchProvidersResponse {
   };
 }
 
-import { getApiBase } from '@/lib/constants/api.const';
+import { fetchApi } from '@/lib/api/fetch-api';
 
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p';
 
 async function apiFetch(path: string, options?: RequestInit) {
-  const base = getApiBase();
-  const url = `${base}${path.startsWith('/') ? path : `/${path}`}`;
-  return fetch(url, { next: { revalidate: 3600 }, ...options });
+  return fetchApi(path, options);
 }
 
 export async function getMovieWatchProviders(movieId: number, country: string = 'US'): Promise<WatchProvidersResult | null> {
