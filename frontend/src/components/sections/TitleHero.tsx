@@ -248,16 +248,31 @@ export default function TitleHero({ item, displayType, trailerType, logoPath: in
     }
   };
 
-  // Show loading spinner while fetching logo path or waiting for image to load
-  if (isFetchingLogo || (logoPath && !isImageLoaded)) {
+  // Show loading spinner until logo path is resolved and (if we have a logo) the image has loaded.
+  // Preload the logo image off-screen so it's cached before we reveal the hero—prevents pop-in.
+  const showLoading = isFetchingLogo || (logoPath && !isImageLoaded);
+  if (showLoading) {
     return (
+      <>
         <Loading />
-      // <div className="fixed inset-0 z-50 flex items-center justify-center bg-black">
-      //   <div className="flex flex-col items-center gap-4">
-      //     <div className="w-16 h-16 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
-      //     <p className="text-white/60 text-lg">Loading...</p>
-      //   </div>
-      // </div>
+        {logoPath ? (
+          <Image
+            src={getImageUrl(logoPath, 'original')}
+            alt=""
+            width={800}
+            height={320}
+            className="sr-only"
+            aria-hidden
+            priority
+            unoptimized
+            onLoad={() => setIsImageLoaded(true)}
+            onError={() => {
+              setLogoPath(null);
+              setIsImageLoaded(true);
+            }}
+          />
+        ) : null}
+      </>
     );
   }
 
@@ -319,8 +334,9 @@ export default function TitleHero({ item, displayType, trailerType, logoPath: in
               className="object-contain drop-shadow-[0_6px_24px_rgba(0,0,0,0.85)]"
               style={{ maxHeight: '320px', width: '600px', height: 'auto' }}
               priority
+              unoptimized
               draggable={false}
-              onLoadingComplete={() => setIsImageLoaded(true)}
+              onLoad={() => setIsImageLoaded(true)}
               onError={() => {
                 console.error('Logo image failed to load');
                 setLogoPath(null);

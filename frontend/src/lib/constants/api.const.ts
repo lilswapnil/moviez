@@ -1,8 +1,12 @@
 // Shared constants and configuration
-// Base URL for API calls - use empty string when same-origin (browser), full URL on server
+// Base URL for API calls - browser uses same-origin; server uses backend (TMDB key stays in backend only)
 export function getApiBase(): string {
   if (typeof window !== 'undefined') return '';
-  return process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  return (
+    process.env.BACKEND_URL ||
+    process.env.NEXT_PUBLIC_BACKEND_URL ||
+    'http://localhost:8000'
+  );
 }
 
 export const API_CONFIG = {

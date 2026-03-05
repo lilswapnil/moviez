@@ -12,7 +12,7 @@ import type { Trailer } from '@/lib/api/tmdb-types';
 // Server-side function to fetch title logo
 async function getTitleLogo(type: 'movie' | 'tv', id: number): Promise<string | null> {
   try {
-    const backendUrl = process.env.BACKEND_URL || 'http://localhost:8001';
+    const backendUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
     const response = await fetch(`${backendUrl}/api/v1/images?type=${type}&id=${id}`, {
       cache: 'no-store',
     });
@@ -32,7 +32,7 @@ async function getTitleLogo(type: 'movie' | 'tv', id: number): Promise<string | 
 // Server-side function to fetch all trailers
 async function getTitleTrailers(type: 'movie' | 'tv', id: number): Promise<Trailer[]> {
   try {
-    const backendUrl = process.env.BACKEND_URL || 'http://localhost:8001';
+    const backendUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
     const response = await fetch(`${backendUrl}/api/v1/trailers?type=${type}&id=${id}`, {
       cache: 'no-store',
     });
