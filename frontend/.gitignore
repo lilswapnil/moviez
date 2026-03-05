@@ -13,9 +13,6 @@ node_modules/
 out/
 build/
 
-# Vercel build: copied backend (do not commit)
-backend/
-
 # Next.js dev server
 dev/
 

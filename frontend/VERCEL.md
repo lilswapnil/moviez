@@ -1,41 +1,18 @@
 # Vercel Deployment
 
-## Project structure
+## Setup
 
-For combined frontend + backend deployment, the **Root Directory** must be set to `frontend` in Vercel Project Settings.
+1. **Set Root Directory to `frontend`** (Project Settings → General).
 
-```
-moviez/
-├── vercel.json          # Vercel config (read from repo root)
-├── frontend/            # Root Directory for deployment
-│   ├── api/             # Python serverless functions (FastAPI)
-│   │   └── v1/
-│   │       └── [[...path]].py   # Handles all /api/v1/* routes
-│   ├── backend/         # Copied during install (from ../backend)
-│   ├── requirements.txt # Python deps for serverless
-│   └── ...
-└── backend/             # Original FastAPI app
-```
+2. **Deploy the backend separately** on [Railway](https://railway.app), [Render](https://render.com), or [Fly.io](https://fly.io), then set:
 
-## Request flow
+   | Variable | Value |
+   |----------|-------|
+   | `BACKEND_URL` | Your backend URL (e.g. `https://moviez-api.railway.app`) |
+   | `NEXT_PUBLIC_BACKEND_URL` | Same as `BACKEND_URL` |
 
-| Request | Handler |
-|---------|---------|
-| `/`, `/browse/*`, etc. | Next.js (frontend) |
-| `/api/deploy-config` | Next.js (diagnostic route) |
-| `/api/v1/*` | Python serverless (FastAPI backend) |
+3. Set `TMDB_API_KEY` in your backend's platform (not in Vercel).
 
-## Environment variables
+## Note
 
-- `TMDB_API_KEY` (required) – TMDB API key for movie data
-- Do **not** set `BACKEND_URL` for combined deploy
-
-## Local development
-
-```bash
-# Terminal 1: Backend
-cd backend && uvicorn main:app --reload --port 8000
-
-# Terminal 2: Frontend (set BACKEND_URL in .env for rewrites)
-cd frontend && npm run dev
-```
+Running the Python backend as Vercel serverless functions exceeds the Lambda bundle size limit (~250 MB). Deploy the backend as a separate service instead.

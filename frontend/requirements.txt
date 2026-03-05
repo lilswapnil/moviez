@@ -1,4 +1,0 @@
-# Python deps for Vercel serverless API (matches backend)
-fastapi>=0.109.0
-httpx>=0.26.0
-python-dotenv>=1.0.0

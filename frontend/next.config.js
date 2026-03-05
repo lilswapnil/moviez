@@ -33,6 +33,7 @@ const nextConfig = {
       { source: "/api/v1/charts", destination: `${dest}/api/v1/charts` },
       { source: "/api/v1/genres", destination: `${dest}/api/v1/genres` },
       { source: "/api/v1/episodes", destination: `${dest}/api/v1/episodes` },
+      { source: "/api/v1/recommendations", destination: `${dest}/api/v1/recommendations` },
       { source: "/api/v1/movie/:path*", destination: `${dest}/api/v1/movie/:path*` },
       { source: "/api/v1/tv/:path*", destination: `${dest}/api/v1/tv/:path*` },
       { source: "/api/v1/collection/:path*", destination: `${dest}/api/v1/collection/:path*` },

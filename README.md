@@ -283,39 +283,22 @@ NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
 
 ## 🚀 Deployment
 
-### Option A: Vercel (Frontend + Backend in One Project)
+### Vercel (Frontend) + Railway / Render / Fly.io (Backend)
 
-Deploy both frontend and backend in a **single Vercel project**:
+The Python backend exceeds Vercel's serverless function size limit (~250 MB), so deploy it separately:
 
-1. **Connect your repo** to Vercel and import the project.
-2. **Set Root Directory to `frontend`** (Project Settings → General → Root Directory).
-3. **Set environment variables** (Project Settings → Environment Variables):
+1. **Deploy the backend** to [Railway](https://railway.app), [Render](https://render.com), or [Fly.io](https://fly.io). Add `TMDB_API_KEY` in that platform's env vars.
 
-   | Variable | Value |
-   |----------|-------|
-   | `TMDB_API_KEY` | Your TMDB API key ([get it free](https://www.themoviedb.org/settings/api)) |
+2. **Deploy the frontend** to Vercel (Root Directory = `frontend`).
 
-   Do **not** set `BACKEND_URL` — the Python backend runs as serverless functions on the same deployment.
-
-4. **How it works:**
-   - `vercel.json` (repo root) configures the Python backend as serverless under `/api/v1/*`.
-   - The `installCommand` copies `backend/` into `frontend/` during build.
-   - All `/api/v1/*` requests (data, search, trailers, charts, recommendations, etc.) are handled by the FastAPI backend.
-
-### Option B: Vercel + Railway (or Render, Fly.io)
-
-1. **Deploy the backend** to Railway, Render, or Fly.io so it has a public URL (e.g. `https://moviez-api.railway.app`).
-
-2. **Deploy the frontend** to Vercel (connect the repo and set root directory to `frontend`).
-
-3. **Set environment variables in Vercel** (Project Settings → Environment Variables):
+3. **Set environment variables in Vercel**:
 
    | Variable | Value |
    |----------|-------|
-   | `BACKEND_URL` | `https://your-backend.railway.app` (your deployed backend URL) |
+   | `BACKEND_URL` | Your backend URL (e.g. `https://moviez-api.railway.app`) |
    | `NEXT_PUBLIC_BACKEND_URL` | Same as `BACKEND_URL` |
 
-   Set `TMDB_API_KEY` in your backend's platform (Railway, Render, etc.), not in Vercel. Without `BACKEND_URL` in Vercel, the frontend will show "Loading featured content..." indefinitely because API rewrites are disabled when `BACKEND_URL` is missing or points to `localhost`.
+   Without `BACKEND_URL`, the frontend will not load content; rewrites proxy `/api/v1/*` to your backend.
 
 ### Self-hosted
 ```bash
