@@ -288,18 +288,19 @@ NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
 Deploy both frontend and backend in a **single Vercel project**:
 
 1. **Connect your repo** to Vercel and import the project.
-
 2. **Set Root Directory to `frontend`** (Project Settings → General → Root Directory).
-
 3. **Set environment variables** (Project Settings → Environment Variables):
 
    | Variable | Value |
    |----------|-------|
    | `TMDB_API_KEY` | Your TMDB API key ([get it free](https://www.themoviedb.org/settings/api)) |
 
-   Do **not** set `BACKEND_URL` when using this setup — the API runs as serverless functions on the same deployment.
+   Do **not** set `BACKEND_URL` — the Python backend runs as serverless functions on the same deployment.
 
-4. The `vercel.json` at the project root configures the Python backend to run as serverless functions under `/api/v1/*`.
+4. **How it works:**
+   - `vercel.json` (repo root) configures the Python backend as serverless under `/api/v1/*`.
+   - The `installCommand` copies `backend/` into `frontend/` during build.
+   - All `/api/v1/*` requests (data, search, trailers, charts, recommendations, etc.) are handled by the FastAPI backend.
 
 ### Option B: Vercel + Railway (or Render, Fly.io)
 

@@ -1,8 +1,7 @@
 // Shared constants and configuration
-// Base URL for API calls
-// - Client: empty string (same-origin; rewrites proxy /api/v1/* to backend)
-// - Server: use BACKEND_URL directly when it's a production URL (Vercel/etc);
-//   otherwise fetch from app URL so rewrites proxy (local dev)
+// Base URL for API calls:
+// - Client: always '' (same-origin; /api/v1/* hits backend via Python serverless or rewrites)
+// - Server: BACKEND_URL when set (external backend); else '' for same-origin (Vercel combined deploy)
 export function getApiBase(): string {
   if (typeof window !== 'undefined') return '';
 
@@ -12,12 +11,8 @@ export function getApiBase(): string {
     return backend.replace(/\/$/, '');
   }
 
-  const appUrl =
-    process.env.NEXT_PUBLIC_APP_URL ||
-    (typeof process.env.VERCEL_URL === 'string' && process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : 'http://localhost:3000');
-  return appUrl;
+  // Same-origin: Vercel combined (Python handles /api/v1/*) or local dev (uvicorn backend)
+  return '';
 }
 
 export const API_CONFIG = {

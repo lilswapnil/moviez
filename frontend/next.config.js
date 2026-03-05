@@ -18,16 +18,13 @@ try {
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   async rewrites() {
+    // When BACKEND_URL is set (external backend): rewrite /api/v1/* to backend
+    // When not set (Vercel combined deploy): no rewrites; Python serverless handles /api/v1/*
     const backend = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL;
-    if (process.env.VERCEL && (!backend || backend.includes("localhost"))) {
-      console.warn(
-        "\n⚠️  Vercel: BACKEND_URL is missing or points to localhost. API rewrites are disabled.\n" +
-        "   To fix: Deploy your backend (Railway, Render, etc.), then in Vercel → Project Settings → Environment Variables:\n" +
-        "   Set BACKEND_URL and NEXT_PUBLIC_BACKEND_URL to your deployed backend URL (e.g. https://your-app.railway.app)\n"
-      );
+    if (!backend || backend.includes("localhost")) {
       return [];
     }
-    const dest = backend || "http://localhost:8000";
+    const dest = backend;
     return [
       { source: "/api/v1/data", destination: `${dest}/api/v1/data` },
       { source: "/api/v1/search", destination: `${dest}/api/v1/search` },

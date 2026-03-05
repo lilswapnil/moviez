@@ -1,6 +1,6 @@
 """
 Vercel serverless handler for FastAPI backend.
-Handles /api/v1/* routes (except /api/v1/recommendations which stays with Next.js).
+Handles all /api/v1/* routes when frontend and backend are deployed together.
 """
 import os
 import sys
