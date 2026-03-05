@@ -1,3 +1,8 @@
+const path = require("path");
+
+// Load root .env so frontend and backend share the same env file
+require("dotenv").config({ path: path.resolve(__dirname, "..", ".env") });
+
 const projectRoot = __dirname;
 let tailwindEntry = null;
 try {

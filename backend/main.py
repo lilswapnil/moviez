@@ -1,7 +1,11 @@
 """Moviez Backend API."""
+from pathlib import Path
+
 from dotenv import load_dotenv
 
-load_dotenv()
+# Load root .env (project root) so frontend and backend share the same file
+_root = Path(__file__).resolve().parent.parent
+load_dotenv(_root / ".env")
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware

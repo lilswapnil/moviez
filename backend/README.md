@@ -11,7 +11,7 @@ source .venv/bin/activate   # or: .venv\Scripts\activate on Windows
 pip install -r requirements.txt
 ```
 
-Copy `.env.example` to `.env` and add your TMDB API key.
+Create `.env` at the **project root** (one level up). Copy from root `.env.example` and add your TMDB API key. Both frontend and backend use this file.
 
 ## Run
 
@@ -19,7 +19,7 @@ Copy `.env.example` to `.env` and add your TMDB API key.
 uvicorn main:app --reload --port 8000
 ```
 
-**Required:** The frontend must have the backend running. Set `BACKEND_URL=http://localhost:8000` in the frontend `.env.local` (or it defaults to that).
+**Required:** The frontend must have the backend running. Set `BACKEND_URL=http://localhost:8000` in the root `.env` (used by both).
 
 API docs: http://localhost:8000/docs
 

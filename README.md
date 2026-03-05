@@ -115,8 +115,9 @@ moviez/
 git clone https://github.com/lilswapnil/moviez.git
 cd moviez
 
-# Configure environment
-export TMDB_API_KEY=your_tmdb_api_key_here
+# Configure environment (single .env at project root - used by frontend and backend)
+cp .env.example .env
+# Edit .env and add your TMDB_API_KEY
 
 # Start all services
 docker compose up --build
@@ -127,24 +128,29 @@ docker compose up --build
 
 ### Option 2: Local Development
 
+Both frontend and backend read from the **root `.env`** file. Create it once at project root:
+
+```bash
+cp .env.example .env
+# Edit .env and add TMDB_API_KEY, BACKEND_URL, etc.
+```
+
+#### Backend (start first)
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
+# Server runs on http://localhost:8000
+```
+
 #### Frontend
 ```bash
 cd frontend
 npm install
 npm run dev
-# Open http://localhost:3000
-```
-
-#### Backend
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-
-export TMDB_API_KEY=your_api_key
-python main.py
-# Server runs on http://localhost:8000
+# Open http://localhost:3000 (reads BACKEND_URL from root .env)
 ```
 
 #### Recommender (Analysis)
@@ -231,19 +237,21 @@ See [`recommender/notebook/TMD/data_exploration.ipynb`](recommender/notebook/TMD
 
 ## 🔐 Environment Variables
 
+All variables go in **one file**: `.env` at the project root. Both frontend and backend read from it.
+
 ```bash
-# Frontend (.env.local)
-TMDB_API_KEY=your_tmdb_api_key
-NEXT_PUBLIC_TMDB_IMAGE_BASE_URL=https://image.tmdb.org/t/p
-NEXT_PUBLIC_APP_NAME=Moviez
+# Copy .env.example to .env at project root
+cp .env.example .env
 
-# Backend (.env or export)
+# Required
 TMDB_API_KEY=your_tmdb_api_key
-DATABASE_URL=postgresql://user:pass@localhost/moviez
-SECRET_KEY=your_jwt_secret
+BACKEND_URL=http://localhost:8000
+NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
 
-# Recommender (notebook env)
-# Uses huggingface datasets library for MovieLens-32M
+# Optional
+# TMDB_BEARER_TOKEN=
+# DATABASE_URL=postgresql://user:pass@localhost/moviez
+# JWT_SECRET=your_jwt_secret
 ```
 
 ## 📊 Performance Metrics
