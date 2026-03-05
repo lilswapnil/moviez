@@ -1,12 +1,14 @@
 // Shared constants and configuration
-// Base URL for API calls - browser uses same-origin; server uses backend (TMDB key stays in backend only)
+// Base URL for API calls - always use same-origin so rewrites can proxy to backend
 export function getApiBase(): string {
   if (typeof window !== 'undefined') return '';
-  return (
-    process.env.BACKEND_URL ||
-    process.env.NEXT_PUBLIC_BACKEND_URL ||
-    'http://localhost:8000'
-  );
+  // Server: fetch from our own app; rewrites in next.config proxy /api/v1/* to backend
+  const appUrl =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (typeof process.env.VERCEL_URL === 'string'
+      ? `https://${process.env.VERCEL_URL}`
+      : 'http://localhost:3000');
+  return appUrl;
 }
 
 export const API_CONFIG = {
