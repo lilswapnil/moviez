@@ -16,6 +16,11 @@ const nextConfig = {
   async rewrites() {
     const backend = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL;
     if (process.env.VERCEL && (!backend || backend.includes("localhost"))) {
+      console.warn(
+        "\n⚠️  Vercel: BACKEND_URL is missing or points to localhost. API rewrites are disabled.\n" +
+        "   To fix: Deploy your backend (Railway, Render, etc.), then in Vercel → Project Settings → Environment Variables:\n" +
+        "   Set BACKEND_URL and NEXT_PUBLIC_BACKEND_URL to your deployed backend URL (e.g. https://your-app.railway.app)\n"
+      );
       return [];
     }
     const dest = backend || "http://localhost:8000";

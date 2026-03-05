@@ -22,7 +22,7 @@ async function getTitleLogo(type: 'movie' | 'tv', id: number): Promise<string | 
     }
     const data = await response.json();
     const logos = Array.isArray(data.logos) ? data.logos : [];
-    const enLogo = logos.find((logo: any) => logo.iso_639_1 === 'en' || logo.iso_639_1 === null);
+    const enLogo = logos.find((logo: { iso_639_1?: string | null }) => logo.iso_639_1 === 'en' || logo.iso_639_1 === null);
     return enLogo?.file_path || (logos[0]?.file_path ?? null);
   } catch (error) {
     console.error('Failed to fetch logo:', error);
@@ -108,7 +108,7 @@ export default async function TitlePage({ params }: TitlePageProps) {
 
     const releaseYear = details.release_date ? new Date(details.release_date).getFullYear() : undefined;
     const runtimeMinutes = details.runtime ?? null;
-    const genres = details.genres?.map((genre: any) => genre.name) ?? [];
+    const genres = details.genres?.map((genre: { name: string }) => genre.name) ?? [];
 
     return (
       <main className="bg-black text-white min-h-screen">
@@ -135,7 +135,7 @@ export default async function TitlePage({ params }: TitlePageProps) {
           {streamingPlatforms.length > 0 && (
             <div className="mb-6 flex flex-wrap gap-3 items-center">
               <span className="text-white/80 font-semibold mr-2">Available on:</span>
-              {streamingPlatforms.map((provider: any) => (
+              {streamingPlatforms.map((provider: { provider_id: number; provider_name: string; logo_path?: string | null }) => (
                 <a
                   key={provider.provider_id}
                   href={providerLink || '#'}
@@ -193,7 +193,7 @@ export default async function TitlePage({ params }: TitlePageProps) {
   const runtimeMinutes = Array.isArray(details.episode_run_time) && details.episode_run_time.length > 0
     ? details.episode_run_time[0]
     : null;
-  const genres = details.genres?.map((genre: any) => genre.name) ?? [];
+  const genres = details.genres?.map((genre: { name: string }) => genre.name) ?? [];
 
   const displayType =
     routeType === 'shows' ? 'TV Series' : routeType === 'animes' ? 'Anime Series' : 'Cartoon Series';
@@ -223,7 +223,7 @@ export default async function TitlePage({ params }: TitlePageProps) {
         {streamingPlatforms.length > 0 && (
           <div className="mb-6 flex flex-wrap gap-3 items-center">
             <span className="text-white/80 font-semibold mr-2">Available on:</span>
-            {streamingPlatforms.map((provider: any) => (
+            {streamingPlatforms.map((provider: { provider_id: number; provider_name: string; logo_path?: string | null }) => (
               <Button
                 key={provider.provider_id}
                 href={providerLink || '#'}

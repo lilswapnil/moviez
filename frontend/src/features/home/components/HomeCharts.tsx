@@ -3,7 +3,6 @@
 import { getImageUrl } from '@/lib/api/tmdb-client';
 import type { Movie, TVShow } from '@/lib/api/tmdb-types';
 import { getTitleUrl } from '@/lib/utils/url';
-import { useState } from 'react';
 import Button from '@/components/common/Button';
 import PosterCard from '@/components/common/PosterCard';
 import SectionHeader from '@/components/common/SectionHeader';
@@ -54,8 +53,6 @@ export default function HomeCards({ title, movies = [], shows = [], onShowMore, 
     }))
   ];
 
-  if (items.length < 6) return null;
-
   const {
     scrollContainerRef,
     canScrollLeft,
@@ -67,6 +64,8 @@ export default function HomeCards({ title, movies = [], shows = [], onShowMore, 
     gap: 16,
     deps: [items.length],
   });
+
+  if (items.length < 6) return null;
 
   return (
     <div className="mb-12 px-11">

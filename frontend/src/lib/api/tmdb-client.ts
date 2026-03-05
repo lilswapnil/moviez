@@ -429,58 +429,6 @@ export async function getUpcomingKDramas(page: number = 1): Promise<TVShow[]> {
   try { const r = await apiFetch(`/api/v1/data?type=shows&category=kdrama_upcoming&page=${page}`); if (!r.ok) return []; return (await r.json()) ?? []; } catch (e) { console.error('Error fetching K dramas:', e); return []; }
 }
 
-type SearchMediaType = 'movie' | 'tv';
-
-interface TMDBSearchResult {
-  id: number;
-  media_type: SearchMediaType | string;
-  title?: string;
-  name?: string;
-  overview?: string;
-  backdrop_path?: string | null;
-  poster_path?: string | null;
-  vote_average?: number;
-  genre_ids?: number[];
-  release_date?: string;
-  first_air_date?: string;
-  original_language?: string;
-  origin_country?: string[];
-}
-
-function normalizeString(value: string | undefined | null): string {
-  return value ?? '';
-}
-
-function normalizeNumber(value: number | undefined | null): number {
-  return Number.isFinite(value) ? Number(value) : 0;
-}
-
-function normalizeSearchItem(item: Record<string, unknown>): Movie | TVShow {
-  const mediaType = item.media_type as string;
-  const isMovie = mediaType === 'movie';
-  const title = (item.title as string) || (item.name as string) || 'Untitled';
-  const dateVal = (item.release_date as string) || (item.first_air_date as string);
-  const year = dateVal && dateVal.length >= 4 ? parseInt(dateVal.slice(0, 4), 10) : undefined;
-  const result: Record<string, unknown> = {
-    id: item.id as number,
-    overview: (item.overview as string) || '',
-    poster_path: (item.poster_path as string) ?? '',
-    backdrop_path: (item.backdrop_path as string) ?? '',
-    release_date: year ? `${year}-01-01` : '',
-    first_air_date: year ? `${year}-01-01` : '',
-    vote_average: (item.vote_average as number) ?? 0,
-    popularity: (item.popularity as number) ?? 0,
-    genre_ids: (item.genre_ids as number[]) ?? [],
-    media_type: mediaType,
-  };
-  // Only set title or name based on media type to preserve distinction
-  if (isMovie) {
-    result.title = title;
-  } else {
-    result.name = title;
-  }
-  return result as unknown as Movie | TVShow;
-}
 export async function searchTitles(query: string, page: number = 1): Promise<(Movie | TVShow)[]> {
   const trimmedQuery = query.trim();
   if (!trimmedQuery) return [];

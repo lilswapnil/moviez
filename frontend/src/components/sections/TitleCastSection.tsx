@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Image from 'next/image';
 import { getImageUrl } from '@/lib/api/tmdb-client';
 import type { CastMember } from '@/lib/api/tmdb-types';
@@ -27,10 +27,6 @@ export default function TitleCastSection({ cast, variant = 'standalone' }: Title
 
   const [currentPage, setCurrentPage] = useState(0);
   const totalPages = Math.max(1, Math.ceil(sorted.length / ITEMS_PER_PAGE));
-
-  useEffect(() => {
-    setCurrentPage((prev) => Math.min(prev, totalPages - 1));
-  }, [totalPages]);
 
   const safePage = useMemo(() => {
     return Math.min(currentPage, totalPages - 1);

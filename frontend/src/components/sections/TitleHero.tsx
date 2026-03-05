@@ -162,7 +162,7 @@ export default function TitleHero({ item, displayType, trailerType, logoPath: in
         const data = await response.json();
         const logos = Array.isArray(data.logos) ? data.logos : [];
         // Find an English logo if available
-        const enLogo = logos.find((logo: any) => logo.iso_639_1 === 'en' || logo.iso_639_1 === null);
+        const enLogo = logos.find((logo: { iso_639_1?: string | null }) => logo.iso_639_1 === 'en' || logo.iso_639_1 === null);
         const result = enLogo?.file_path || (logos[0]?.file_path ?? null);
         logoCacheRef.current[cacheKey] = result;
         if (!cancelled) {

@@ -20,9 +20,9 @@ export async function fetchApi(
 ): Promise<Response> {
   const base = getApiBase();
   const url = `${base}${path.startsWith('/') ? path : `/${path}`}`;
-  const timeoutMs = options?.timeout ?? DEFAULT_TIMEOUT_MS;
-  const maxRetries = options?.retries ?? MAX_RETRIES;
-  const { timeout: _, retries: __, ...fetchOptions } = options ?? {};
+  const { timeout = DEFAULT_TIMEOUT_MS, retries = MAX_RETRIES, ...fetchOptions } = options ?? {};
+  const timeoutMs = timeout;
+  const maxRetries = retries;
 
   let lastError: unknown;
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
