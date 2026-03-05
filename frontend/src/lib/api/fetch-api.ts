@@ -1,8 +1,9 @@
 /**
  * Fetch with retry and timeout for reliable API calls on Vercel/serverless.
  * Handles intermittent failures and slow backends.
+ * On server: uses request headers for base URL (reliable on Vercel).
  */
-import { getApiBase } from '@/lib/constants/api.const';
+import { getApiBase, getApiBaseAsync } from '@/lib/constants/api.const';
 
 const DEFAULT_TIMEOUT_MS = 20000; // 20s for slow backends
 const MAX_RETRIES = 2;
@@ -18,7 +19,8 @@ export async function fetchApi(
   path: string,
   options?: FetchApiOptions
 ): Promise<Response> {
-  const base = getApiBase();
+  const base =
+    typeof window === 'undefined' ? await getApiBaseAsync() : getApiBase();
   const url = `${base}${path.startsWith('/') ? path : `/${path}`}`;
   const { timeout = DEFAULT_TIMEOUT_MS, retries = MAX_RETRIES, ...fetchOptions } = options ?? {};
   const timeoutMs = timeout;
