@@ -283,11 +283,29 @@ NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
 
 ## 🚀 Deployment
 
-### Vercel + Railway (or Render, Fly.io, etc.)
+### Option A: Vercel (Frontend + Backend in One Project)
+
+Deploy both frontend and backend in a **single Vercel project**:
+
+1. **Connect your repo** to Vercel and import the project.
+
+2. **Set Root Directory to `frontend`** (Project Settings → General → Root Directory).
+
+3. **Set environment variables** (Project Settings → Environment Variables):
+
+   | Variable | Value |
+   |----------|-------|
+   | `TMDB_API_KEY` | Your TMDB API key ([get it free](https://www.themoviedb.org/settings/api)) |
+
+   Do **not** set `BACKEND_URL` when using this setup — the API runs as serverless functions on the same deployment.
+
+4. The `vercel.json` at the project root configures the Python backend to run as serverless functions under `/api/v1/*`.
+
+### Option B: Vercel + Railway (or Render, Fly.io)
 
 1. **Deploy the backend** to Railway, Render, or Fly.io so it has a public URL (e.g. `https://moviez-api.railway.app`).
 
-2. **Deploy the frontend** to Vercel (connect the repo and set root directory to `frontend` if needed).
+2. **Deploy the frontend** to Vercel (connect the repo and set root directory to `frontend`).
 
 3. **Set environment variables in Vercel** (Project Settings → Environment Variables):
 

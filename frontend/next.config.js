@@ -1,7 +1,11 @@
 const path = require("path");
 
-// Load root .env so frontend and backend share the same env file
-require("dotenv").config({ path: path.resolve(__dirname, "..", ".env") });
+// Load root .env (optional - Vercel injects env vars at build time)
+try {
+  require("dotenv").config({ path: path.resolve(__dirname, "..", ".env") });
+} catch {
+  // dotenv optional in production
+}
 
 const projectRoot = __dirname;
 let tailwindEntry = null;
@@ -48,6 +52,8 @@ const nextConfig = {
       },
     ],
   },
+  // outputFileTracingRoot and turbopack.root must match on Vercel
+  outputFileTracingRoot: projectRoot,
   turbopack: {
     root: projectRoot,
     resolveAlias: tailwindEntry

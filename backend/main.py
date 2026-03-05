@@ -1,4 +1,5 @@
 """Moviez Backend API."""
+import os
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -18,9 +19,21 @@ app = FastAPI(
     version="1.0.0",
 )
 
+# CORS: allow localhost and Vercel deployments
+_origins = [
+    "http://localhost:3000",
+    "http://localhost:3005",
+    "https://moviez.vercel.app",
+]
+# Add dynamic Vercel preview/production URLs
+if os.getenv("VERCEL_URL"):
+    _origins.append(f"https://{os.getenv('VERCEL_URL')}")
+if os.getenv("VERCEL_BRANCH_URL"):
+    _origins.append(f"https://{os.getenv('VERCEL_BRANCH_URL')}")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:3005"],
+    allow_origins=_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

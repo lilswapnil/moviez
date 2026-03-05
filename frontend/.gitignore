@@ -17,6 +17,9 @@
 /.next/
 /out/
 
+# copied backend during Vercel build (do not commit)
+/backend/
+
 # production
 /build
 

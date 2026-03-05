@@ -1,3 +1,9 @@
 {
-  "framework": "nextjs"
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "cp -r ../backend ./backend 2>/dev/null || true && npm install",
+  "functions": {
+    "api/v1/[[...path]].py": {
+      "runtime": "@vercel/python@4.2.1"
+    }
+  }
 }
