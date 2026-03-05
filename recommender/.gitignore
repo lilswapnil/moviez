@@ -1,0 +1,18 @@
+# Data (large datasets)
+data/raw/
+data/processed/
+
+# Models (pre-trained weights)
+models/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment
+.env
